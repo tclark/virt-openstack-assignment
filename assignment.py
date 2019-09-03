@@ -1,5 +1,4 @@
 import argparse
-import os
 import openstack
 
 def create():
@@ -21,19 +20,18 @@ def status():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', 
-            help='One of "create", "run", "stop", "destroy", or "status"')
+    parser.add_argument('operation',
+                        help='One of "create", "run", "stop", "destroy", or "status"')
     args = parser.parse_args()
     operation = args.operation
 
     operations = {
-            'create'  : create,
-            'run'     : run,
-            'stop'    : stop,
-            'destroy' : destroy,
-            'status'  : status
-            }
+        'create'  : create,
+        'run'     : run,
+        'stop'    : stop,
+        'destroy' : destroy,
+        'status'  : status
+        }
 
     action = operations.get(operation, lambda: print('{}: no such operation'.format(operation)))
     action()
-
