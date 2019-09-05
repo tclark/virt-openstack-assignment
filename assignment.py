@@ -2,22 +2,35 @@ import argparse
 import openstack
 
 def create():
-    print('performing create')
+    ''' Create a set of Openstack resources '''
+    pass
 
 def run():
-    print('performing run')
+    ''' Start  a set of Openstack virtual machines
+    if they are not already running.
+    '''
+    pass
 
 def stop():
-    print('performing stop')
+    ''' Stop  a set of Openstack virtual machines
+    if they are running.
+    '''
+    pass
 
 def destroy():
-    print('performing destroy')
+    ''' Tear down the set of Openstack resources 
+    produced by the create action
+    '''
+    pass
 
 def status():
-    print('performing status')
+    ''' Print a status report on the OpenStack
+    virtual machines created by the create action.
+    '''
+    pass
 
 
-
+### You should not modify anything below this line ###
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('operation',
