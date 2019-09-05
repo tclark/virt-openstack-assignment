@@ -5,6 +5,7 @@ IMAGE = 'ubuntu-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
 KEYPAIR = 'mariadb'
 NETWORK = 'gorda5-net'
+SUBNET = 'gorda5-sub'
 ROUTER = 'gorda5-rtr'
 SERVER1 = 'gorda5-web'
 SERVER2 = 'gorda5-app'
@@ -14,7 +15,11 @@ conn = openstack.connect(cloud_name='openstack')
 
 def create():
     ''' Create a set of Openstack resources '''
-   pass 
+    if not conn.network.find_network(NETWORK):
+        network = conn.network.create_network(name=NETWORK)
+        subnet = conn.network.create_subnet(name=SUBNET, cidr='192.168.50.0/24', network_id=network.id, ip_version='4')
+    else:
+        print('Network already exist')
 
 def run():
     ''' Start  a set of Openstack virtual machines
@@ -32,7 +37,9 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    pass
+    if conn.network.find_network(NETWORK):
+        network = conn.network.find_network(NETWORK)
+        conn.network.delete_network(network)
 
 def status():
     ''' Print a status report on the OpenStack
