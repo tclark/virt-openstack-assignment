@@ -9,14 +9,14 @@ In particular, it is invoked with one argument that is one of
 be taken for each argument are
 
 *create*: Create the following resources in OpenStack
-  - A network named "<username>-net" with a subnet, 192.168.50.0/24
-  - A router named "<username>-rtr" with interfaces joining the network
+  - A network named "\<username\>-net" with a subnet, 192.168.50.0/24
+  - A router named "\<username\>-rtr" with interfaces joining the network
     above with public-net
   - A floating IP address
   - Three servers
         image: ubuntu-minimal-16.04-x86_64
         flavour: c1.c1r1
-        names: <username>-web, <username>-app, <username>-db
+        names: \<username\>-web, \<username\>-app, \<username\>-db
         security-group: assignment2 (You do not need to create this)
   Assign the floating IP to the web server.
   If any of the resources above already exisit when the script is run, then they 
