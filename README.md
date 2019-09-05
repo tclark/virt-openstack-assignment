@@ -14,10 +14,10 @@ be taken for each argument are
     above with public-net
   - A floating IP address
   - Three servers
-        -- image: ubuntu-minimal-16.04-x86_64
-        -- flavour: c1.c1r1
-        -- names: \<username\>-web, \<username\>-app, \<username\>-db
-        -- security-group: assignment2 (You do not need to create this)
+     - image: ubuntu-minimal-16.04-x86_64
+     - flavour: c1.c1r1
+     - names: \<username\>-web, \<username\>-app, \<username\>-db
+     - security-group: assignment2 (You do not need to create this)
   Assign the floating IP to the web server.
   If any of the resources above already exisit when the script is run, then they 
   should not be recreated.
