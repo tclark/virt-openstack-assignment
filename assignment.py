@@ -1,9 +1,20 @@
 import argparse
 import openstack
 
+IMAGE = 'ubuntu-16.04-x86_64'
+FLAVOUR = 'c1.c1r1'
+KEYPAIR = 'mariadb'
+NETWORK = 'gorda5-net'
+ROUTER = 'gorda5-rtr'
+SERVER1 = 'gorda5-web'
+SERVER2 = 'gorda5-app'
+SERVER3 = 'gorda5-db'
+
+conn = openstack.connect(cloud_name='openstack')
+
 def create():
     ''' Create a set of Openstack resources '''
-    pass
+   pass 
 
 def run():
     ''' Start  a set of Openstack virtual machines
@@ -27,7 +38,9 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    pass
+    servers = conn.compute.servers()
+    for server in servers:
+        print(server.name)
 
 
 ### You should not modify anything below this line ###
