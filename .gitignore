@@ -103,5 +103,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# credentials
-clouds.yml
+# Open stack connection details
+clouds.yaml
