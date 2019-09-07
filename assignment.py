@@ -1,8 +1,30 @@
+#!/usr/bin/env
+
+
 import argparse
 import openstack
 
+KEYPAIR = 'sysadminapp'
+conn = openstack.connect(could_name='openstack')
+
+NETWORK = "chril2-net"
+NETWORK_IP = "192.168.50.0"
+NETWORK_MASK = "255.255.255.0"
+FLOATING_IP = ""
+
+ROUTER = "chril2-rtl"
+SERVERS = ["chrill2-web", "chril2-app", "chril2-db"]
+IMAGE = "ubuntu-minimal-1604-x86_64"
+FLAVOUR = "c1.c1r1"
+
 def create():
     ''' Create a set of Openstack resources '''
+    for server in SERVERS:
+        if(conn.compute.find_server(server) == None):
+            print(f"Creating server {server}...")
+        else:
+            print(conn.compute.find_server(server))
+            print(f"Server {server} already exists - skipping")
     pass
 
 def run():
@@ -48,3 +70,4 @@ if __name__ == '__main__':
 
     action = operations.get(operation, lambda: print('{}: no such operation'.format(operation)))
     action()
+
