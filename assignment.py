@@ -113,6 +113,36 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+
+    for server_name in SERVERS:
+        server = conn.compute.find_server(server_name)
+        if( server != None):
+            print(f'\nDeleting server {server_name}...')
+            conn.compute.delete_server(server)
+        else:
+            print(f'\nServer {server_name} does not exist - skipping')
+    
+    subnet = conn.network.find_subnet(SUBNET_NAME)
+    router = conn.network.find_router(ROUTER_NAME)
+    if (router != None):
+        print(f'\nDeleting router {ROUTER_NAME}...')
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router)
+    else:
+        print(f'\nRouter {ROUTER_NAME} does not exist - skipping')
+
+    if(subnet != None):
+        print(f'\nDeleting subnet {SUBNET_NAME}...')
+        conn.network.delete_subnet(subnet)
+    else:
+        print(f'\nSubnet {SUBNET_NAME} does not exist - skipping')
+    
+    network = conn.network.find_network(NETWORK_NAME)
+    if(network != None):
+        print(f'\nDeleting network {NETWORK_NAME}...')
+        conn.network.delete_network(network)
+    else:
+        print(f'\nNetwork {NETWORK_NAME} does not exist - skipping')
     pass
 
 def status():
