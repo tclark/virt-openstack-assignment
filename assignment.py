@@ -74,13 +74,14 @@ def create():
             print(f'\nServer {server_name} already exists - skipping')
         
         # Adding floating IP to web server.
-        if(server_name == 'chril2-web'): 
-            if(conn.compute.get_server(server.id).addresses == None):
-                print('Adding floating IP to chril2_web')
+        if(server_name == 'chril2-web'):
+            conn.compute.wait_for_server(server)
+            if( len(conn.compute.get_server(server.id)['addresses']['chril2-net']) < 2 ):
                 floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
                 conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
+                print(f'Added address {floating_ip["floating_ip_address"]}')
             else:
-                print('Chril2 already has a floating IP address')
+                print('Chril2-web already has a floating IP address')
     pass
 
 def run():
