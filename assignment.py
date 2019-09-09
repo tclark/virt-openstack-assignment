@@ -52,7 +52,7 @@ def create():
                 conn.compute.wait_for_server(server)
                 fip = conn.network.create_ip(floating_network_id=public_net.id)
                 conn.compute.add_floating_ip_to_server(server, fip.floating_ip_address)
-                print(f"Web server has address: {fip.floating_ip_address}")
+                print(f"Web server ip address is: {fip.floating_ip_address}")
         else:
             print(f"Server {servername} already exists")
 
@@ -78,12 +78,17 @@ def destroy():
             conn.compute.delete_server(server)
     
     if rtr:
+        instances = 3
+        while instances > 0:
+            instances = 0
+            for servername in SERVERNAMES:
+                s = conn.compute.find_server(servername)
+                if s:
+                    instances += 1
         conn.network.remove_interface_from_router(rtr, sub.id)
         conn.network.delete_router(rtr)
     
     if net:
-        for s in net.subnet_ids:
-            conn.network.delete_subnet(s)
         conn.network.delete_network(net)
 
 
