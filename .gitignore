@@ -105,3 +105,4 @@ venv.bak/
 
 #Personal cloud.yml
 clouds.yaml
+test.py
