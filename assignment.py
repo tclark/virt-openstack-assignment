@@ -97,9 +97,12 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    servers = conn.compute.servers()
-    for server in servers:
-        print(server.name)
+    for servername in SERVERNAMES:
+        server = conn.compute.get_server(conn.compute.find_server(servername))
+        addresses = []
+        for addr in server.addresses[NETWORK]:
+            addresses.append(addr['addr'])
+        print(f"Server: {server.name}, Status: {server.status}, Addresses: {addresses}")
 
 
 ### You should not modify anything below this line ###
