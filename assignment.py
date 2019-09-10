@@ -10,6 +10,7 @@ SUBNET = 'hallmg1-subnet'
 NETWORK = 'hallmg1-net'
 ROUTER = 'hallmg1-router'
 SECURITY_GROUP = 'assignment2'
+PUBNET_NAME = 'public-net'
 SERVER_NAMES = ['hallmg1-web', 'hallmg1-app', 'hallmg1-db']
 
 conn = openstack.connect(cloud_name='openstack')
@@ -20,10 +21,11 @@ def create():
     image = conn.compute.find_image(IMAGE)
     flavor = conn.compute.find_flavor(FLAVOR)
     keypair = conn.compute.find_keypair(KEYPAIR)
+    public_net = conn.network.find_network(PUBNET_NAME)
+    security_group = conn.network.find_security_group(SECURITY_GROUP)
 
     # TODO: check if resources already exist before creation
     # TODO: floating ip
-    # TODO: router interfaces
 
     print('Creating', NETWORK)
     network = conn.network.create_network(name=NETWORK)
@@ -32,11 +34,12 @@ def create():
         cidr='192.168.50.0/24', ip_version=4)
 
     print('Creating', ROUTER)
-    router = conn.network.create_router(name=ROUTER)
+    router = conn.network.create_router(name=ROUTER,
+        external_gateway_info={'network_id': public_net.id})
 
-    security_group = conn.network.find_security_group(SECURITY_GROUP)
+    print('Adding interface for', SUBNET)
+    conn.network.add_interface_to_router(router, subnet.id)
 
-    #public_net = conn.network.find_network('public-net')
     #web_ip = conn.network.create_ip(floating_network_id=public_net.id)
 
     for name in SERVER_NAMES:
