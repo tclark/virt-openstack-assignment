@@ -68,9 +68,9 @@ def create():
         else:
             print('Creating', name)
             s = conn.compute.create_server(name=name, image_id=image.id,
-                    flavor_id=flavor.id, key_name=keypair.name,
-                    networks=[{'uuid': network.id}],
-                    security_groups=[security_group])
+                flavor_id=flavor.id, key_name=keypair.name,
+                networks=[{'uuid': network.id}],
+                security_groups=[security_group])
 
     web = conn.compute.find_server('hallmg1-web')
     web = conn.compute.get_server(web.id)
@@ -123,6 +123,10 @@ def destroy():
                 conn.network.delete_ip(addr)
             print('Deleting', name)
             conn.compute.delete_server(s, ignore_missing=True)
+            # Wait for server to actually be deleted.
+            print('Waiting for {} to be deleted'.format(name))
+            while s:
+                s = conn.compute.find_server(name)
         else:
             print('Unable to find {}, skipping'.format(name))
 
