@@ -26,7 +26,7 @@ def extract_ips(server):
 
 
 def create():
-    ''' Create a set of Openstack resources '''
+    """Create a set of Openstack resources."""
     image = conn.compute.find_image(IMAGE)
     flavor = conn.compute.find_flavor(FLAVOR)
     keypair = conn.compute.find_keypair(KEYPAIR)
@@ -104,7 +104,7 @@ def stop():
 
 
 def destroy():
-    """Tear down the Openstack resources produced by the create action."""
+    """Tear down the Openstack resources made by the create action."""
 
     # TODO: this could break the deletion of the router and network
     #       if the subnet does not exist
@@ -155,17 +155,35 @@ def destroy():
 
 
 def status():
-    ''' Print a status report on the OpenStack
-    virtual machines created by the create action.
-    '''
-    pass
+    """Print statuses of the virtual machines made by the create action."""
+    servers = []
+    # Get info for all servers.
+    for name in SERVER_NAMES:
+        print('Fetching status of {}...'.format(name), end=' ')
+        s = conn.compute.find_server(name)
+        # Retrieve full server information when possible.
+        if s:
+            s = conn.compute.get_server(s.id)
+            servers.append(s)
+            print('OK')
+        else:
+            print('NOT FOUND')
+
+    # Display status of all servers that were found.
+    for server in servers:
+        print('\n{}: {}'.format(server.name, server.status))
+        ips = extract_ips(server)
+        if ips:
+            print('Floating IP Addresses:')
+            for i in ips:
+                print(i)
 
 
 ### You should not modify anything below this line ###
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('operation',
-                        help='One of "create", "run", "stop", "destroy", or "status"')
+        help='One of "create", "run", "stop", "destroy", or "status"')
     args = parser.parse_args()
     operation = args.operation
 
@@ -177,5 +195,6 @@ if __name__ == '__main__':
         'status'  : status
         }
 
-    action = operations.get(operation, lambda: print('{}: no such operation'.format(operation)))
+    action = operations.get(operation,
+        lambda: print('{}: no such operation'.format(operation)))
     action()
