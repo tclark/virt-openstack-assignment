@@ -60,13 +60,24 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
-    pass
+    for servername in SERVERNAMES:
+       server = conn.compute.find_server(servername)
+       if server:
+           server = conn.compute.get_server(server)
+           if server.status != 'ACTIVE':
+               conn.compute.start_server(server)
+           
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
-    pass
+    for servername in SERVERNAMES:
+        server = conn.compute.find_server(servername)
+        if server:
+            server = conn.compute.get_server(server)
+            if server.status == 'ACTIVE':
+                conn.compute.stop_server(server)
 
 def destroy():
     ''' Tear down the set of Openstack resources 
@@ -98,11 +109,13 @@ def status():
     virtual machines created by the create action.
     '''
     for servername in SERVERNAMES:
-        server = conn.compute.get_server(conn.compute.find_server(servername))
-        addresses = []
-        for addr in server.addresses[NETWORK]:
-            addresses.append(addr['addr'])
-        print(f"Server: {server.name}, Status: {server.status}, Addresses: {addresses}")
+        server = conn.compute.find_server(servername)
+        if server:
+            server = conn.compute.get_server(server)
+            addresses = []
+            for addr in server.addresses[NETWORK]:
+                addresses.append(addr['addr'])
+            print(f"Server: {server.name}, Status: {server.status}, Addresses: {addresses}")
 
 
 ### You should not modify anything below this line ###
