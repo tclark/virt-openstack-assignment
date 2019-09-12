@@ -123,7 +123,8 @@ def destroy():
                 conn.network.delete_ip(addr)
             print('Deleting', name)
             conn.compute.delete_server(s, ignore_missing=True)
-            # Wait for server to actually be deleted.
+            # Waiting for the servers to actually be deleted ensures
+            # their ports are also deleted so we can delete the network.
             print('Waiting for {} to be deleted'.format(name))
             while s:
                 s = conn.compute.find_server(name)
