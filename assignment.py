@@ -35,35 +35,58 @@ def create():
 
     # TODO: check if resources already exist before creation
 
-    print('Creating', NETWORK)
-    network = conn.network.create_network(name=NETWORK)
-    print('Creating', SUBNET)
-    subnet = conn.network.create_subnet(name=SUBNET, network_id=network.id,
-        cidr='192.168.50.0/24', ip_version=4)
+    network = conn.network.find_network(NETWORK)
+    if network:
+        print(NETWORK, 'already exists')
+    else:
+        print('Creating', NETWORK)
+        network = conn.network.create_network(name=NETWORK)
 
-    print('Creating', ROUTER)
-    router = conn.network.create_router(name=ROUTER,
-        external_gateway_info={'network_id': public_net.id})
+    subnet = conn.network.find_subnet(SUBNET)
+    if subnet:
+        print(SUBNET, 'already exists')
+    else:
+        print('Creating', SUBNET)
+        subnet = conn.network.create_subnet(name=SUBNET,
+            cidr='192.168.50.0/24', ip_version=4,
+            network_id=network.id)
 
-    print('Creating interface for', SUBNET)
-    conn.network.add_interface_to_router(router, subnet.id)
+    router = conn.network.find_router(ROUTER)
+    if router:
+        print(ROUTER, 'already exists')
+    else:
+        print('Creating', ROUTER)
+        router = conn.network.create_router(name=ROUTER,
+            external_gateway_info={'network_id': public_net.id})
+        print('Creating interface for', SUBNET)
+        conn.network.add_interface_to_router(router, subnet.id)
 
     for name in SERVER_NAMES:
-        print('Creating', name)
-        s = conn.compute.create_server(name=name, image_id=image.id,
-                flavor_id=flavor.id, key_name=keypair.name,
-                networks=[{'uuid': network.id}],
-                security_groups=[security_group])
+        s = conn.compute.find_server(name)
+        if s:
+            print(name, 'already exists')
+        else:
+            print('Creating', name)
+            s = conn.compute.create_server(name=name, image_id=image.id,
+                    flavor_id=flavor.id, key_name=keypair.name,
+                    networks=[{'uuid': network.id}],
+                    security_groups=[security_group])
 
-        if name == 'hallmg1-web':
-            print('Creating floating IP address for hallmg1-web... ', end='')
-            web_ip = conn.network.create_ip(floating_network_id=public_net.id)
-            print('Got IP:', web_ip.floating_ip_address)
+    web = conn.compute.find_server('hallmg1-web')
+    web = conn.compute.get_server(web.id)
+    conn.compute.wait_for_server(web)
+    # `extract_ips(web)`evaluates to False
+    # if the server does not have any floating IP addresses.
+    if extract_ips(web):
+        pass
+    else:
+        print('Creating floating IP address for hallmg1-web... ', end='')
+        web_ip = conn.network.create_ip(floating_network_id=public_net.id)
+        print('Got IP:', web_ip.floating_ip_address)
 
-            print('Assigning address to', name)
-            conn.compute.wait_for_server(s)
-            conn.compute.add_floating_ip_to_server(s,
-                web_ip.floating_ip_address)
+        print('Assigning address to hallmg1-web')
+        conn.compute.add_floating_ip_to_server(web,
+            web_ip.floating_ip_address)
 
 
 def run():
