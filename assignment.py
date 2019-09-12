@@ -89,7 +89,22 @@ def create():
 
 def run():
     """Start the virtual machines if they are not already running."""
-    pass
+    for name in SERVER_NAMES:
+        s = conn.compute.find_server(name)
+        if not s:
+            print(name, 'not found, skipping')
+        else:
+            s = conn.compute.get_server(s)
+            print('Sarting {}... '.format(name), end='')
+            try:
+                conn.compute.start_server(s.id)
+            # Openstack will raise a ConflictException here
+            # if the server is already active.
+            except openstack.exceptions.ConflictException:
+                print('Already active')
+            else:
+                conn.compute.wait_for_server(s)
+                print('OK')
 
 
 def stop():
@@ -103,7 +118,7 @@ def stop():
             print('Shutting off {}... '.format(name), end='')
             try:
                 conn.compute.stop_server(s.id)
-            # Openstack will raise a ConflictExpection
+            # Openstack will raise a ConflictExpection here
             # is the server is already shut down.
             except openstack.exceptions.ConflictException:
                 print('Already shut down')
