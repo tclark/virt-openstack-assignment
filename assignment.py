@@ -21,7 +21,7 @@ def extract_ips(server):
     ips = []
     for net in server.addresses:
         ips.extend([a['addr'] for a in server.addresses[net]
-                    if a['OS-EXT-IPS:type'] == 'floating'])
+            if a['OS-EXT-IPS:type'] == 'floating'])
     return ips
 
 
@@ -32,8 +32,6 @@ def create():
     keypair = conn.compute.find_keypair(KEYPAIR)
     public_net = conn.network.find_network(PUBNET_NAME)
     security_group = conn.network.find_security_group(SECURITY_GROUP)
-
-    # TODO: check if resources already exist before creation
 
     network = conn.network.find_network(NETWORK)
     if network:
@@ -90,17 +88,28 @@ def create():
 
 
 def run():
-    ''' Start  a set of Openstack virtual machines
-    if they are not already running.
-    '''
+    """Start the virtual machines if they are not already running."""
     pass
 
 
 def stop():
-    ''' Stop  a set of Openstack virtual machines
-    if they are running.
-    '''
-    pass
+    """Stop the virtual machines if they are running."""
+    for name in SERVER_NAMES:
+        s = conn.compute.find_server(name)
+        if not s:
+            print(name, 'not found, skipping')
+        else:
+            s = conn.compute.get_server(s.id)
+            print('Shutting off {}... '.format(name), end='')
+            try:
+                conn.compute.stop_server(s.id)
+            # Openstack will raise a ConflictExpection
+            # is the server is already shut down.
+            except openstack.exceptions.ConflictException:
+                print('Already shut down')
+            else:
+                conn.compute.wait_for_server(s, status='SHUTOFF')
+                print('OK')
 
 
 def destroy():
