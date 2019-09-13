@@ -20,8 +20,11 @@ def extract_ips(server):
     """Return a list of floating IPs of a Server as strings."""
     ips = []
     for net in server.addresses:
-        ips.extend([a['addr'] for a in server.addresses[net]
-            if a['OS-EXT-IPS:type'] == 'floating'])
+        for a in server.addresses[net]:
+            addrs = []
+            if a['OS-EXT-IPS:type'] == 'floating':
+                addrs.append(a['addr'])
+        ips.extend(addrs)
     return ips
 
 
@@ -46,16 +49,18 @@ def create():
     else:
         print('Creating', SUBNET)
         subnet = conn.network.create_subnet(name=SUBNET,
-            cidr='192.168.50.0/24', ip_version=4,
-            network_id=network.id)
+                                            cidr='192.168.50.0/24',
+                                            ip_version=4,
+                                            network_id=network.id)
 
     router = conn.network.find_router(ROUTER)
     if router:
         print(ROUTER, 'already exists')
     else:
         print('Creating', ROUTER)
+        ext = {'network_id': public_net.id}
         router = conn.network.create_router(name=ROUTER,
-            external_gateway_info={'network_id': public_net.id})
+                                            external_gateway_info=ext)
         print('Creating interface for', SUBNET)
         conn.network.add_interface_to_router(router, subnet.id)
 
@@ -65,10 +70,12 @@ def create():
             print(name, 'already exists')
         else:
             print('Creating', name)
-            s = conn.compute.create_server(name=name, image_id=image.id,
-                flavor_id=flavor.id, key_name=keypair.name,
-                networks=[{'uuid': network.id}],
-                security_groups=[security_group])
+            s = conn.compute.create_server(name=name,
+                                           image_id=image.id,
+                                           flavor_id=flavor.id,
+                                           key_name=keypair.name,
+                                           networks=[{'uuid': network.id}],
+                                           security_groups=[security_group])
 
     web = conn.compute.find_server('hallmg1-web')
     web = conn.compute.get_server(web.id)
@@ -84,7 +91,7 @@ def create():
 
         print('Assigning address to hallmg1-web')
         conn.compute.add_floating_ip_to_server(web,
-            web_ip.floating_ip_address)
+                                               web_ip.floating_ip_address)
 
 
 def run():
@@ -203,22 +210,20 @@ def status():
                 print(i)
 
 
-### You should not modify anything below this line ###
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation',
-        help='One of "create", "run", "stop", "destroy", or "status"')
+    parser.add_argument('operation', help=('One of "create", "run",'
+                        ' "stop", "destroy", or "status"'))
     args = parser.parse_args()
     operation = args.operation
 
     operations = {
-        'create'  : create,
-        'run'     : run,
-        'stop'    : stop,
-        'destroy' : destroy,
-        'status'  : status
-        }
+        'create': create,
+        'run': run,
+        'stop': stop,
+        'destroy': destroy,
+        'status': status}
 
-    action = operations.get(operation,
-        lambda: print('{}: no such operation'.format(operation)))
+    action = operations.get(operation, lambda:
+                            print('{}: no such operation'.format(operation)))
     action()
