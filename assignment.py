@@ -91,7 +91,7 @@ def create():
 
         print('Assigning address to hallmg1-web')
         conn.compute.add_floating_ip_to_server(web,
-                                               web_ip.foating_ip_address)
+                                               web_ip.floating_ip_address)
 
 
 def run():
