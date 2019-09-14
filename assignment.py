@@ -76,13 +76,14 @@ def run():
     if they are not already running.
     '''
     for server in SERVERLIST:
-        s = conn.compute.find_server(server)
-        ss = conn.compute.get_server(conn.compute.find_server(server).id)
+        s = conn.compute.find_server(server) # get server
+        ss = conn.compute.get_server(conn.compute.find_server(server).id) # get status
+        # 1. create server when server does not exists 2. check the server whehter running 3. start server
         if(s == None):
             print(
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
         elif(ss.status == 'ACTIVE'):
-            print(f'The Server {server} has been running.')
+            print(f'The Server {server} already running.')
         else:
             conn.compute.start_server(s)
     pass
@@ -92,6 +93,18 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    for server in SERVERLIST:
+        s = conn.compute.find_server(server) # get server
+        ss = conn.compute.get_server(
+            conn.compute.find_server(server).id)  # get status
+        if(server == None):
+            print(
+                f'\nThe Server {server} has not created. Please run this script with create parameter first.')
+        elif(ss.status == 'ACTIVE'):
+            print(f'\nStopping server {server}...')
+            conn.compute.stop_server(server)
+        else:
+            print(f'The Server {server} currently not ACTIVE...')
     pass
 
 
