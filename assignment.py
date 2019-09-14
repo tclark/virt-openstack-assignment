@@ -95,17 +95,19 @@ def stop():
     if they are running.
     '''
     for server in SERVERLIST:
-        s = conn.compute.find_server(server)  # get server
-        ss = conn.compute.get_server(
-            conn.compute.find_server(server).id)  # get status
+        s = conn.compute.find_server(server)  # find server
+        ss = conn.compute.get_server(s.id)  # get server
         if(server == None):
             print(
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
-        elif(ss.status == 'ACTIVE'):
-            print(f'\nStopping server {server}...')
-            conn.compute.stop_server(server)
+            return
         else:
-            print(f'The Server {server} currently not ACTIVE...')
+            if(ss.status == 'ACTIVE'):
+                print(f'\nStopping server {server}...')
+                conn.compute.stop_server(server)
+            else:
+                print(f'The Server {server} currently not ACTIVE...')
+
     pass
 
 
