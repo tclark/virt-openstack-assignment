@@ -63,6 +63,7 @@ def create():
                     floating_network_id=public_net.id)
                 conn.compute.add_floating_ip_to_server(
                     s, floating_ip.floating_ip_address)
+                print(f'Floating IP added to {server}.')
     print('Operation completed.')
     pass
 
