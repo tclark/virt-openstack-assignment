@@ -76,8 +76,9 @@ def run():
     if they are not already running.
     '''
     for server in SERVERLIST:
-        s = conn.compute.find_server(server) # get server
-        ss = conn.compute.get_server(conn.compute.find_server(server).id) # get status
+        s = conn.compute.find_server(server)  # get server
+        ss = conn.compute.get_server(
+            conn.compute.find_server(server).id)  # get status
         # 1. create server when server does not exists 2. check the server whehter running 3. start server
         if(s == None):
             print(
@@ -94,7 +95,7 @@ def stop():
     if they are running.
     '''
     for server in SERVERLIST:
-        s = conn.compute.find_server(server) # get server
+        s = conn.compute.find_server(server)  # get server
         ss = conn.compute.get_server(
             conn.compute.find_server(server).id)  # get status
         if(server == None):
@@ -120,12 +121,13 @@ def status():
     virtual machines created by the create action.
     '''
     for server in SERVERLIST:
-        s = conn.compute.get_server(
-            conn.compute.find_server(server).id)
+        s = conn.compute.find_server(server)
         if(s == None):
             print(
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
         else:
+            ss = conn.compute.get_server(
+                conn.compute.find_server(server_name).id)
             print(f'\nThe status of server {server} is: {s.status}')
     pass
 
