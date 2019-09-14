@@ -81,7 +81,7 @@ def run():
             print(
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
         else:
-            conn.compute.start_server(server)
+            conn.compute.start_server(s)
     pass
 
 
