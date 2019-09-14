@@ -7,7 +7,7 @@ CIDR = '192.168.50.0/24'
 ROUTER = 'wangh21-rtr'
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
-SERVERLIST = ['wangh21-web', 'wangh21-app', 'wangh21-db']
+SERVERLIST = ['wangh21-app', 'wangh21-db', 'wangh21-web']
 SECURITYGROUP = 'assignment2'
 KEYPAIRNAME = 'hua'
 
@@ -56,11 +56,15 @@ def create():
         else:
             print(f'The server {server} has already exists...')
 
-        if(server == 'wangh21-web'):
+        if(server == 'chril2-web'):
             conn.compute.wait_for_server(s)
-            conn.compute.add_floating_ip_to_server(
-                server, conn.network.create_ip(floating_network_id=public_net.id).floating_ip_address)
-
+            if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
+                floating_ip = conn.network.create_ip(
+                    floating_network_id=public_net.id)
+                conn.compute.add_floating_ip_to_server(
+                    s, floating_ip.floating_ip_address)
+    
+    pass
 
 def run():
     ''' Start  a set of Openstack virtual machines
