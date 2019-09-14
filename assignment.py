@@ -29,8 +29,8 @@ def create():
 
     router = conn.network.find_router(ROUTER)
     if (router == None):
-        router = conn.network.create_router(name=ROUTER, external_gateway_info={
-                                            'network_id': conn.network.find_network('public-net').id})
+        router = conn.network.create_router(name=ROUTER,
+                                            external_gateway_info={'network_id': conn.network.find_network('public-net').id})
         router = conn.network.add_interface_to_router(router, subnet.id)
 
     image = conn.compute.find_image(IMAGE)
@@ -41,6 +41,7 @@ def create():
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
         if(s == None):
+            print(f"Create Server {server}:")
             s = conn.compute.create_server(
                 name=server,
                 image_id=image.id,
@@ -51,6 +52,12 @@ def create():
             )
         else:
             print(f'The server {server} has already exists...')
+
+        conn.compute.wait_for_server(server)
+        if(server == 'wangh21-web'):
+            f_ip = conn.network.create_ip(floating_network_id=public_net.id)
+            conn.compute.add_floating_ip_to_server(
+                server, floating_ip.floating_ip_address)
 
 
 def run():
