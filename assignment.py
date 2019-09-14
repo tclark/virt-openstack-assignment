@@ -7,7 +7,7 @@ CIDR = '192.168.50.0/24'
 ROUTER = 'wangh21-rtr'
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
-SERVERLIST = ['wangh21-app', 'wangh21-db', 'wangh21-web']
+SERVERLIST = ['wangh21-web', 'wangh21-app', 'wangh21-db']
 SECURITYGROUP = 'assignment2'
 KEYPAIRNAME = 'hua'
 
@@ -18,7 +18,7 @@ conn = openstack.connect(cloud_name='openstack')
 def create():
     ''' Create a set of Openstack resources '''
 
-    print('System prepare to create resources, please wait...')
+    print('Preparing to create resources, please wait...')
 
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
@@ -56,14 +56,15 @@ def create():
         else:
             print(f'The server {server} has already exists...')
 
-        if(server == 'wangh21-web'):
+        if(server == SERVERLIST[0]):
+            print(f'looking for floating ip address...')
             conn.compute.wait_for_server(s)
-            if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) <= 2):
+            if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
                 floating_ip = conn.network.create_ip(
                     floating_network_id=public_net.id)
                 conn.compute.add_floating_ip_to_server(
                     s, floating_ip.floating_ip_address)
-    
+    print('Resources have been created.')
     pass
 
 def run():
