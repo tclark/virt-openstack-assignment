@@ -7,7 +7,7 @@ CIDR = '192.168.50.0/24'
 ROUTER = 'wangh21-rtr'
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
-SERVERLIST = ['wangh21-app', 'wangh21-db', 'wangh21-web']
+SERVERLIST = ['wangh21-web', 'wangh21-app', 'wangh21-db']
 SECURITYGROUP = 'assignment2'
 KEYPAIRNAME = 'hua'
 
@@ -18,7 +18,7 @@ conn = openstack.connect(cloud_name='openstack')
 def create():
     ''' Create a set of Openstack resources '''
 
-    print('System prepare to create resources, please wait...')
+    print('Preparing create resources, please wait...')
 
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
@@ -56,14 +56,15 @@ def create():
         else:
             print(f'The server {server} has already exists...')
 
-        if(server == 'wangh21-web'):
+        if(server == SERVERLIST[0]):
             conn.compute.wait_for_server(s)
-            if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
-                floating_ip = conn.network.create_ip(
-                    floating_network_id=public_net.id)
+            n_ip = len(conn.compute.get_server(s.id)['addresses']['wangh21-net']
+            if(n_ip == 1):
+                print(f'looking for floating ip for {server}')
                 conn.compute.add_floating_ip_to_server(
-                    s, floating_ip.floating_ip_address)
-    
+                    s, conn.network.create_ip(
+                        floating_network_id=public_net.id).floating_ip_address)
+
     pass
 
 def run():
@@ -81,7 +82,7 @@ def stop():
 
 
 def destroy():
-    ''' Tear down the set of Openstack resources 
+    ''' Tear down the set of Openstack resources
     produced by the create action
     '''
     pass
@@ -96,13 +97,13 @@ def status():
 
 ### You should not modify anything below this line ###
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser=argparse.ArgumentParser()
     parser.add_argument('operation',
                         help='One of "create", "run", "stop", "destroy", or "status"')
-    args = parser.parse_args()
-    operation = args.operation
+    args=parser.parse_args()
+    operation=args.operation
 
-    operations = {
+    operations={
         'create': create,
         'run': run,
         'stop': stop,
@@ -110,6 +111,6 @@ if __name__ == '__main__':
         'status': status
     }
 
-    action = operations.get(operation, lambda: print(
+    action=operations.get(operation, lambda: print(
         '{}: no such operation'.format(operation)))
     action()
