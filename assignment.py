@@ -77,9 +77,12 @@ def run():
     '''
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
+        ss = conn.compute.get_server(conn.compute.find_server(server).id)
         if(s == None):
             print(
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
+        # else if(ss.status):
+
         else:
             conn.compute.start_server(s)
     pass
@@ -103,6 +106,15 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    for server in SERVERS:
+        s = conn.compute.get_server(
+            conn.compute.find_server(server).id)
+        if(s == None):
+            print(
+                f'\nThe Server {server} has not created. Please run this script with create parameter first.')
+        else:
+            print(f'\nThe status of server {server} is: {server.status}')
+            print(server.status)
     pass
 
 
