@@ -18,6 +18,12 @@ conn = openstack.connect(cloud_name='openstack')
 def create():
     ''' Create a set of Openstack resources '''
 
+    image = conn.compute.find_image(IMAGE)
+    flavour = conn.compute.find_flavor(FLAVOUR)
+    keypair = conn.compute.find_keypair(KEYPAIRNAME)
+    security_group = conn.network.find_security_group(SECURITYGROUP)
+    public_net = conn.network.find_network('public-net')
+
     network = conn.network.find_network(NETWORK)
     if(network == None):
         network = conn.network.create_network(name=NETWORK)
@@ -30,13 +36,8 @@ def create():
     router = conn.network.find_router(ROUTER)
     if (router == None):
         router = conn.network.create_router(name=ROUTER,
-                                            external_gateway_info={'network_id': conn.network.find_network('public-net').id})
+                                            external_gateway_info={'network_id': public_net.id})
         router = conn.network.add_interface_to_router(router, subnet.id)
-
-    image = conn.compute.find_image(IMAGE)
-    flavour = conn.compute.find_flavor(FLAVOUR)
-    keypair = conn.compute.find_keypair(KEYPAIRNAME)
-    security_group = conn.network.find_security_group(SECURITYGROUP)
 
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
