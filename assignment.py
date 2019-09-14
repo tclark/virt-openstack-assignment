@@ -124,11 +124,12 @@ def status():
         s = conn.compute.find_server(server)
         if(s == None):
             print(
-                f'\nThe Server {server} has not created. Please run this script with create parameter first.')
+                f'\nThe Server {server} has not created yet. Please run this script with create parameter first.')
+            return
         else:
             ss = conn.compute.get_server(
-                conn.compute.find_server(server_name).id)
-            print(f'\nThe status of server {server} is: {s.status}')
+                conn.compute.find_server(s).id)
+            print(f'\nThe status of server {server} is: {ss.status}')
     pass
 
 
