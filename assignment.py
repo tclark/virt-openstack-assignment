@@ -106,7 +106,7 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    for server in SERVERS:
+    for server in SERVERLIST:
         s = conn.compute.get_server(
             conn.compute.find_server(server).id)
         if(s == None):
