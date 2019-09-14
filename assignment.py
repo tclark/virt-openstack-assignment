@@ -60,10 +60,10 @@ def create():
             conn.compute.wait_for_server(s)
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
                 floating_ip = conn.network.create_ip(
-                    floating_network_id=public_net.id)
+                    floating_network_id=public_net.id).floating_ip_address
                 conn.compute.add_floating_ip_to_server(
-                    s, floating_ip.floating_ip_address)
-                print(f'Floating IP added to {server}.')
+                    s, floating_ip)
+                print(f'Floating IP {floating_ip} added to {server}.')
     print('Operation completed.')
     pass
 
