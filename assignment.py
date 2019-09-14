@@ -81,8 +81,8 @@ def run():
         if(s == None):
             print(
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
-        # else if(ss.status):
-
+        else if(ss.status == 'ACTIVE'):
+            print(f'The Server {server} has been running.')
         else:
             conn.compute.start_server(s)
     pass
