@@ -11,7 +11,6 @@ SERVERLIST = ['wangh21-web', 'wangh21-app', 'wangh21-db']
 SECURITYGROUP = 'assignment2'
 KEYPAIRNAME = 'hua'
 
-
 conn = openstack.connect(cloud_name='openstack')
 
 
@@ -20,12 +19,14 @@ def create():
 
     print('Preparing to create resources, please wait...')
 
+    # declare variable ref from:  https://github.com/openstack/openstacksdk/blob/master/examples/compute/create.py
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
     keypair = conn.compute.find_keypair(KEYPAIRNAME)
     security_group = conn.network.find_security_group(SECURITYGROUP)
     public_net = conn.network.find_network('public-net')
 
+    # check network subnet router whether exists to avoid recreate
     network = conn.network.find_network(NETWORK)
     if(network == None):
         network = conn.network.create_network(name=NETWORK)
@@ -41,10 +42,11 @@ def create():
                                             external_gateway_info={'network_id': public_net.id})
         router = conn.network.add_interface_to_router(router, subnet.id)
 
+    # start create server from SERVERLIST
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
         if(s == None):
-            print(f"Create Server {server}:")
+            print(f"Create Server {server}...")
             s = conn.compute.create_server(
                 name=server,
                 image_id=image.id,
@@ -56,13 +58,14 @@ def create():
         else:
             print(f'The server {server} has already exists...')
 
+        # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
             conn.compute.wait_for_server(s)
+            # if the web server only already have one ip
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
                 floating_ip = conn.network.create_ip(
                     floating_network_id=public_net.id).floating_ip_address
-                conn.compute.add_floating_ip_to_server(
-                    s, floating_ip)
+                conn.compute.add_floating_ip_to_server(s, floating_ip)
                 print(f'Floating IP {floating_ip} added to {server}.')
     print('Operation completed.')
     pass
