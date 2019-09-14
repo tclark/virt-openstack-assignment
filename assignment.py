@@ -18,6 +18,8 @@ conn = openstack.connect(cloud_name='openstack')
 def create():
     ''' Create a set of Openstack resources '''
 
+    print('System prepare to create resources, please wait...')
+
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
     keypair = conn.compute.find_keypair(KEYPAIRNAME)
@@ -57,7 +59,7 @@ def create():
         f_ip = conn.network.create_ip(floating_network_id=public_net.id)
         if(server == 'wangh21-web'):
             conn.compute.add_floating_ip_to_server(
-                server, floating_ip.floating_ip_address)
+                server, f_ip.floating_ip_address)
 
 
 def run():
