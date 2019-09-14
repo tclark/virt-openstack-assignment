@@ -1,35 +1,57 @@
 import argparse
 import openstack
 
+NETWORK = 'wangh21-net'
+SUBNET = 'wangh21-subnet'
+CIDR = '192.168.50.0/24'
+ROUTER = 'wangh21-rtr'
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
-SERVERLIST = ['wangh21-web','wangh21-app','wangh21-db']
-KEYPAIRNAME= 'hua'
-NETWORK = 'wangh21-net'
-SUBNET = '192.168.50.0/24'
-ROUTER = 'wangh21-rtr'
+SERVERLIST = ['wangh21-web', 'wangh21-app', 'wangh21-db']
+SECURITYGROUP = 'assignment2'
+KEYPAIRNAME = 'hua'
 
-conn = openstack.connect(cloud_name=’openstack’)
 
+conn = openstack.connect(cloud_name='openstack')
 
 
 def create():
     ''' Create a set of Openstack resources '''
-    conn.netowrk.find_network(NETWORK)==None? network = conn.network.create_network(name=NETWORK) : print(f'Network {NETWORK} already exists...')
+
+    network = conn.network.find_network(NETWORK)
+    if(network == None):
+        network = conn.network.create_network(name=NETWORK)
+
+    subnet = conn.network.find_subnet(SUBNET)
+    if(subnet == None):
+        subnet = conn.network.create_subnet(
+            name=SUBNET, network_id=network.id, ip_version=4, cidr=CIDR)
+
+    router = conn.network.find_router(ROUTER)
+    if (router == None):
+        router = conn.network.create_router(name=ROUTER, external_gateway_info={
+                                            'network_id': conn.network.find_network('public-net').id})
+        router = conn.network.add_interface_to_router(router, subnet.id)
+
+    image = conn.compute.find_image(IMAGE)
+    flavour = conn.compute.find_flavor(FLAVOUR)
+    keypair = conn.compute.find_keypair(KEYPAIRNAME)
+    security_group = conn.network.find_security_group(SECURITYGROUP)
 
     for server in SERVERLIST:
-        is_exists = conn.compute.find_server(server)
-        if(is_exists):
-            print(f'The Server {server} already exists...')
+        s = conn.compute.find_server(server)
+        if(s == None):
+            s = conn.compute.create_server(
+                name=server,
+                image_id=image.id,
+                flavor_id=flavour.id,
+                networks=[{'uuid': network.id}],
+                key_name=keypair.name,
+                security_groups=[{'sgid': security_group.id}]
+            )
         else:
-            print(f'Start create {server}, please wait...')
-            conn.compute.create_server(
-                    name=server,
-                    image_id=image.id,
-                    flavor_id=flavor.id,
-                    networks=[{"uuid": network}],
-                    key_name='hua'
-                    )
+            print(f'The server {server} has already exists...')
+
 
 def run():
     ''' Start  a set of Openstack virtual machines
@@ -37,17 +59,20 @@ def run():
     '''
     pass
 
+
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
     pass
 
+
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
     pass
+
 
 def status():
     ''' Print a status report on the OpenStack
@@ -65,12 +90,13 @@ if __name__ == '__main__':
     operation = args.operation
 
     operations = {
-        'create'  : create,
-        'run'     : run,
-        'stop'    : stop,
-        'destroy' : destroy,
-        'status'  : status
-        }
+        'create': create,
+        'run': run,
+        'stop': stop,
+        'destroy': destroy,
+        'status': status
+    }
 
-    action = operations.get(operation, lambda: print('{}: no such operation'.format(operation)))
+    action = operations.get(operation, lambda: print(
+        '{}: no such operation'.format(operation)))
     action()
