@@ -53,8 +53,9 @@ def create():
         else:
             print(f'The server {server} has already exists...')
 
-        conn.compute.wait_for_server(server)
+        
         if(server == 'wangh21-web'):
+            conn.compute.wait_for_server(server)
             f_ip = conn.network.create_ip(floating_network_id=public_net.id)
             conn.compute.add_floating_ip_to_server(
                 server, floating_ip.floating_ip_address)
