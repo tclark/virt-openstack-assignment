@@ -75,6 +75,13 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    for server in SERVERLIST:
+        s = conn.compute.find_server(server)
+        if(s == None):
+            print(
+                f'\nThe Server {server} has not created. Please run this script with create parameter first.')
+        else:
+            conn.compute.start_server(server)
     pass
 
 
