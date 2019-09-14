@@ -113,8 +113,7 @@ def status():
             print(
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
         else:
-            print(f'\nThe status of server {server} is: {server.status}')
-            print(server.status)
+            print(f'\nThe status of server {server} is: {s.status}')
     pass
 
 
