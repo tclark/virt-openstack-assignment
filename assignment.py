@@ -56,7 +56,7 @@ def create():
         else:
             print(f'The server {server} has already exists...')
 
-        if(server == SERVERLIST[0]):
+        if(server == SERVERLIST[0] and server != None):
             print(f'looking for floating ip address...')
             conn.compute.wait_for_server(s)
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
@@ -64,7 +64,7 @@ def create():
                     floating_network_id=public_net.id)
                 conn.compute.add_floating_ip_to_server(
                     s, floating_ip.floating_ip_address)
-    print('Resources have been created.')
+    print('Operation completed.')
     pass
 
 def run():
