@@ -56,9 +56,8 @@ def create():
         else:
             print(f'The server {server} has already exists...')
 
-        if(server == SERVERLIST[0] and server != None):
-            print(f'looking for floating ip address...')
-            conn.compute.wait_for_server(s)
+        if(server == SERVERLIST[0]):
+            # conn.compute.wait_for_server(s)
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
                 floating_ip = conn.network.create_ip(
                     floating_network_id=public_net.id)
@@ -66,6 +65,7 @@ def create():
                     s, floating_ip.floating_ip_address)
     print('Operation completed.')
     pass
+
 
 def run():
     ''' Start  a set of Openstack virtual machines
