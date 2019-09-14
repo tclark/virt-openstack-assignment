@@ -59,7 +59,7 @@ def create():
         if(server == SERVERLIST[0]):
             conn.compute.wait_for_server(s)
             n_ip = len(conn.compute.get_server(s.id)['addresses']['wangh21-net']
-            if(n_ip == 1):
+            if(n_ip < 2):
                 print(f'looking for floating ip for {server}')
                 conn.compute.add_floating_ip_to_server(
                     s, conn.network.create_ip(
