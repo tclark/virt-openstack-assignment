@@ -60,7 +60,6 @@ def create():
             )
         else:
             print(f'The server {server} has already exists...')
-            return
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
