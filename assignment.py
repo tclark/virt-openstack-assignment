@@ -1,6 +1,13 @@
+# project: 2019 S2 Virtualization assignment 2
+# lecturer: Tom Clark
+# student: Hua Wang
+# date: 2019-09-14
+# document ref: https://docs.openstack.org/openstacksdk/latest/user/proxies/compute.html
+
 import argparse
 import openstack
 
+# declare constant
 NETWORK = 'wangh21-net'
 SUBNET = 'wangh21-subnet'
 CIDR = '192.168.50.0/24'
@@ -55,11 +62,13 @@ def create():
                 security_groups=[{'sgid': security_group.id}]
             )
         else:
-            print(f'The server {server} has already exists...')
+            print(
+                f'The server {server} has already exists. terminate operation...')
             return
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
+            print(f'The system is looking for floating ip address...')
             conn.compute.wait_for_server(s)
             # if the web server only already have one ip
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
@@ -92,6 +101,8 @@ def run():
             print(f'running {server} ...')
             conn.compute.start_server(s)
 
+        conn.compute.wait_for_server(s)
+
     print('Operation completed.')
     pass
 
@@ -114,6 +125,8 @@ def stop():
             print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
 
+        conn.compute.wait_for_server(s)
+
     print('Operation completed.')
     pass
 
@@ -122,6 +135,30 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+
+    # delete the server list
+    for server in SERVERLIST:
+        s = conn.compute.find_server(server)
+        if(s != None):
+            print(f'Deleting server {server}...')
+            conn.compute.delete_server(server)
+
+        conn.compute.wait_for_server(s)
+
+    # remove network router interface
+    router = conn.network.find_router(ROUTER)
+    subnet = conn.network.find_subnet(SUBNET)
+    network = conn.network.find_network(NETWORK)
+    if (router != None):
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router)
+
+    if(subnet != None):
+        conn.network.delete_subnet(subnet)
+
+    if(network != None):
+        conn.network.delete_network(network)
+
     pass
 
 
