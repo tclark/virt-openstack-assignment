@@ -38,6 +38,7 @@ def check_parameter():
                                             external_gateway_info={'network_id': public_net.id})
         router = conn.network.add_interface_to_router(router, subnet.id)
 
+
 def create():
     ''' Create a set of Openstack resources '''
 
@@ -62,7 +63,7 @@ def create():
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
-            conn.compute.wait_for_server(s)
+            server = conn.compute.wait_for_server(s)
             # if the web server only already have one ip
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
                 floating_ip = conn.network.create_ip(
