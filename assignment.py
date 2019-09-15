@@ -89,7 +89,7 @@ def run():
             print(f'running {server} ...')
             conn.compute.start_server(s)
 
-    status()
+    print('Operation completed.')
     pass
 
 
@@ -111,9 +111,7 @@ def stop():
             print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
 
-        conn.compute.wait_for_server(s)
-
-    status()
+    print('Operation completed.')
     pass
 
 
