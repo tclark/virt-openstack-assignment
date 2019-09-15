@@ -102,11 +102,9 @@ def stop():
                 f'\nThe Server {server} has not created. Please run this script with create parameter first.')
             return
         else:
-            if(ss.status == 'ACTIVE'):
-                print(f'\nStopping server {server}...')
-                conn.compute.stop_server(server)
-            else:
-                print(f'The Server {server} currently not ACTIVE...')
+            print(f'\nStopping server {server}...')
+            conn.compute.stop_server(server)
+
 
     pass
 
