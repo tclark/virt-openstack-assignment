@@ -82,7 +82,7 @@ def run():
         # 1. create server when server does not exists 2. check the server whehter running 3. start server
         if(s == None):
             print(
-                f'\nThe Server {server} has not created. Please run this script with create parameter first.')
+                f'The Server {server} has not created. Please run this script with create parameter first.')
         elif(ss.status == 'ACTIVE'):
             print(f'The Server {server} already running.')
         else:
@@ -105,11 +105,13 @@ def stop():
         ss = conn.compute.get_server(s.id)  # get server
         if(server == None):
             print(
-                f'\nThe Server {server} has not created. Please run this script with create parameter first.')
+                f'The Server {server} has not created. Please run this script with create parameter first.')
             return
         else:
-            print(f'\nStopping server {server}...')
+            print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
+
+        conn.compute.wait_for_server(s)
 
     status()
     pass
@@ -130,11 +132,11 @@ def status():
         s = conn.compute.find_server(server)
         if(s == None):
             print(
-                f'\nThe Server {server} has not created yet. Please run this script with create parameter first.')
+                f'The Server {server} has not created yet. Please run this script with create parameter first.')
             return
         else:
             ss = conn.compute.get_server(s.id)
-            print(f'\nThe status of server {server} is: {ss.status}')
+            print(f'The status of server {server} is: {ss.status}')
     pass
 
 
