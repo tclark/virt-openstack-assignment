@@ -14,7 +14,10 @@ KEYPAIRNAME = 'hua'
 conn = openstack.connect(cloud_name='openstack')
 
 
-def check_parameter():
+def create():
+    ''' Create a set of Openstack resources '''
+
+    print('Preparing to create resources, please wait...')
     # declare variable ref from:  https://github.com/openstack/openstacksdk/blob/master/examples/compute/create.py
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
@@ -38,13 +41,6 @@ def check_parameter():
                                             external_gateway_info={'network_id': public_net.id})
         router = conn.network.add_interface_to_router(router, subnet.id)
 
-
-def create():
-    ''' Create a set of Openstack resources '''
-
-    print('Preparing to create resources, please wait...')
-    check_parameter()
-
     # start create server from SERVERLIST
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
@@ -60,6 +56,7 @@ def create():
             )
         else:
             print(f'The server {server} has already exists...')
+            return
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
