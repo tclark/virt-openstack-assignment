@@ -145,7 +145,7 @@ def destroy():
 
         conn.compute.wait_for_server(s)
 
-    remove network router interface
+    # remove network router interface
     network = conn.network.find_network(NETWORK)
     subnet = conn.network.find_subnet(SUBNET)
     router = conn.network.find_router(ROUTER)
