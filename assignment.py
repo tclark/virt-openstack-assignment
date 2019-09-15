@@ -146,6 +146,7 @@ def destroy():
         conn.compute.wait_for_server(s)
 
     # remove network router interface
+    print(f'clearing network interface...')
     network = conn.network.find_network(NETWORK)
     subnet = conn.network.find_subnet(SUBNET)
     router = conn.network.find_router(ROUTER)
@@ -158,6 +159,8 @@ def destroy():
 
     if(network != None):
         conn.network.delete_network(network)
+
+    print(f'Operation completed.')
 
     pass
 
