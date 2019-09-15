@@ -86,7 +86,10 @@ def run():
         elif(ss.status == 'ACTIVE'):
             print(f'The Server {server} already running.')
         else:
+            print(f'running {server} ...')
             conn.compute.start_server(s)
+
+    status()
     pass
 
 
@@ -94,6 +97,9 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    print(f'Current status:')
+    status()
+
     for server in SERVERLIST:
         s = conn.compute.find_server(server)  # find server
         ss = conn.compute.get_server(s.id)  # get server
