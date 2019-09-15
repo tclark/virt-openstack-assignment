@@ -75,6 +75,9 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    print(f'Current status:')
+    status()
+    
     for server in SERVERLIST:
         s = conn.compute.find_server(server)  # get server
         ss = conn.compute.get_server(
