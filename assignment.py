@@ -103,8 +103,7 @@ def stop():
             return
         else:
             print(f'\nStopping server {server}...')
-            conn.compute.stop_server(server)
-
+            conn.compute.stop_server(s)
 
     pass
 
