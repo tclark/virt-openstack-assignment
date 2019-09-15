@@ -105,6 +105,7 @@ def stop():
             print(f'\nStopping server {server}...')
             conn.compute.stop_server(s)
 
+    status()
     pass
 
 
