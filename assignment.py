@@ -60,10 +60,11 @@ def create():
             )
         else:
             print(f'The server {server} has already exists...')
+            return
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
-            server = conn.compute.wait_for_server(s)
+            conn.compute.wait_for_server(s)
             # if the web server only already have one ip
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
                 floating_ip = conn.network.create_ip(
