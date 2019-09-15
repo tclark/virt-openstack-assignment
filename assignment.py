@@ -64,7 +64,7 @@ def create():
         else:
             print(
                 f'The server {server} has already exists. terminate operation...')
-            return
+            break
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
@@ -120,7 +120,7 @@ def stop():
         if(server == None):
             print(
                 f'The Server {server} has not created. Please run this script with create parameter first.')
-            return
+            break
         else:
             print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
@@ -141,23 +141,23 @@ def destroy():
         s = conn.compute.find_server(server)
         if(s != None):
             print(f'Deleting server {server}...')
-            conn.compute.delete_server(server)
+            conn.compute.delete_server(s)
 
         conn.compute.wait_for_server(s)
 
-    # remove network router interface
-    # network = conn.network.find_network(NETWORK)
-    # subnet = conn.network.find_subnet(SUBNET)
-    # router = conn.network.find_router(ROUTER)
-    # if (router != None):
-    #     conn.network.remove_interface_from_router(router, subnet.id)
-    #     conn.network.delete_router(router)
+    remove network router interface
+    network = conn.network.find_network(NETWORK)
+    subnet = conn.network.find_subnet(SUBNET)
+    router = conn.network.find_router(ROUTER)
+    if (router != None):
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router)
 
-    # if(subnet != None):
-    #     conn.network.delete_subnet(subnet)
+    if(subnet != None):
+        conn.network.delete_subnet(subnet)
 
-    # if(network != None):
-    #     conn.network.delete_network(network)
+    if(network != None):
+        conn.network.delete_network(network)
 
     pass
 
@@ -171,7 +171,7 @@ def status():
         if(s == None):
             print(
                 f'The Server {server} has not created yet. Please run this script with create parameter first.')
-            return
+            break
         else:
             ss = conn.compute.get_server(s.id)
             print(f'The status of server {server} is: {ss.status}')
