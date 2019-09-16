@@ -187,5 +187,6 @@ def get_server_status(server_name):
             f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
         print(f'\nGetting status of server {server_name}...')
-        print(server.status, conn.compute.get_server(
-            server.id)['addresses']['chril2-net'])
+        print(server.status)
+        for address in conn.compute.get_server(server.id)['addresses']['chril2-net']: 
+            print(address['addr'])
