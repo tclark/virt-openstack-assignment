@@ -143,13 +143,13 @@ def add_floating_ip_to_server(server_name, network_name):
     if(server == None):
         print(f'\nCOULD NOT FIND SERVER {server_name}')
     conn.compute.wait_for_server(server)
-    if(len(conn.compute.get_server(server.id)['addresses'][server_name]) < 2):
+    if(len(conn.compute.get_server(server.id)['addresses']['chril2-net']) < 2):
         floating_ip = conn.network.create_ip(floating_network_id=network.id)
         conn.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address)
         print(f'Added address {floating_ip["floating_ip_address"]}')
     else:
-        print('Chril2-web already has a floating IP address')
+        print(f'{server_name} already has a floating IP address')
 
 
 def start_server(server_name):
@@ -158,8 +158,11 @@ def start_server(server_name):
         print(
             f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
-        print(f'\nStarting server {server_name}...')
-        conn.compute.start_server(server)
+        if(server.status != 'ACTIVE'):
+            print(f'\nStarting server {server_name}...')
+            conn.compute.start_server(server)
+        else:
+            print(f'\nServer {server_name} has already been started - skipping')
 
 
 def stop_server(server_name):
@@ -167,8 +170,11 @@ def stop_server(server_name):
     if(server == None):
         print(f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
-        print(f'\nStopping server {server_name}...')
-        conn.compute.stop_server(server)
+        if(server.status != 'SHUTOFF')
+            print(f'\nStopping server {server_name}...')
+            conn.compute.stop_server(server)
+        else:
+            print(f'\nServer {server_name} has already been stopped - skipping')
 
 
 def get_server_status(server_name):
@@ -176,5 +182,5 @@ def get_server_status(server_name):
     if(server == None):
         print(f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
-        print(f'\nGettings status of server {server_name}...')
-        print(server.status)
+        print(f'\nGetting status of server {server_name}...')
+        print(server.status, conn.compute.get_server(server.id)['addresses']['chril2-net'])
