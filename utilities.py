@@ -162,25 +162,30 @@ def start_server(server_name):
             print(f'\nStarting server {server_name}...')
             conn.compute.start_server(server)
         else:
-            print(f'\nServer {server_name} has already been started - skipping')
+            print(
+                f'\nServer {server_name} has already been started - skipping')
 
 
 def stop_server(server_name):
     server = conn.compute.find_server(server_name)
     if(server == None):
-        print(f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
+        print(
+            f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
         if(server.status != 'SHUTOFF'):
             print(f'\nStopping server {server_name}...')
             conn.compute.stop_server(server)
         else:
-            print(f'\nServer {server_name} has already been stopped - skipping')
+            print(
+                f'\nServer {server_name} has already been stopped - skipping')
 
 
 def get_server_status(server_name):
     server = conn.compute.get_server(conn.compute.find_server(server_name).id)
     if(server == None):
-        print(f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
+        print(
+            f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
         print(f'\nGetting status of server {server_name}...')
-        print(server.status, conn.compute.get_server(server.id)['addresses']['chril2-net'])
+        print(server.status, conn.compute.get_server(
+            server.id)['addresses']['chril2-net'])
