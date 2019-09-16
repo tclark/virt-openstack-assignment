@@ -170,7 +170,7 @@ def stop_server(server_name):
     if(server == None):
         print(f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
-        if(server.status != 'SHUTOFF')
+        if(server.status != 'SHUTOFF'):
             print(f'\nStopping server {server_name}...')
             conn.compute.stop_server(server)
         else:
