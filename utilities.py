@@ -69,13 +69,39 @@ def create_server(server_name, network):
     else:
         print(f'\nServer {server_name} already exists - skipping')
 
-def destory_server(server_name):
+def destroy_server(server_name):
     server = conn.compute.find_server(server_name)
     if( server != None):
         print(f'\nDeleting server {server_name}...')
         conn.compute.delete_server(server)
     else:
         print(f'\nServer {server_name} does not exist - skipping')
+
+def destroy_router(router_name, subnet_name):
+    subnet = conn.network.find_subnet(subnet_name)
+    router = conn.network.find_router(router_name)
+    if (router != None):
+        print(f'\nDeleting router {router_name}...')
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router)
+    else:
+        print(f'\nRouter {router_name} does not exist - skipping')
+
+def destroy_subnet(subnet_name):
+    subnet = conn.network.find_subnet(subnet_name)
+    if(subnet != None):
+        print(f'\nDeleting subnet {subnet_name}...')
+        conn.network.delete_subnet(subnet)
+    else:
+        print(f'\nSubnet {subnet_name} does not exist - skipping')
+
+def destroy_network(network_name):
+    network = conn.network.find_network(network_name)
+    if(network != None):
+        print(f'\nDeleting network {network_name}...')
+        conn.network.delete_network(network)
+    else:
+        print(f'\nNetwork {network_name} does not exist - skipping')
 
 def find_public_network(public_network_name):
     public_net = conn.network.find_network(public_network_name)

@@ -35,7 +35,7 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
-    for server_name in SERVERS:
+    for server_name in SERVER_NAMES:
         server = conn.compute.find_server(server_name)
         if(server == None):
             print(f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
@@ -47,30 +47,12 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    for server_name in SERVERS:
+    for server_name in SERVER_NAMES:
         utilities.destroy_server(server_name)
     
-    subnet = conn.network.find_subnet(SUBNET_NAME)
-    router = conn.network.find_router(ROUTER_NAME)
-    if (router != None):
-        print(f'\nDeleting router {ROUTER_NAME}...')
-        conn.network.remove_interface_from_router(router, subnet.id)
-        conn.network.delete_router(router)
-    else:
-        print(f'\nRouter {ROUTER_NAME} does not exist - skipping')
-
-    if(subnet != None):
-        print(f'\nDeleting subnet {SUBNET_NAME}...')
-        conn.network.delete_subnet(subnet)
-    else:
-        print(f'\nSubnet {SUBNET_NAME} does not exist - skipping')
-    
-    network = conn.network.find_network(NETWORK_NAME)
-    if(network != None):
-        print(f'\nDeleting network {NETWORK_NAME}...')
-        conn.network.delete_network(network)
-    else:
-        print(f'\nNetwork {NETWORK_NAME} does not exist - skipping')
+    utilities.destroy_router(ROUTER_NAME, SUBNET_NAME)
+    utilities.destroy_subnet(SUBNET_NAME)
+    utilities.destroy_network(NETWORK_NAME)
 
 def status():
     ''' Print a status report on the OpenStack
