@@ -3,6 +3,23 @@ import openstack
 
 def create():
     ''' Create a set of Openstack resources '''
+	conn = openstack.connect(cloud_name='openstack')
+	
+    print("Create Network:")
+
+    network = conn.network.create_network(
+        name='bradcw1-net')
+
+    # print(network)
+
+    # subnet = conn.network.create_subnet(
+    #     name='openstacksdk-example-project-subnet',
+    #     network_id=network.id,
+    #     ip_version='4',
+    #     cidr='192.168.50.0/24',
+    #     gateway_ip='10.0.2.1')
+
+    # print(example_subnet)
     pass
 
 def run():
