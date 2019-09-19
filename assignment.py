@@ -102,7 +102,7 @@ def run():
             print(name, 'not found, skipping')
         else:
             s = conn.compute.get_server(s)
-            print('Sarting {}... '.format(name), end='')
+            print('Starting {}... '.format(name), end='')
             try:
                 conn.compute.start_server(s.id)
             # Openstack will raise a ConflictException here
