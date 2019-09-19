@@ -2,6 +2,7 @@ import argparse
 import openstack
 
 
+
 serverList = ["dackja1-app", "dackja1-db", "dackja1-web "]
 
 def create():
@@ -37,17 +38,22 @@ def create():
 
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
-    network = conn.network.find_network(NETWORK)
+    network = conn.network.find_network(Network)
     keypair = conn.compute.find_keypair(KEYPAIR)
 
     for serverName in serverList:
         
         SERVER = serverName
-        server =conn.compote.create_server(
-        name=SERVER, image_id=image_id, flavour_id=flavour.id,
+        server =conn.compute.create_server(
+        name=SERVER, image_id=image.id, flavor_id=flavour.id,
         networks=[{"uuid": network.id}], key_name=keypair.name)
         server = conn.compute.wait_for_server(server)
-        )
+        
+
+        if serverName == "dackja1-web":
+            floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
+            web = conn.compute.find_server("dackja1-web")
+            conn.compute.add_floating_ip_to_server(web, floating_ip.floating_ip_address)
 
 def run():
     ''' Start  a set of Openstack virtual machines
