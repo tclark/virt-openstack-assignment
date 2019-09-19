@@ -16,7 +16,7 @@ SERVER_NAMES = ['hallmg1-web', 'hallmg1-app', 'hallmg1-db']
 conn = openstack.connect(cloud_name='openstack')
 
 
-def extract_ips(server):
+def extract_floating_ips(server):
     """Return a list of floating IPs of a Server as strings."""
     ips = []
     for net in server.addresses:
@@ -25,6 +25,15 @@ def extract_ips(server):
             if a['OS-EXT-IPS:type'] == 'floating':
                 addrs.append(a['addr'])
         ips.extend(addrs)
+    return ips
+
+
+def extract_all_ips(server):
+    """Return a list of IPs of a Server as strings."""
+    ips = []
+    for net in server.addresses:
+        for a in server.addresses[net]:
+            ips.append(a['addr'])
     return ips
 
 
@@ -80,9 +89,9 @@ def create():
     web = conn.compute.find_server('hallmg1-web')
     web = conn.compute.get_server(web.id)
     conn.compute.wait_for_server(web)
-    # `extract_ips(web)`evaluates to False
+    # `extract_floating_ips(web)`evaluates to False
     # if the server does not have any floating IP addresses.
-    if extract_ips(web):
+    if extract_floating_ips(web):
         pass
     else:
         print('Creating floating IP address for hallmg1-web... ', end='')
@@ -146,7 +155,7 @@ def destroy():
         s = conn.compute.find_server(name)
         if s:
             s = conn.compute.get_server(s)
-            ips = extract_ips(s)
+            ips = extract_floating_ips(s)
             # Release any floating IP addresses.
             for ip in ips:
                 addr = conn.network.find_ip(ip)
@@ -203,11 +212,13 @@ def status():
     # Display status of all servers that were found.
     for server in servers:
         print('\n{}: {}'.format(server.name, server.status))
-        ips = extract_ips(server)
+        ips = extract_all_ips(server)
         if ips:
-            print('Floating IP Addresses:')
+            print('IP Addresses:')
             for i in ips:
                 print(i)
+        else:
+            print('No IP addresses found. Wrong find server command?')
 
 
 if __name__ == '__main__':
