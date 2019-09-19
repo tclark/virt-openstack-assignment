@@ -54,7 +54,7 @@ def create():
 
     # LAUNCH INSTANCES
 
-    IMAGE = 'ubuntu-16.04-x86_64'
+    IMAGE = 'ubuntu-minimal-16.04-x86_64'
     FLAVOUR = 'c1.c1r1'
     NETWORK = 'private-net'
     KEYPAIR = 'bradcw1-key'
@@ -81,16 +81,6 @@ def create():
 
         else:
             print(serverName + " already exists.")
-
-    # # CREATE AND APPLY FLOATING IP
-    # if conn.compute.find_server(name_or_id="bradcw1-web") is not None:
-    #     public_net = conn.network.find_network(name_or_id='public-net')
-    #     floating_ip = conn.network.create_ip(floating_network_id=public_net.id)    
-    #     web = conn.compute.find_server("bradcw1-web")
-    #     conn.compute.add_floating_ip_to_server(web, floating_ip.floating_ip_address)
-    #     print(floating_ip + " applied to bradcw1-web.")
-    # else:
-    #     print("bradcw1-web does not exist.")
     pass
 
 def run():
@@ -175,8 +165,7 @@ def status():
         elif serverid is not None:
             ser = conn.compute.get_server(serverid)
             print("Name: " + ser.name + "\n" 
-                "Status: " + ser.status)
-                # str(ser.addresses["private-net":{"addr"}]) 
+                "Status: " + ser.status) 
             for value in ser.addresses["private-net"]:
                 print("IP: " + value["addr"])
             print("\n")
