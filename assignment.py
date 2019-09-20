@@ -2,8 +2,10 @@ import argparse
 import openstack
 
 
+global conn 
+conn = openstack.connect(cloud_name='openstack')
 
-serverList = ["dackja1-app", "dackja1-db", "dackja1-web "]
+serverList = ["dackja1-app", "dackja1-db", "dackja1-web"]
 
 def create():
     ''' Create a set of Openstack resources '''
@@ -59,7 +61,21 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+
+    for name in serverList:
+        server = conn.compute.find_server(name_or_id=name)
+        if server is not None:
+            ser = conn.compute.get_server(server)
+            if ser.status == "SHUTOFF":
+                conn.compute.start_server(server)
+            elif ser.status == "ACTIVE":
+                print("yote")
+
+            else:
+                print(name + "ye")
+
     pass
+    
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
@@ -80,6 +96,17 @@ def destroy():
     router = conn.network.find_router("dackja1-rtr")
     delRouter = conn.network.delete_router(router)
     print("Router Destroyed")
+
+    for server in serverList:
+        ser = conn.compute.find_server(name_or_id=server)
+        if ser is not None:
+            conn.compute.delete_server(ser)
+            print(ser.name + " Destroyed.")
+        else:
+            print(server + " does not exist.")
+
+    pass
+
     pass
 
 def status():
