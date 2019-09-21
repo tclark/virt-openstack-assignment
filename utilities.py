@@ -5,7 +5,7 @@ conn = openstack.connect(could_name='openstack')
 
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
-SECURITY_GROUP = 'default'
+SECURITY_GROUP = 'assignment2'
 
 SUBNET_IP_VERSION = 4
 SUBNET_CIDR = '192.168.50.0/24'
@@ -181,11 +181,12 @@ def stop_server(server_name):
 
 
 def get_server_status(server_name):
-    server = conn.compute.get_server(conn.compute.find_server(server_name).id)
+    server = conn.compute.find_server(server_name)
     if(server == None):
         print(
             f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
+        server = conn.compute.get_server(server.id)
         print(f'\nGetting status of server {server_name}...')
         print(server.status)
         for address in conn.compute.get_server(server.id)['addresses']['chril2-net']: 
