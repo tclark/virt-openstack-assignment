@@ -21,6 +21,7 @@ flavour = conn.compute.find_flavor(FLAVOUR)
 network = conn.network.find_network(my_network_name)
 keypair = conn.compute.find_keypair(KEYPAIR)
 security_group = conn.network.find_security_group(SECURITYGROUP)
+public_net = conn.network.find_network(public_net_name)
 
 
 def create_network(conn_obj, network_name):
@@ -81,7 +82,6 @@ else:
 
 
 if not conn.network.find_router(my_router_name):
-    public_net = conn.network.find_network(public_net_name)
     rout = create_router(conn, my_router_name, public_net)
     add_router_interface(conn, rout, subn)
 else:
@@ -98,8 +98,19 @@ for server in server_list:
             flavor_id=flavour.id,
             networks=[{"uuid": network.id}],
             key_name=keypair.name,
-            security_groups=[{"sgid": security_group.id}]
+            security_groups=[{"sgid": security_group.id}],
         )
-        n_serv = conn.compute.wait_for_server(server)
+
+        if server == "qiaoy2-web":
+            conn.compute.wait_for_server(server)
+            print("-------Adding floating ip to the web server...------")
+            floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
+            conn.compute.add_floating_ip_to_server(
+                server, floating_ip.floating_ip_address
+            )
+            print(
+                "Web server floating ip address is: %s"
+                % floating_ip.floating_ip_address
+            )
     else:
         print("Server %s exists already" % server)
