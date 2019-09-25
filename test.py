@@ -1,69 +1,105 @@
 import argparse
 import openstack
 
-conn = openstack.connect(cloud_name='openstack',region_name='nz_wlg_2')
 
-#from neutronclient.v2_0 import client
-#from credentials import get_credentials
+conn = openstack.connect(cloud_name="openstack", region_name="nz_wlg_2")
 
-my_network_name = 'qiaoy2-net'
-my_cidr = '192.168.50.0/24'
-my_subnet_name = 'qiaoy2-subnet'
-my_router_name = 'qiaoy2-rtr'
-public_net_name='public-net'
-def create_network(conn, network_name):
+IMAGE = "ubuntu-minimal-16.04-x86_64"
+FLAVOUR = "c1.c1r1"
+SECURITYGROUP = "assignment2"
+KEYPAIR = "qiaoy2MDB"
+
+my_network_name = "qiaoy2-net"
+my_cidr = "192.168.50.0/24"
+my_subnet_name = "qiaoy2-subnet"
+my_router_name = "qiaoy2-rtr"
+public_net_name = "public-net"
+server_list = ["qiaoy2-web", "qiaoy2-app", "qiaoy2-db"]
+
+image = conn.compute.find_image(IMAGE)
+flavour = conn.compute.find_flavor(FLAVOUR)
+network = conn.network.find_network(my_network_name)
+keypair = conn.compute.find_keypair(KEYPAIR)
+security_group = conn.network.find_security_group(SECURITYGROUP)
+
+
+def create_network(conn_obj, network_name):
     try:
         print("--------------Creating network...---------------")
-        n_netw = conn.create_network(name=network_name, admin_state_up=True)
-        print('Network %s created' % n_netw)
+        n_netw = conn_obj.create_network(name=network_name, admin_state_up=True)
+        print("Network %s created" % n_netw)
         print(type(n_netw))
         return n_netw
     finally:
         print("*************Network creating completed****************")
 
-def create_subnet(conn, network_name, subnet_name, cidr_r):
+
+def create_subnet(conn_obj, network_obj, subnet_name, cidr_r):
     try:
         print("---------------Creating subnet...--------------")
-        n_subn = conn.create_subnet(name=subnet_name, network_name_or_id=network_name.id, cidr=cidr_r)
-        print('Created subnet %s' % n_subn)
+        n_subn = conn_obj.create_subnet(
+            name=subnet_name, network_name_or_id=network_obj.id, cidr=cidr_r
+        )
+        print("Created subnet %s" % n_subn)
         return n_subn
     finally:
         print("*****************Subnet creating completed**************")
 
-def create_router(conn, router_name,external_network):
+
+def create_router(conn_obj, router_name, ext_network_obj):
     try:
         print("--------------Creating router...-------------------- ")
-        print("the external network is %s" % external_network)
-        n_rout = conn.network.create_router(name=router_name,external_gateway_info={'network_id': external_network.id})
-        print('Created rounter %s' % n_rout)
+        print("the external network is %s" % ext_network_obj)
+        n_rout = conn_obj.network.create_router(
+            name=router_name, ext_gateway_info={"network_id": ext_network_obj.id}
+        )
+        print("Created rounter %s" % n_rout)
         return n_rout
     finally:
         print("****************Router creating completed***************")
 
-def add_router_interface(conn, router_name, subnet_name):
+
+def add_router_interface(conn_obj, router_obj, subnet_obj):
     try:
         print("--------------Add router interface...----------------- ")
-        #print("subnet type is %s " % type(subnet_name))
-        conn.add_router_interface(router_name, subnet_id = subnet_name.id)
+        conn_obj.add_router_interface(router_obj, subnet_id=subnet_obj.id)
     finally:
         print("Router interface is added completely")
-        
 
-if not (conn.network.find_network(my_network_name)):
+
+if not conn.network.find_network(my_network_name):
     netw = create_network(conn, my_network_name)
 else:
-    print('Network %s exists already.' % my_network_name)
+    print("Network %s exists already." % my_network_name)
 
 
-if not (conn.network.find_subnet(my_subnet_name)):
+if not conn.network.find_subnet(my_subnet_name):
     subn = create_subnet(conn, netw, my_subnet_name, my_cidr)
 else:
     subn = conn.network.find_subnet(my_subnet_name)
-    print('subnet is %s ' % subn)
-    print('Subnet %s exists already.' %my_subnet_name)
+    print("Subnet %s exists already." % my_subnet_name)
 
-public_net = conn.network.find_network(public_net_name)
-rout = create_router(conn, my_router_name, public_net)
 
-add_router_interface(conn, rout, subn)
-#conn.add_router_interface(rout, external_gateway_info={'network_id': public_net.id})
+if not conn.network.find_router(my_router_name):
+    public_net = conn.network.find_network(public_net_name)
+    rout = create_router(conn, my_router_name, public_net)
+    add_router_interface(conn, rout, subn)
+else:
+    print("Router %s exists already." % my_router_name)
+
+
+for server in server_list:
+    n_serv = conn.compute.find_server(server)
+    if not n_serv:
+        print("------------Creating server...--------")
+        n_serv = conn.compute.create_server(
+            name=server,
+            image_id=image.id,
+            flavor_id=flavour.id,
+            networks=[{"uuid": network.id}],
+            key_name=keypair.name,
+            security_groups=[{"sgid": security_group.id}]
+        )
+        n_serv = conn.compute.wait_for_server(server)
+    else:
+        print("Server %s exists already" % server)
