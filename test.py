@@ -1,6 +1,6 @@
 import argparse
 import openstack
-
+import time
 
 conn = openstack.connect(cloud_name="openstack", region_name="nz_wlg_2")
 
@@ -21,7 +21,7 @@ flavour = conn.compute.find_flavor(FLAVOUR)
 network = conn.network.find_network(my_network_name)
 keypair = conn.compute.find_keypair(KEYPAIR)
 security_group = conn.network.find_security_group(SECURITYGROUP)
-public_net = conn.network.find_network(public_net_name)
+#public_net = conn.network.find_network(public_net_name)
 
 
 def create_network(conn_obj, network_name):
@@ -71,6 +71,7 @@ def add_router_interface(conn_obj, router_obj, subnet_obj):
 if not conn.network.find_network(my_network_name):
     netw = create_network(conn, my_network_name)
 else:
+    netw = conn.network.find_network(my_network_name)
     print("Network %s exists already." % my_network_name)
 
 
@@ -82,6 +83,7 @@ else:
 
 
 if not conn.network.find_router(my_router_name):
+    public_net = conn.network.find_network(public_net_name)
     rout = create_router(conn, my_router_name, public_net)
     add_router_interface(conn, rout, subn)
 else:
@@ -91,18 +93,19 @@ else:
 for server in server_list:
     n_serv = conn.compute.find_server(server)
     if not n_serv:
-        print("------------Creating server...--------")
+        print("------------Creating server %s...--------" % server)
+        print("network is %s " % conn.network.find_network('qiaoy2-net'))
         n_serv = conn.compute.create_server(
             name=server,
             image_id=image.id,
             flavor_id=flavour.id,
-            networks=[{"uuid": network.id}],
+            networks=[{"uuid": conn.network.find_network('qiaoy2-net').id}],
             key_name=keypair.name,
             security_groups=[{"sgid": security_group.id}],
         )
 
         if server == "qiaoy2-web":
-            conn.compute.wait_for_server(server)
+            conn.compute.wait_for_server(n_serv)
             print("-------Adding floating ip to the web server...------")
             floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
             conn.compute.add_floating_ip_to_server(
@@ -114,3 +117,4 @@ for server in server_list:
             )
     else:
         print("Server %s exists already" % server)
+
