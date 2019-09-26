@@ -46,7 +46,7 @@ def create():
     else:
         print("Router %s exists already." % my_router_name)
 
-'''
+
     for server in server_list:
         n_serv = conn.compute.find_server(server)
         if not n_serv:
@@ -60,13 +60,13 @@ def create():
                 key_name=keypair.name,
                 security_groups=[{"sgid": security_group.id}],
             )
-
+            # conn.compute.wait_for_server(n_serv)
             if server == "qiaoy2-web":
                 conn.compute.wait_for_server(n_serv)
                 print("-------Adding floating ip to the web server...------")
                 floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
                 conn.compute.add_floating_ip_to_server(
-                    server, floating_ip.floating_ip_address
+                    n_serv, floating_ip.floating_ip_address
                 )
                 print(
                     "Web server floating ip address is: %s"
@@ -75,7 +75,7 @@ def create():
         else:
             print("Server %s exists already" % server)
 
-'''
+
 def run():
     """ Start  a set of Openstack virtual machines
     if they are not already running.
