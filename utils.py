@@ -1,6 +1,6 @@
 import argparse
 import openstack
-import time
+#import time
 
 def create_network(conn_obj, network_name):
     try:
@@ -30,7 +30,7 @@ def create_router(conn_obj, router_name, ext_network_obj):
         print("--------------Creating router...-------------------- ")
         print("the external network is %s" % ext_network_obj)
         n_rout = conn_obj.network.create_router(
-            name=router_name, ext_gateway_info={"network_id": ext_network_obj.id}
+            name=router_name, external_gateway_info={"network_id": ext_network_obj.id}
         )
         print("Created rounter %s" % n_rout)
         return n_rout

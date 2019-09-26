@@ -37,13 +37,16 @@ def create():
     else:
         subn = conn.network.find_subnet(my_subnet_name)
         print("Subnet %s exists already." % my_subnet_name)
-        if not conn.network.find_router(my_router_name):
-            # public_net = conn.network.find_network(public_net_name)
-            rout = utils.create_router(conn, my_router_name, public_net)
-            utils.add_router_interface(conn, rout, subn)
-        else:
-            print("Router %s exists already." % my_router_name)
 
+    if not conn.network.find_router(my_router_name):
+        # public_net = conn.network.find_network(public_net_name)
+        rout = utils.create_router(conn, my_router_name, public_net)
+        #rout = conn.network.create_router(name=my_router_name, external_gateway_info={'network_id': public_net.id})
+        utils.add_router_interface(conn, rout, subn)
+    else:
+        print("Router %s exists already." % my_router_name)
+
+'''
     for server in server_list:
         n_serv = conn.compute.find_server(server)
         if not n_serv:
@@ -72,7 +75,7 @@ def create():
         else:
             print("Server %s exists already" % server)
 
-
+'''
 def run():
     """ Start  a set of Openstack virtual machines
     if they are not already running.
