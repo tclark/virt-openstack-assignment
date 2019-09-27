@@ -25,7 +25,9 @@ public_net = conn.network.find_network(PUBLICNET)
 
 
 def create():
-    """ Create a set of Openstack resources """
+    """ Create a set of Openstack resources.
+    If the required resources do not exist, new one will be created.
+    """
     if not conn.network.find_network(my_network_name):
         netw = utils.create_network(conn, my_network_name)
     else:
@@ -39,41 +41,53 @@ def create():
         print("Subnet %s exists already." % my_subnet_name)
 
     if not conn.network.find_router(my_router_name):
-        # public_net = conn.network.find_network(public_net_name)
         rout = utils.create_router(conn, my_router_name, public_net)
-        #rout = conn.network.create_router(name=my_router_name, external_gateway_info={'network_id': public_net.id})
         utils.add_router_interface(conn, rout, subn)
     else:
         print("Router %s exists already." % my_router_name)
 
-
-    for server in server_list:
-        n_serv = conn.compute.find_server(server)
-        if not n_serv:
-            print("------------Creating server %s...--------" % server)
-            print("network is %s " % conn.network.find_network("qiaoy2-net"))
-            n_serv = conn.compute.create_server(
-                name=server,
-                image_id=image.id,
-                flavor_id=flavour.id,
-                networks=[{"uuid": conn.network.find_network("qiaoy2-net").id}],
-                key_name=keypair.name,
-                security_groups=[{"sgid": security_group.id}],
-            )
-            # conn.compute.wait_for_server(n_serv)
-            if server == "qiaoy2-web":
+    """ Check whether the provided resources exist. If they do not exist
+    prompt message will show. Otherwise servers will be created.
+    """
+    if not (image and flavour and keypair and security_group):
+        print(
+            "Please make sure the provided image %s, flavour %s, keypair %s or security_group %s exists already."
+            % (IMAGE, FLAVOUR, KEYPAIR, SECURITYGROUP)
+        )
+    else:
+        # Create server one by one
+        for server in server_list:
+            n_serv = conn.compute.find_server(server)
+            if not n_serv:
+                print("------------Creating server %s...--------" % server)
+                print("network is %s " % conn.network.find_network("qiaoy2-net"))
+                n_serv = conn.compute.create_server(
+                    name=server,
+                    image_id=image.id,
+                    flavor_id=flavour.id,
+                    networks=[{"uuid": conn.network.find_network("qiaoy2-net").id}],
+                    key_name=keypair.name,
+                    security_groups=[{"sgid": security_group.id}],
+                )
                 conn.compute.wait_for_server(n_serv)
-                print("-------Adding floating ip to the web server...------")
-                floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
-                conn.compute.add_floating_ip_to_server(
-                    n_serv, floating_ip.floating_ip_address
-                )
-                print(
-                    "Web server floating ip address is: %s"
-                    % floating_ip.floating_ip_address
-                )
-        else:
-            print("Server %s exists already" % server)
+            else:
+                print("Server %s exists already" % server)
+
+        """
+        Find, check and add floating ip to web server if no floating ip for it
+        if server == "qiaoy2-web":
+            conn.compute.wait_for_server(n_serv)
+            print("-------Adding floating ip to the web server...------")
+            floating_ip = conn.network.create_ip(
+                floating_network_id=public_net.id
+            )
+            conn.compute.add_floating_ip_to_server(
+                n_serv, floating_ip.floating_ip_address
+            )
+            print(
+                "Web server floating ip address is: %s"
+                % floating_ip.floating_ip_address
+            )"""
 
 
 def run():
