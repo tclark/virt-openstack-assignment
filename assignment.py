@@ -47,7 +47,8 @@ def create():
         print("Router %s exists already." % my_router_name)
 
     """ Check whether the provided resources exist. If they do not exist
-    prompt message will show. Otherwise servers will be created.
+    prompt message will show and servers creating will not continue.
+    Otherwise servers will be created.
     """
     if not (image and flavour and keypair and security_group):
         print(
@@ -60,12 +61,12 @@ def create():
             n_serv = conn.compute.find_server(server)
             if not n_serv:
                 print("------------Creating server %s...--------" % server)
-                print("network is %s " % conn.network.find_network("qiaoy2-net"))
+                print("network is %s " % conn.network.find_network(my_network_name))
                 n_serv = conn.compute.create_server(
                     name=server,
                     image_id=image.id,
                     flavor_id=flavour.id,
-                    networks=[{"uuid": conn.network.find_network("qiaoy2-net").id}],
+                    networks=[{"uuid": conn.network.find_network(my_network_name).id}],
                     key_name=keypair.name,
                     security_groups=[{"sgid": security_group.id}],
                 )
@@ -73,21 +74,15 @@ def create():
             else:
                 print("Server %s exists already" % server)
 
-        """
-        Find, check and add floating ip to web server if no floating ip for it
-        if server == "qiaoy2-web":
-            conn.compute.wait_for_server(n_serv)
-            print("-------Adding floating ip to the web server...------")
-            floating_ip = conn.network.create_ip(
-                floating_network_id=public_net.id
-            )
-            conn.compute.add_floating_ip_to_server(
-                n_serv, floating_ip.floating_ip_address
-            )
+        # Checking, creating and attaching floating ip to web server
+        get_web_server = conn.get_server(name_or_id=server_list[0])
+        if len(get_web_server["addresses"][my_network_name]) < 2:
             print(
-                "Web server floating ip address is: %s"
-                % floating_ip.floating_ip_address
-            )"""
+                "-------- Creating and attaching floating ip to server %s"
+                % server_list[0]
+            )
+            web_server = conn.compute.find_server(server_list[0])
+            conn.create_floating_ip(network=PUBLICNET, server=web_server)
 
 
 def run():

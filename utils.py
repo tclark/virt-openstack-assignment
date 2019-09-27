@@ -2,11 +2,10 @@ def create_network(conn_obj, network_name):
     try:
         print("------------ Creating network... --------------")
         n_netw = conn_obj.create_network(name=network_name, admin_state_up=True)
-        print("Network %s created" % n_netw)
-        print(type(n_netw))
+        print("Created network %s " % n_netw)
         return n_netw
     finally:
-        print("+++++++++++++ Network is created successfully +++++++++++++")
+        print("Network is created successfully")
 
 
 def create_subnet(conn_obj, network_obj, subnet_name, cidr_r):
@@ -18,25 +17,24 @@ def create_subnet(conn_obj, network_obj, subnet_name, cidr_r):
         print("Created subnet %s" % n_subn)
         return n_subn
     finally:
-        print("+++++++++++++ Subnet is created successfully +++++++++++++")
+        print("Subnet is created successfully")
 
 
 def create_router(conn_obj, router_name, ext_network_obj):
     try:
         print("------------- Creating router... -------------------- ")
-        print("the external network is %s" % ext_network_obj)
         n_rout = conn_obj.network.create_router(
             name=router_name, external_gateway_info={"network_id": ext_network_obj.id}
         )
         print("Created rounter %s" % n_rout)
         return n_rout
     finally:
-        print("++++++++++++++ Router is created successfully ++++++++++++++")
+        print("Router is created successfully")
 
 
 def add_router_interface(conn_obj, router_obj, subnet_obj):
     try:
-        print("---------- Add router interface...----------------- ")
+        print("---------- Adding router interface...----------------- ")
         conn_obj.add_router_interface(router_obj, subnet_id=subnet_obj.id)
     finally:
-        print("++++++++++ Router interface is added successfully +++++++")
+        print("Router interface is added successfully")
