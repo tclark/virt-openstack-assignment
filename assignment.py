@@ -32,7 +32,6 @@ subnet = conn.network.find_subnet(my_subnet_name)
 get_web_server = conn.get_server(name_or_id=server_list[0])
 find_web_server = conn.compute.find_server(server_list[0])
 
-
 def create():
     """ Create a set of Openstack resources.
     If the required resources do not exist, new one will be created.
@@ -68,8 +67,8 @@ def create():
     else:
         # Create server one by one
         for server in server_list:
-            n_serv = conn.compute.find_server(server)
-            if not n_serv:
+            find_serv = conn.compute.find_server(server)
+            if not find_serv:
                 print("------------ Creating server %s... --------" % server)
                 n_serv = conn.compute.create_server(
                     name=server,
@@ -79,17 +78,17 @@ def create():
                     key_name=keypair.name,
                     security_groups=[{"sgid": security_group.id}],
                 )
-                conn.compute.wait_for_server(n_serv)
+                conn.compute.wait_for_server(find_serv)
             else:
                 print("Server %s exists already" % server)
 
         # Checking, creating and attaching floating ip to web server
-        if len(get_web_server["addresses"][my_network_name]) < 2:
+        if not get_web_server["interface_ip"]:
             print(
                 "-------- Creating and attaching floating ip to server %s --------"
                 % server_list[0]
             )
-
+            conn.compute.wait_for_server(n_serv)
             conn.create_floating_ip(network=PUBLICNET, server=find_web_server)
         else:
             print("Floating ip is attached to server %s already" % server_list[0])
