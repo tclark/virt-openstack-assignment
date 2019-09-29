@@ -67,8 +67,8 @@ def create():
     else:
         # Create server one by one
         for server in server_list:
-            find_serv = conn.compute.find_server(server)
-            if not find_serv:
+            n_serv = conn.compute.find_server(server)
+            if not n_serv:
                 print("------------ Creating server %s... --------" % server)
                 n_serv = conn.compute.create_server(
                     name=server,
@@ -78,11 +78,12 @@ def create():
                     key_name=keypair.name,
                     security_groups=[{"sgid": security_group.id}],
                 )
-                conn.compute.wait_for_server(find_serv)
+                conn.compute.wait_for_server(n_serv,wait=180)
             else:
                 print("Server %s exists already" % server)
 
         # Checking, creating and attaching floating ip to web server
+        get_web_server = conn.get_server(name_or_id=server_list[0])
         if not get_web_server["interface_ip"]:
             print(
                 "-------- Creating and attaching floating ip to server %s --------"
