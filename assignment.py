@@ -129,6 +129,7 @@ def destroy():
     # Detach and releasing floating ip for the web server
     web_server_ip = get_web_server["interface_ip"]
     list_ips = conn.list_floating_ips()
+    ip_id = None
     for ipa in list_ips:
         if ipa["floating_ip_address"] == web_server_ip:
             ip_id = ipa["id"]
@@ -143,7 +144,7 @@ def destroy():
     for server in server_list:
         find_server = conn.compute.find_server(server)
         if find_server:
-            print("------ Deleteing server %s" % server)
+            print("------ Deleteing server %s... ---------" % server)
             conn.compute.delete_server(find_server)
     # Delete router
     if router:
@@ -151,14 +152,14 @@ def destroy():
         conn.network.remove_interface_from_router(router, subnet.id)
         print("------ Deleteing router %s...--------" % my_router_name)
         conn.network.delete_router(router)
-    # Delete Subnet
-    if subnet:
-        print("------ Deleteing subnet %s... ---------" % my_subnet_name)
-        conn.network.delete_subnet(subnet)
     # Delete network
     if network:
         print("------ Deleteing network %s... ---------" % my_network_name)
         conn.network.delete_network(network)
+    # Delete Subnet
+    if subnet:
+        print("------ Deleteing subnet %s... ---------" % my_subnet_name)
+        conn.network.delete_subnet(subnet)
 
 
 def status():
