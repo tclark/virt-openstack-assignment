@@ -127,19 +127,21 @@ def destroy():
     """
 
     # Detach and releasing floating ip for the web server
-    web_server_ip = get_web_server["interface_ip"]
     list_ips = conn.list_floating_ips()
-    ip_id = None
-    for ipa in list_ips:
-        if ipa["floating_ip_address"] == web_server_ip:
-            ip_id = ipa["id"]
-            break
-    if ip_id:
-        print(
-            "Detaching floating ip with id %s from server %s" % (ip_id, server_list[0])
-        )
-        conn.detach_ip_from_server(find_web_server.id, ip_id)
-        conn.delete_floating_ip(ip_id, retry=3)
+    if get_web_server and list_ips:
+        web_server_ip = get_web_server["interface_ip"]
+        ip_id = None
+        for ipa in list_ips:
+            if ipa["floating_ip_address"] == web_server_ip:
+                ip_id = ipa["id"]
+                break
+        if ip_id:
+            print(
+                "Detaching floating ip with id %s from server %s"
+                % (ip_id, server_list[0])
+            )
+            conn.detach_ip_from_server(find_web_server.id, ip_id)
+            conn.delete_floating_ip(ip_id, retry=3)
     # Delete servers one by one
     for server in server_list:
         find_server = conn.compute.find_server(server)
