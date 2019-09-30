@@ -144,17 +144,6 @@ def destroy():
             )
             conn.delete_floating_ip(ip_id, retry=3)
 
-    # Detach ports from servers and router
-    """
-    network_id = conn.get_network(name_or_id='qiaoy2-net')['id']
-    list_ports = conn.list_ports()
-    if list_ports:
-        for port in list_ports:
-            if port['network_id'] == network_id:
-                delete_port(name_or_id=port['id'])
-    #            port_id.append(port['id'])
-    """
-
     # Delete servers one by one
     for server in server_list:
         find_server = conn.compute.find_server(server)
@@ -162,23 +151,26 @@ def destroy():
             print("------ Deleteing server %s... ---------" % server)
             conn.compute.delete_server(find_server)
     # Delete router
+    r_network = conn.network.find_network(my_network_name)
+    r_subnet = conn.network.find_subnet(my_subnet_name)
     r_router = conn.network.find_router(my_router_name)
     if r_router:
         print("------ Removing interface from router %s... -------" % my_router_name)
         conn.network.remove_interface_from_router(
-            r_router, conn.network.find_subnet(my_subnet_name).id
+            r_router, r_subnet.id
         )
         print("------ Deleteing router %s...--------" % my_router_name)
         conn.network.delete_router(r_router)
 
     # Delete Subnet
-    if conn.network.find_subnet(my_subnet_name):
+    if r_subnet:
         print("------ Deleteing subnet %s... ---------" % my_subnet_name)
-        conn.network.delete_subnet(conn.network.find_subnet(my_subnet_name))
+        conn.network.delete_subnet(r_subnet)
     # Delete network
-    if conn.network.find_network(my_network_name):
+    if r_network:
         print("------ Deleteing network %s... ---------" % my_network_name)
-        conn.network.delete_network(conn.network.find_network(my_network_name))
+        conn.network.delete_network(r_network)
+
 
 
 def status():
