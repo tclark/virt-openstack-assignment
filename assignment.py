@@ -101,7 +101,7 @@ def run():
         get_server = conn.get_server(name_or_id=server)
         # print(get_server)
         if get_server:
-            if get_server['status'] != 'ACTIVE':
+            if get_server["status"] != "ACTIVE":
                 print("------- Starting server %s... --------" % server)
                 conn.compute.start_server(get_server)
                 conn.compute.wait_for_server(conn.compute.find_server(server))
@@ -118,6 +118,21 @@ def stop():
     """ Stop  a set of Openstack virtual machines
     if they are running.
     """
+
+    for server in server_list:
+        get_server = conn.get_server(name_or_id=server)
+        # print(get_server)
+        if get_server:
+            if get_server["status"] == "ACTIVE":
+                print("------- Stopping server %s... --------" % server)
+                conn.compute.stop_server(get_server)
+            else:
+                print("Server %s is stopping already" % server)
+        else:
+            print(
+                "Server %s can not be got. Please check wthether the server exists."
+                % server
+            )
 
 
 def destroy():
@@ -157,9 +172,7 @@ def destroy():
     r_router = conn.network.find_router(my_router_name)
     if r_router:
         print("------ Removing interface from router %s... -------" % my_router_name)
-        conn.network.remove_interface_from_router(
-            r_router, r_subnet.id
-        )
+        conn.network.remove_interface_from_router(r_router, r_subnet.id)
         print("------ Deleteing router %s...--------" % my_router_name)
         conn.network.delete_router(r_router)
 
@@ -173,12 +186,20 @@ def destroy():
         conn.network.delete_network(r_network)
 
 
-
 def status():
     """ Print a status report on the OpenStack
     virtual machines created by the create action.
     """
-    pass
+    for server in server_list:
+        get_server = conn.get_server(name_or_id=server)
+        # s = conn.compute.find_server(server)
+        if get_server:
+            print("Status of server %s is %s" % (server, get_server["status"]))
+        else:
+            print(
+                "Server %s can not be got. Please check wthether the server exists."
+                % server
+            )
 
 
 ### You should not modify anything below this line ###
