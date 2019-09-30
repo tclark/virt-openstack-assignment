@@ -126,6 +126,7 @@ def stop():
             if get_server["status"] == "ACTIVE":
                 print("------- Stopping server %s... --------" % server)
                 conn.compute.stop_server(get_server)
+                conn.compute.wait_for_server(conn.compute.find_server(server),status='SHUTOFF')
             else:
                 print("Server %s is stopping already" % server)
         else:
