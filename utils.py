@@ -1,3 +1,12 @@
+"""
+Author: Yandong Qiao
+Date: Septeber, 2019
+API Reference:
+https://docs.openstack.org/openstacksdk/latest/user/connection.html
+https://docs.openstack.org/openstacksdk/latest/user/proxies/compute.html
+"""
+
+
 def create_network(conn_obj, network_name):
     try:
         print("------------ Creating network... --------------")

@@ -1,8 +1,12 @@
 """
-API reference
+Author: Yandong Qiao
+Date: Septeber, 2019
+API Reference:
 https://docs.openstack.org/openstacksdk/latest/user/connection.html
 https://docs.openstack.org/openstacksdk/latest/user/proxies/compute.html
 """
+
+
 import argparse
 import openstack
 import utils
@@ -99,7 +103,6 @@ def run():
     """
     for server in server_list:
         get_server = conn.get_server(name_or_id=server)
-        # print(get_server)
         if get_server:
             if get_server["status"] != "ACTIVE":
                 print("------- Starting server %s... --------" % server)
@@ -126,7 +129,9 @@ def stop():
             if get_server["status"] == "ACTIVE":
                 print("------- Stopping server %s... --------" % server)
                 conn.compute.stop_server(get_server)
-                conn.compute.wait_for_server(conn.compute.find_server(server),status='SHUTOFF')
+                conn.compute.wait_for_server(
+                    conn.compute.find_server(server), status="SHUTOFF"
+                )
             else:
                 print("Server %s is stopping already" % server)
         else:
@@ -176,7 +181,6 @@ def destroy():
         conn.network.remove_interface_from_router(r_router, r_subnet.id)
         print("------ Deleteing router %s...--------" % my_router_name)
         conn.network.delete_router(r_router)
-
     # Delete Subnet
     if r_subnet:
         print("------ Deleteing subnet %s... ---------" % my_subnet_name)
