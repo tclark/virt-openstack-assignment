@@ -11,7 +11,7 @@ def create_network(conn_obj, network_name):
     try:
         print("------------ Creating network... --------------")
         n_netw = conn_obj.create_network(name=network_name, admin_state_up=True)
-        print("Created network %s " % n_netw)
+        print("Created network {} ".format(n_netw))
         return n_netw
     finally:
         print("Network is created successfully")
@@ -23,7 +23,7 @@ def create_subnet(conn_obj, network_obj, subnet_name, cidr_r):
         n_subn = conn_obj.create_subnet(
             name=subnet_name, network_name_or_id=network_obj.id, cidr=cidr_r
         )
-        print("Created subnet %s" % n_subn)
+        print("Created subnet {}".format(n_subn))
         return n_subn
     finally:
         print("Subnet is created successfully")
@@ -35,7 +35,7 @@ def create_router(conn_obj, router_name, ext_network_obj):
         n_rout = conn_obj.network.create_router(
             name=router_name, external_gateway_info={"network_id": ext_network_obj.id}
         )
-        print("Created rounter %s" % n_rout)
+        print("Created rounter {}".format(n_rout))
         return n_rout
     finally:
         print("Router is created successfully")

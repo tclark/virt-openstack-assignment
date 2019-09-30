@@ -40,20 +40,20 @@ def create():
         netw = utils.create_network(conn, my_network_name)
     else:
         netw = conn.network.find_network(my_network_name)
-        print("Network %s exists already." % my_network_name)
+        print("Network {} exists already.".format(my_network_name))
 
     if not conn.network.find_subnet(my_subnet_name):
         subn = utils.create_subnet(conn, netw, my_subnet_name, my_cidr)
     else:
         subn = conn.network.find_subnet(my_subnet_name)
-        print("Subnet %s exists already." % my_subnet_name)
+        print("Subnet {} exists already.".format(my_subnet_name))
 
     if not conn.network.find_router(my_router_name):
         rout = utils.create_router(conn, my_router_name, public_net)
         utils.add_router_interface(conn, rout, subn)
     else:
         rout = conn.network.find_router(my_router_name)
-        print("Router %s exists already." % my_router_name)
+        print("Router {} exists already.".format(my_router_name))
 
     """ Check whether the provided resources exist. If they do not exist
     prompt message will show and servers creating will not continue.
@@ -61,15 +61,16 @@ def create():
     """
     if not (image and flavour and keypair and security_group):
         print(
-            "Please make sure the provided image %s, flavour %s, keypair %s or security_group %s exists already."
-            % (IMAGE, FLAVOUR, KEYPAIR, SECURITYGROUP)
+            "Please make sure the provided image {}, flavour {}, keypair {} or security_group {} exists already.".format(
+                IMAGE, FLAVOUR, KEYPAIR, SECURITYGROUP
+            )
         )
     else:
         # Create server one by one
         for server in server_list:
             n_serv = conn.compute.find_server(server)
             if not n_serv:
-                print("------------ Creating server %s... --------" % server)
+                print("------------ Creating server {}... --------".format(server))
                 n_serv = conn.compute.create_server(
                     name=server,
                     image_id=image.id,
@@ -79,22 +80,23 @@ def create():
                     security_groups=[{"sgid": security_group.id}],
                 )
                 conn.compute.wait_for_server(n_serv, wait=180)
-                print("Server %s is created successfully" % n_serv)
+                print("Server {} is created successfully".format(n_serv))
             else:
-                print("Server %s exists already" % server)
+                print("Server {} exists already".format(server))
 
         # Checking, creating and attaching floating ip to web server
         if not conn.get_server(name_or_id=server_list[0])["interface_ip"]:
             print(
-                "-------- Creating and attaching floating ip to server %s --------"
-                % server_list[0]
+                "-------- Creating and attaching floating ip to server {} --------".format(
+                    server_list[0]
+                )
             )
             conn.compute.wait_for_server(n_serv)
             conn.create_floating_ip(
                 network=PUBLICNET, server=conn.compute.find_server(server_list[0])
             )
         else:
-            print("Floating ip is attached to server %s already" % server_list[0])
+            print("Floating ip is attached to server {} already".format(server_list[0]))
 
 
 def run():
@@ -105,15 +107,16 @@ def run():
         get_server = conn.get_server(name_or_id=server)
         if get_server:
             if get_server["status"] != "ACTIVE":
-                print("------- Starting server %s... --------" % server)
+                print("------- Starting server {}... --------".format(server))
                 conn.compute.start_server(get_server)
                 conn.compute.wait_for_server(conn.compute.find_server(server))
             else:
-                print("Server %s is running already" % server)
+                print("Server {} is running already".format(server))
         else:
             print(
-                "Server %s can not be got. Please check wthether the server exists."
-                % server
+                "Server {} can not be got. Please check wthether the server exists.".format(
+                    server
+                )
             )
 
 
@@ -127,17 +130,18 @@ def stop():
         # print(get_server)
         if get_server:
             if get_server["status"] == "ACTIVE":
-                print("------- Stopping server %s... --------" % server)
+                print("------- Stopping server {}... --------".format(server))
                 conn.compute.stop_server(get_server)
                 conn.compute.wait_for_server(
                     conn.compute.find_server(server), status="SHUTOFF"
                 )
             else:
-                print("Server %s is stopping already" % server)
+                print("Server {} is stopping already".format(server))
         else:
             print(
-                "Server %s can not be got. Please check wthether the server exists."
-                % server
+                "Server {} can not be got. Please check wthether the server exists.".format(
+                    server
+                )
             )
 
 
@@ -158,8 +162,9 @@ def destroy():
                 break
         if ip_id:
             print(
-                "Detaching floating ip with id %s from server %s"
-                % (ip_id, server_list[0])
+                "Detaching floating ip with id {} from server {}".format(
+                    ip_id, server_list[0]
+                )
             )
             conn.detach_ip_from_server(
                 conn.compute.find_server(server_list[0]).id, ip_id
@@ -170,24 +175,26 @@ def destroy():
     for server in server_list:
         find_server = conn.compute.find_server(server)
         if find_server:
-            print("------ Deleteing server %s... ---------" % server)
+            print("------ Deleteing server {}... ---------".format(server))
             conn.compute.delete_server(find_server)
     # Delete router
     r_network = conn.network.find_network(my_network_name)
     r_subnet = conn.network.find_subnet(my_subnet_name)
     r_router = conn.network.find_router(my_router_name)
     if r_router:
-        print("------ Removing interface from router %s... -------" % my_router_name)
+        print(
+            "------ Removing interface from router {}... -------".format(my_router_name)
+        )
         conn.network.remove_interface_from_router(r_router, r_subnet.id)
-        print("------ Deleteing router %s...--------" % my_router_name)
+        print("------ Deleteing router {}...--------".format(my_router_name))
         conn.network.delete_router(r_router)
     # Delete Subnet
     if r_subnet:
-        print("------ Deleteing subnet %s... ---------" % my_subnet_name)
+        print("------ Deleteing subnet {}... ---------".format(my_subnet_name))
         conn.network.delete_subnet(r_subnet)
     # Delete network
     if r_network:
-        print("------ Deleteing network %s... ---------" % my_network_name)
+        print("------ Deleteing network {}... ---------".format(my_network_name))
         conn.network.delete_network(r_network)
 
 
@@ -199,11 +206,12 @@ def status():
         get_server = conn.get_server(name_or_id=server)
         # s = conn.compute.find_server(server)
         if get_server:
-            print("Status of server %s is %s" % (server, get_server["status"]))
+            print("Status of server {} is {}".format(server, get_server["status"]))
         else:
             print(
-                "Server %s can not be got. Please check wthether the server exists."
-                % server
+                "Server {} can not be got. Please check wthether the server exists.".format(
+                    server
+                )
             )
 
 
