@@ -23,36 +23,32 @@ server_list = ["qiaoy2-web", "qiaoy2-app", "qiaoy2-db"]
 
 image = conn.compute.find_image(IMAGE)
 flavour = conn.compute.find_flavor(FLAVOUR)
-network = conn.network.find_network(my_network_name)
 keypair = conn.compute.find_keypair(KEYPAIR)
 security_group = conn.network.find_security_group(SECURITYGROUP)
 public_net = conn.network.find_network(PUBLICNET)
-router = conn.network.find_router(my_router_name)
-subnet = conn.network.find_subnet(my_subnet_name)
-get_web_server = conn.get_server(name_or_id=server_list[0])
-find_web_server = conn.compute.find_server(server_list[0])
+
 
 def create():
     """ Create a set of Openstack resources.
     If the required resources do not exist, new one will be created.
     """
-    if not network:
+    if not conn.network.find_network(my_network_name):
         netw = utils.create_network(conn, my_network_name)
     else:
-        netw = network
+        netw = conn.network.find_network(my_network_name)
         print("Network %s exists already." % my_network_name)
 
-    if not subnet:
+    if not conn.network.find_subnet(my_subnet_name):
         subn = utils.create_subnet(conn, netw, my_subnet_name, my_cidr)
     else:
-        subn = subnet
+        subn = conn.network.find_subnet(my_subnet_name)
         print("Subnet %s exists already." % my_subnet_name)
 
-    if not router:
+    if not conn.network.find_router(my_router_name):
         rout = utils.create_router(conn, my_router_name, public_net)
         utils.add_router_interface(conn, rout, subn)
     else:
-        rout = router
+        rout = conn.network.find_router(my_router_name)
         print("Router %s exists already." % my_router_name)
 
     """ Check whether the provided resources exist. If they do not exist
@@ -78,19 +74,20 @@ def create():
                     key_name=keypair.name,
                     security_groups=[{"sgid": security_group.id}],
                 )
-                conn.compute.wait_for_server(n_serv,wait=180)
+                conn.compute.wait_for_server(n_serv, wait=180)
             else:
                 print("Server %s exists already" % server)
 
         # Checking, creating and attaching floating ip to web server
-        get_web_server = conn.get_server(name_or_id=server_list[0])
-        if not get_web_server["interface_ip"]:
+        if not conn.get_server(name_or_id=server_list[0])["interface_ip"]:
             print(
                 "-------- Creating and attaching floating ip to server %s --------"
                 % server_list[0]
             )
             conn.compute.wait_for_server(n_serv)
-            conn.create_floating_ip(network=PUBLICNET, server=find_web_server)
+            conn.create_floating_ip(
+                network=PUBLICNET, server=conn.compute.find_server(server_list[0])
+            )
         else:
             print("Floating ip is attached to server %s already" % server_list[0])
 
@@ -128,6 +125,7 @@ def destroy():
 
     # Detach and releasing floating ip for the web server
     list_ips = conn.list_floating_ips()
+    get_web_server = conn.get_server(name_or_id=server_list[0])
     if get_web_server and list_ips:
         web_server_ip = get_web_server["interface_ip"]
         ip_id = None
@@ -140,8 +138,12 @@ def destroy():
                 "Detaching floating ip with id %s from server %s"
                 % (ip_id, server_list[0])
             )
-            conn.detach_ip_from_server(find_web_server.id, ip_id)
+            conn.detach_ip_from_server(
+                conn.compute.find_server(server_list[0]).id, ip_id
+            )
             conn.delete_floating_ip(ip_id, retry=3)
+    
+    
     # Delete servers one by one
     for server in server_list:
         find_server = conn.compute.find_server(server)
@@ -149,19 +151,22 @@ def destroy():
             print("------ Deleteing server %s... ---------" % server)
             conn.compute.delete_server(find_server)
     # Delete router
-    if router:
+    r_router = conn.network.find_router(my_router_name)
+    if r_router:
         print("------ Removing interface from router %s... -------" % my_router_name)
-        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.remove_interface_from_router(
+            r_router, conn.network.find_subnet(my_subnet_name).id
+        )
         print("------ Deleteing router %s...--------" % my_router_name)
-        conn.network.delete_router(router)
+        conn.network.delete_router(r_router)
     # Delete network
-    if network:
+    if conn.network.find_network(my_network_name):
         print("------ Deleteing network %s... ---------" % my_network_name)
-        conn.network.delete_network(network)
+        conn.network.delete_network(conn.network.find_network(my_network_name))
     # Delete Subnet
-    if subnet:
+    if conn.network.find_subnet(my_subnet_name):
         print("------ Deleteing subnet %s... ---------" % my_subnet_name)
-        conn.network.delete_subnet(subnet)
+        conn.network.delete_subnet(conn.network.find_subnet(my_subnet_name))
 
 
 def status():
