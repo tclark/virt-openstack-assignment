@@ -75,6 +75,7 @@ def create():
                     security_groups=[{"sgid": security_group.id}],
                 )
                 conn.compute.wait_for_server(n_serv, wait=180)
+                print("Server %s is created successfully" % n_serv)
             else:
                 print("Server %s exists already" % server)
 
@@ -143,7 +144,16 @@ def destroy():
             )
             conn.delete_floating_ip(ip_id, retry=3)
     
-    
+    # Detach ports from servers and router
+    network_id = conn.get_network(name_or_id='qiaoy2-net')['id']
+    list_ports = conn.list_ports()
+    if list_ports:
+        for port in list_ports:
+            if port['network_id'] == network_id:
+                delete_port(name_or_id=port['id'])
+    #            port_id.append(port['id'])
+
+
     # Delete servers one by one
     for server in server_list:
         find_server = conn.compute.find_server(server)
