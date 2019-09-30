@@ -99,10 +99,11 @@ def run():
     """
     for server in server_list:
         get_server = conn.get_server(name_or_id=server)
+        # print(get_server)
         if get_server:
-            if get_server.status not in ["Active"]:
+            if get_server['status'] != 'ACTIVE':
                 print("------- Starting server %s... --------" % server)
-                conn.compute.start_server(server)
+                conn.compute.start_server(get_server)
                 conn.compute.wait_for_server(conn.compute.find_server(server))
             else:
                 print("Server %s is running already" % server)
