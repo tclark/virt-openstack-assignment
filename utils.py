@@ -1,7 +1,7 @@
 """
 Author: Yandong Qiao
-Date: Septeber, 2019
-API Reference:
+Date: September, 2019
+Email: yandongqiao@gmail.com
 https://docs.openstack.org/openstacksdk/latest/user/connection.html
 https://docs.openstack.org/openstacksdk/latest/user/proxies/compute.html
 """

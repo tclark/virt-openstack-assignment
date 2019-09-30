@@ -1,6 +1,7 @@
 """
 Author: Yandong Qiao
-Date: Septeber, 2019
+Date: September, 2019
+Email: yandongqiao@gmail.com
 API Reference:
 https://docs.openstack.org/openstacksdk/latest/user/connection.html
 https://docs.openstack.org/openstacksdk/latest/user/proxies/compute.html
@@ -114,7 +115,7 @@ def run():
                 print("Server {} is running already".format(server))
         else:
             print(
-                "Server {} can not be got. Please check wthether the server exists.".format(
+                "Server {} can not be found. Please check wthether the server exists.".format(
                     server
                 )
             )
@@ -139,7 +140,7 @@ def stop():
                 print("Server {} is stopping already".format(server))
         else:
             print(
-                "Server {} can not be got. Please check wthether the server exists.".format(
+                "Server {} can not be found. Please check wthether the server exists.".format(
                     server
                 )
             )
@@ -209,7 +210,7 @@ def status():
             print("Status of server {} is {}".format(server, get_server["status"]))
         else:
             print(
-                "Server {} can not be got. Please check wthether the server exists.".format(
+                "Server {} can not be found. Please check wthether the server exists.".format(
                     server
                 )
             )
