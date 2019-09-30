@@ -162,7 +162,7 @@ def destroy():
                 break
         if ip_id:
             print(
-                "Detaching floating ip with id {} from server {}".format(
+                "--- Detaching floating ip with id {} from server {}...---".format(
                     ip_id, server_list[0]
                 )
             )
