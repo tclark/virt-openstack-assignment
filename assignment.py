@@ -1,9 +1,20 @@
 import argparse
 import openstack
 
+conn = openstack.connect(cloud_name='openstack', region_name='nz_wlg_2')
+
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
+FLAVOUR = 'c1.c1r1'
+NETWORK = 'tiddfc1-net'
+KEYPAIR = 'tiddfc1-key'
+ROUTER = 'tiddfc1-rtr'
+SECURITY_GROUP = 'assignment2'
+SERVER_LIST = ['tiddfc1-web', 'tiddfc1-app', 'tiddfc1-db']
+
+
 def create():
     ''' Create a set of Openstack resources '''
-    pass
+    
 
 def run():
     ''' Start  a set of Openstack virtual machines
