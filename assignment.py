@@ -14,6 +14,11 @@ SUBNET_IP = '192.168.50.0/24'
 SUBNET = 'tiddfc1-subnet'
 PUBLICNET = 'public-net'
 
+network = conn.network.find_network(NETWORK)
+router = conn.network.find_router(ROUTER)
+subnet = conn.network.find_subnet(SUBNET)
+public_network = conn.network.find_network(PUBLICNET)
+
 
 def create():
     ''' Create a set of Openstack resources '''
@@ -21,12 +26,8 @@ def create():
     
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
-    network = conn.network.find_network(NETWORK)
     keypair = conn.compute.find_keypair(KEYPAIR)
     security_group = conn.network.find_security_group(SECURITY_GROUP)
-    router = conn.network.find_router(ROUTER)
-    subnet = conn.network.find_subnet(SUBNET)
-    public_network = conn.network.find_network(PUBLICNET)
 
     if network is None:
         n_network = conn.network.create_network(name=NETWORK, admin_state_up=True)
@@ -50,7 +51,13 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    pass
+    print('running destroy function..')
+
+    if network is not None:
+        conn.network.delete_network(network)
+        print(f'Network: {NETWORK} Deleted')
+    else:
+        print(f'Nework Already Deleted')
 
 def status():
     ''' Print a status report on the OpenStack
