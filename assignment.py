@@ -35,6 +35,13 @@ def create():
     else:
         print(f'Network: {NETWORK} Already Exists')
 
+    if subnet is None:
+        n_subnet = conn.network.create_subnet(name=SUBNET, network_id=n_network.id, ip_version='4', cidr=SUBNET_IP)
+        print(f'Created Subnet: {SUBNET}')
+    else:
+        print(f'Subnet: {SUBNET} Already Exists')
+
+
 def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
