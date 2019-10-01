@@ -67,21 +67,22 @@ def destroy():
     '''
     print('running destroy function..')
 
-    if network is not None:
-        conn.network.delete_network(network)
-        print(f'Network: {NETWORK} Deleted')
+    if router is not None:
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router)
+        print(f'Router: {ROUTER} Deleted')
     else:
-        print(f'Network: {NETWORK} Already Deleted')
+        print(f'Router: {ROUTER} Already Deleted')
     if subnet is not None:
         conn.network.delete_subnet(subnet)
         print(f'Subnet: {SUBNET} Deleted')
     else:
         print(f'Subnet: {SUBNET} Already Deleted')
-    if router is not None:
-        conn.network.delete_router(router)
-        print(f'Router: {ROUTER} Deleted')
+    if network is not None:
+        conn.network.delete_network(network)
+        print(f'Network: {NETWORK} Deleted')
     else:
-        print(f'Router: {ROUTER} Already Deleted')
+        print(f'Network: {NETWORK} Already Deleted')
 
 def status():
     ''' Print a status report on the OpenStack
