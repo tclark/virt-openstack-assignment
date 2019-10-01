@@ -10,11 +10,29 @@ KEYPAIR = 'tiddfc1-key'
 ROUTER = 'tiddfc1-rtr'
 SECURITY_GROUP = 'assignment2'
 SERVER_LIST = ['tiddfc1-web', 'tiddfc1-app', 'tiddfc1-db']
+SUBNET_IP = '192.168.50.0/24'
+SUBNET = 'tiddfc1-subnet'
+PUBLICNET = 'public-net'
 
 
 def create():
     ''' Create a set of Openstack resources '''
+    print('running create function..')
     
+    image = conn.compute.find_image(IMAGE)
+    flavour = conn.compute.find_flavor(FLAVOUR)
+    network = conn.network.find_network(NETWORK)
+    keypair = conn.compute.find_keypair(KEYPAIR)
+    security_group = conn.network.find_security_group(SECURITY_GROUP)
+    router = conn.network.find_router(ROUTER)
+    subnet = conn.network.find_subnet(SUBNET)
+    public_network = conn.network.find_network(PUBLICNET)
+
+    if network is None:
+        n_network = conn.network.create_network(name=NETWORK, admin_state_up=True)
+        print(f'Created Network: {NETWORK}')
+    else:
+        print(f'Network: {NETWORK} Already Exists')
 
 def run():
     ''' Start  a set of Openstack virtual machines
