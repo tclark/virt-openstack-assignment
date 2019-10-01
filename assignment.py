@@ -40,7 +40,14 @@ def create():
         print(f'Created Subnet: {SUBNET}')
     else:
         print(f'Subnet: {SUBNET} Already Exists')
-
+    
+    if router is None:
+        n_router = conn.network.create_router(name=ROUTER, external_gateway_info={'network_id': public_network.id})
+        print(f'Created Router: {ROUTER}')
+        conn.network.add_interface_to_router(n_router, n_subnet.id)
+        print(f'Interface Added To: {ROUTER}')
+    else:
+        print(f'Router: {ROUTER} Already Exists')
 
 def run():
     ''' Start  a set of Openstack virtual machines
@@ -70,6 +77,11 @@ def destroy():
         print(f'Subnet: {SUBNET} Deleted')
     else:
         print(f'Subnet: {SUBNET} Already Deleted')
+    if router is not None:
+        conn.network.delete_router(router)
+        print(f'Router: {ROUTER} Deleted')
+    else:
+        print(f'Router: {ROUTER} Already Deleted')
 
 def status():
     ''' Print a status report on the OpenStack
