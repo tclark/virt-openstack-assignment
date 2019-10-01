@@ -64,7 +64,12 @@ def destroy():
         conn.network.delete_network(network)
         print(f'Network: {NETWORK} Deleted')
     else:
-        print(f'Nework Already Deleted')
+        print(f'Network: {NETWORK} Already Deleted')
+    if subnet is not None:
+        conn.network.delete_subnet(subnet)
+        print(f'Subnet: {SUBNET} Deleted')
+    else:
+        print(f'Subnet: {SUBNET} Already Deleted')
 
 def status():
     ''' Print a status report on the OpenStack
