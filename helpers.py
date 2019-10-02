@@ -1,5 +1,5 @@
 import openstack
-from connection import connection.py
+from connection import connection
 
 KEYPAIR = 'sysadminapp'
 

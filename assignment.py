@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
-from helpers import create_subnet, create_router, create_server,
-create_network, add_floating_ip_to_server
+from helpers import (create_subnet, create_router, create_server,
+create_network, add_floating_ip_to_server)
 
 ROUTER_NAME = 'nichtj3-rtl'
 
