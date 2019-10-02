@@ -1,25 +1,31 @@
 #!/usr/bin/env python
 
 import argparse
-import connection from connection.py
-
-# KEYPAIR = 'sysadminapp'
-# SUBNET_NAME = 'nichtj3-subnet'
-# SUBNET_IP_VERSION = 4
-# SUBNET_CIDR = '192.168.50.0/24'
-# NETWORK_NAME = 'nichtj3-net'
-# PUBLIC_NETWORK_NAME = 'public-net'
+from helpers import create_subnet, create_router, create_server,
+create_network, add_floating_ip_to_server
 
 ROUTER_NAME = 'nichtj3-rtl'
-SERVERS = ['nichtj3-web', 'nichtj3-app', 'nichtj3-db']
-IMAGE = 'ubuntu-minimal-16.04-x86_64'
-FLAVOUR = 'c1.c1r1'
-SECURITY_GROUP = 'default'
+
+SUBNET_NAME = 'nichtj3-subnet'
+NETWORK_NAME = 'nichtj3-net'
+PUBLIC_NETWORK_NAME = 'public-net'
+
+WEB_SERVER = 'nichtj3-web'
+APP_SERVER = 'nichtj3-app'
+DB_SERVER = 'nichtj3-db'
+SERVERS = [WEB_SERVER, APP_SERVER, DB_SERVER]
 
 
 def create():
     ''' Create a set of Openstack resources '''
-    pass
+    create_network(NETWORK_NAME)
+    create_subnet(SUBNET_NAME, NETWORK_NAME)
+    create_subnet(SUBNET_NAME, NETWORK_NAME)
+    create_router(ROUTER_NAME, SUBNET_NAME, PUBLIC_NETWORK_NAME)
+    for server_name in SERVER_NAMES:
+        create_server(server_name, NETWORK_NAME)
+        if(server_name is WEB_SERVER):
+            add_floating_ip_to_server(server_name, PUBLIC_NETWORK_NAME)
 
 
 def run():
