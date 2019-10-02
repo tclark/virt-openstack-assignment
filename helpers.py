@@ -117,3 +117,40 @@ def add_floating_ip_to_server(server_name, network_name):
         print(f'Added address {floating_ip["floating_ip_address"]}')
     else:
         print(f'{server_name} already has a floating IP address')
+
+def destroy_server(server_name):
+    server = connection.compute.find_server(server_name)
+    if(server != None):
+        print(f'\nDeleting server {server_name}...')
+        connection.compute.delete_server(server)
+    else:
+        print(f'\nServer {server_name} does not exist - skipping')
+
+
+def destroy_router(router_name, subnet_name):
+    subnet = connection.network.find_subnet(subnet_name)
+    router = connection.network.find_router(router_name)
+    if (router != None):
+        print(f'\nDeleting router {router_name}...')
+        connection.network.remove_interface_from_router(router, subnet.id)
+        connection.network.delete_router(router)
+    else:
+        print(f'\nRouter {router_name} does not exist - skipping')
+
+
+def destroy_subnet(subnet_name):
+    subnet = connection.network.find_subnet(subnet_name)
+    if(subnet != None):
+        print(f'\nDeleting subnet {subnet_name}...')
+        connection.network.delete_subnet(subnet)
+    else:
+        print(f'\nSubnet {subnet_name} does not exist - skipping')
+
+
+def destroy_network(network_name):
+    network = connection.network.find_network(network_name)
+    if(network != None):
+        print(f'\nDeleting network {network_name}...')
+        connection.network.delete_network(network)
+    else:
+        print(f'\nNetwork {network_name} does not exist - skipping')

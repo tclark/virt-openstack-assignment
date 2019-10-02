@@ -2,7 +2,9 @@
 
 import argparse
 from helpers import (create_subnet, create_router, create_server,
-create_network, add_floating_ip_to_server)
+                     create_network, add_floating_ip_to_server,
+                     destroy_server, destroy_router, destroy_subnet,
+                     destroy_network)
 
 ROUTER_NAME = 'nichtj3-rtl'
 
@@ -49,7 +51,11 @@ def destroy():
     Tear down the set of Openstack resources
     produced by the create action
     '''
-    pass
+    for server_name in SERVERS:
+        destroy_server(server_name)
+    destroy_router(ROUTER_NAME, SUBNET_NAME)
+    destroy_subnet(SUBNET_NAME)
+    destroy_network(NETWORK_NAME)
 
 
 def status():
