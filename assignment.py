@@ -6,7 +6,7 @@ from helpers import (create_subnet, create_router, create_server,
                      destroy_server, destroy_router, destroy_subnet,
                      destroy_network)
 
-ROUTER_NAME = 'nichtj3-rtl'
+ROUTER_NAME = 'nichtj3-rtr'
 
 SUBNET_NAME = 'nichtj3-subnet'
 NETWORK_NAME = 'nichtj3-net'
