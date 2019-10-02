@@ -54,9 +54,11 @@ def create():
         n_server = conn.compute.find_server(server)
         if n_server is None:
             print(f'Creating Server: {server}...')
+
             server = conn.compute.create_server(
                 name=server, image_id=image.id, flavor_id=flavour.id,
-                networks=[{'uuid': n_network.id}], key_name=keypair.name)
+                networks=[{'uuid': n_network.id}], key_name=keypair.name,
+                security_groups=[{'name': security_group.name}])
             server = conn.compute.wait_for_server(server)
         else:
             print(f'Server {server} Already Exists')
