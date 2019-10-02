@@ -22,7 +22,6 @@ def create():
     ''' Create a set of Openstack resources '''
     create_network(NETWORK_NAME)
     create_subnet(SUBNET_NAME, NETWORK_NAME)
-    create_subnet(SUBNET_NAME, NETWORK_NAME)
     create_router(ROUTER_NAME, SUBNET_NAME, PUBLIC_NETWORK_NAME)
     for server_name in SERVERS:
         create_server(server_name, NETWORK_NAME)
