@@ -12,6 +12,7 @@ SUBNET_CIDR = '192.168.50.0/24'
 
 
 def create_network(network_name):
+    """Creates a network"""
     network = connection.network.find_network(network_name)
     if(network is None):
         print(f'\nCreating network {network_name}...')
@@ -21,6 +22,7 @@ def create_network(network_name):
 
 
 def create_subnet(subnet_name, network_name):
+    """Creates a subnet withing the given network"""
     network = connection.network.find_network(network_name)
     if(network_name is None):
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
@@ -35,7 +37,10 @@ def create_subnet(subnet_name, network_name):
         print(f'\nSubnet {subnet_name} already exists - skipping')
 
 
+#FIXME: this needs broken up
 def create_router(router_name, subnet_name, network_name):
+    """Creates a router and adds it to a given network and adds an interface to
+    the router for a given subnet"""
     subnet = connection.network.find_subnet(subnet_name)
     if (subnet is None):
         print(f'\nCOULD NOT FIND SUBNET {subnet_name}')
@@ -55,6 +60,7 @@ def create_router(router_name, subnet_name, network_name):
 
 
 def create_server(server_name, network_name):
+    """Creates a server and adds it to a given network"""
     image = connection.compute.find_image(IMAGE)
     if(image is None):
         print(f'\nCOULD NOT FIND IMAGE {IMAGE}')
@@ -88,6 +94,7 @@ def create_server(server_name, network_name):
     else:
         print(f'\nServer {server_name} already exists - skipping')
 
+
 def extract_floating_ips(server):
     """Return a list of floating IPs of a Server as strings."""
     ips = []
@@ -101,6 +108,7 @@ def extract_floating_ips(server):
 
 
 def add_floating_ip_to_server(server_name, network_name):
+    """Adds a floating ip to the given server from the given network"""
     network = connection.network.find_network(network_name)
     if (network is None):
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
@@ -111,14 +119,17 @@ def add_floating_ip_to_server(server_name, network_name):
 
     connection.compute.wait_for_server(server)
     if not extract_floating_ips(server):
-        floating_ip = connection.network.create_ip(floating_network_id=network.id)
+        floating_ip = connection.network.create_ip(
+            floating_network_id=network.id)
         connection.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address)
         print(f'Added address {floating_ip["floating_ip_address"]}')
     else:
         print(f'{server_name} already has a floating IP address')
 
+
 def destroy_server(server_name):
+    """Destroys the given server"""
     server = connection.compute.find_server(server_name)
     if(server != None):
         print(f'\nDeleting server {server_name}...')
@@ -128,10 +139,12 @@ def destroy_server(server_name):
 
 
 def destroy_router(router_name, subnet_name):
+    """Destroys the given router"""
     subnet = connection.network.find_subnet(subnet_name)
     router = connection.network.find_router(router_name)
     if (router != None):
         print(f'\nDeleting router {router_name}...')
+        # FIXME: Does this have to be here
         connection.network.remove_interface_from_router(router, subnet.id)
         connection.network.delete_router(router)
     else:
@@ -139,6 +152,7 @@ def destroy_router(router_name, subnet_name):
 
 
 def destroy_subnet(subnet_name):
+    """Destroys a given subnet if no interfaces are connected to it"""
     subnet = connection.network.find_subnet(subnet_name)
     if(subnet != None):
         print(f'\nDeleting subnet {subnet_name}...')
@@ -148,6 +162,7 @@ def destroy_subnet(subnet_name):
 
 
 def destroy_network(network_name):
+    """Destroys a given network"""
     network = connection.network.find_network(network_name)
     if(network != None):
         print(f'\nDeleting network {network_name}...')
