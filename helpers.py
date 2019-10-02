@@ -88,6 +88,18 @@ def create_server(server_name, network_name):
     else:
         print(f'\nServer {server_name} already exists - skipping')
 
+def extract_floating_ips(server):
+    """Return a list of floating IPs of a Server as strings."""
+    ips = []
+    for net in server.addresses:
+        for a in server.addresses[net]:
+            addrs = []
+            if a['OS-EXT-IPS:type'] == 'floating':
+                addrs.append(a['addr'])
+        ips.extend(addrs)
+    return ips
+
+
 def add_floating_ip_to_server(server_name, network_name):
     network = connection.network.find_network(network_name)
     if (network is None):
@@ -98,7 +110,7 @@ def add_floating_ip_to_server(server_name, network_name):
         print(f'\nCOULD NOT FIND SERVER {server_name}')
 
     connection.compute.wait_for_server(server)
-    if(len(connection.compute.get_server(server.id)['addresses'][network_name]) < 2):
+    if not extract_floating_ips(server):
         floating_ip = connection.network.create_ip(floating_network_id=network.id)
         connection.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address)
