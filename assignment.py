@@ -6,20 +6,20 @@ from helpers import (create_subnet, create_router, create_server,
                      destroy_server, destroy_router, destroy_subnet,
                      destroy_network)
 
-ROUTER_NAME = 'nichtj3-rtr'
+ROUTER_NAME = "nichtj3-rtr"
 
-SUBNET_NAME = 'nichtj3-subnet'
-NETWORK_NAME = 'nichtj3-net'
-PUBLIC_NETWORK_NAME = 'public-net'
+SUBNET_NAME = "nichtj3-subnet"
+NETWORK_NAME = "nichtj3-net"
+PUBLIC_NETWORK_NAME = "public-net"
 
-WEB_SERVER = 'nichtj3-web'
-APP_SERVER = 'nichtj3-app'
-DB_SERVER = 'nichtj3-db'
+WEB_SERVER = "nichtj3-web"
+APP_SERVER = "nichtj3-app"
+DB_SERVER = "nichtj3-db"
 SERVERS = [WEB_SERVER, APP_SERVER, DB_SERVER]
 
 
 def create():
-    ''' Create a set of Openstack resources '''
+    """ Create a set of Openstack resources """
     create_network(NETWORK_NAME)
     create_subnet(SUBNET_NAME, NETWORK_NAME)
     create_router(ROUTER_NAME, SUBNET_NAME, PUBLIC_NETWORK_NAME)
@@ -30,26 +30,26 @@ def create():
 
 
 def run():
-    '''
+    """
     Start  a set of Openstack virtual machines
     if they are not already running.
-    '''
+    """
     pass
 
 
 def stop():
-    '''
+    """
     Stop  a set of Openstack virtual machines
     if they are running.
-    '''
+    """
     pass
 
 
 def destroy():
-    '''
+    """
     Tear down the set of Openstack resources
     produced by the create action
-    '''
+    """
     for server_name in SERVERS:
         destroy_server(server_name)
     destroy_router(ROUTER_NAME, SUBNET_NAME)
@@ -58,29 +58,29 @@ def destroy():
 
 
 def status():
-    '''
+    """
     Print a status report on the OpenStack
     virtual machines created by the create action.
-    '''
+    """
     pass
 
 
 ### You should not modify anything below this line ###
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation',
-                        help='One of "create", "run", "stop", "destroy", or "status"')
+    parser.add_argument("operation",
+                        help="One of "create", "run", "stop", "destroy", or "status"")
     args = parser.parse_args()
     operation = args.operation
 
     operations = {
-        'create': create,
-        'run': run,
-        'stop': stop,
-        'destroy': destroy,
-        'status': status
+        "create": create,
+        "run": run,
+        "stop": stop,
+        "destroy": destroy,
+        "status": status
     }
 
     action = operations.get(operation, lambda: print(
-        '{}: no such operation'.format(operation)))
+        "{}: no such operation".format(operation)))
     action()
