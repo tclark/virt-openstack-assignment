@@ -22,7 +22,7 @@ def create():
     create_subnet(SUBNET_NAME, NETWORK_NAME)
     create_subnet(SUBNET_NAME, NETWORK_NAME)
     create_router(ROUTER_NAME, SUBNET_NAME, PUBLIC_NETWORK_NAME)
-    for server_name in SERVER_NAMES:
+    for server_name in SERVERS:
         create_server(server_name, NETWORK_NAME)
         if(server_name is WEB_SERVER):
             add_floating_ip_to_server(server_name, PUBLIC_NETWORK_NAME)
