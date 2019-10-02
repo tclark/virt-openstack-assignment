@@ -12,7 +12,7 @@ SUBNET_CIDR = '192.168.50.0/24'
 
 
 def create_network(network_name):
-    network = conn.network.find_network(network_name)
+    network = connection.network.find_network(network_name)
     if(network is None):
         print(f'\nCreating network {network_name}...')
         network = connection.network.create_network(name=network_name)
@@ -89,18 +89,18 @@ def create_server(server_name, network_name):
         print(f'\nServer {server_name} already exists - skipping')
 
 def add_floating_ip_to_server(server_name, network_name):
-    network = conn.network.find_network(network_name)
+    network = connection.network.find_network(network_name)
     if (network is None):
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
 
-    server = conn.compute.find_server(server_name)
+    server = connection.compute.find_server(server_name)
     if(server is None):
         print(f'\nCOULD NOT FIND SERVER {server_name}')
 
-    conn.compute.wait_for_server(server)
-    if(len(conn.compute.get_server(server.id)['addresses'][network_name]) < 2):
-        floating_ip = conn.network.create_ip(floating_network_id=network.id)
-        conn.compute.add_floating_ip_to_server(
+    connection.compute.wait_for_server(server)
+    if(len(connection.compute.get_server(server.id)['addresses'][network_name]) < 2):
+        floating_ip = connection.network.create_ip(floating_network_id=network.id)
+        connection.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address)
         print(f'Added address {floating_ip["floating_ip_address"]}')
     else:
