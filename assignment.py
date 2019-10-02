@@ -1,5 +1,6 @@
 import argparse
 import openstack
+import time
 
 conn = openstack.connect(cloud_name='openstack', region_name='nz_wlg_2')
 
@@ -49,6 +50,17 @@ def create():
     else:
         print(f'Router: {ROUTER} Already Exists')
 
+    for server in SERVER_LIST:
+        n_server = conn.compute.find_server(server)
+        if n_server is None:
+            print(f'Creating Server: {server}...')
+            server = conn.compute.create_server(
+                name=server, image_id=image.id, flavor_id=flavour.id,
+                networks=[{'uuid': n_network.id}], key_name=keypair.name)
+            server = conn.compute.wait_for_server(server)
+        else:
+            print(f'Server {server} Already Exists')
+
 def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
@@ -67,22 +79,35 @@ def destroy():
     '''
     print('running destroy function..')
 
+
+    for servers in SERVER_LIST:
+        server = conn.compute.find_server(servers)
+        if server is not None:
+            conn.compute.delete_server(server)
+            print(f'{servers} Being Deleted, This Can Take A Few Seconds..')
+            time.sleep(3)
+        else:
+            print(f'{servers} Already Deleted.')
+    
     if router is not None:
         conn.network.remove_interface_from_router(router, subnet.id)
         conn.network.delete_router(router)
         print(f'Router: {ROUTER} Deleted')
     else:
         print(f'Router: {ROUTER} Already Deleted')
+
     if subnet is not None:
         conn.network.delete_subnet(subnet)
         print(f'Subnet: {SUBNET} Deleted')
     else:
         print(f'Subnet: {SUBNET} Already Deleted')
+
     if network is not None:
         conn.network.delete_network(network)
         print(f'Network: {NETWORK} Deleted')
     else:
         print(f'Network: {NETWORK} Already Deleted')
+
 
 def status():
     ''' Print a status report on the OpenStack
