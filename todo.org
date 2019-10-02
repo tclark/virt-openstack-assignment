@@ -15,7 +15,7 @@
   running, do not restart them or otherwise change their state.
 - [ ] Stop: Stop the three servers. If any are not running, then leave
   them in that state. If any do not exist, display an error message.
-- [ ] Destroy: Remove all of the resources created by the create
+- [X] Destroy: Remove all of the resources created by the create
   action. If any of the resources do not exisit, ignore them and
   destroy whatever ones do.
 - [ ] Status: Print a status report on each of the three servers
