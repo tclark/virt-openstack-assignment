@@ -14,6 +14,7 @@ SERVER_LIST = ['tiddfc1-web', 'tiddfc1-app', 'tiddfc1-db']
 SUBNET_IP = '192.168.50.0/24'
 SUBNET = 'tiddfc1-subnet'
 PUBLICNET = 'public-net'
+WEBSERVER = 'tiddfc1-web'
 
 network = conn.network.find_network(NETWORK)
 router = conn.network.find_router(ROUTER)
@@ -29,6 +30,7 @@ def create():
     flavour = conn.compute.find_flavor(FLAVOUR)
     keypair = conn.compute.find_keypair(KEYPAIR)
     security_group = conn.network.find_security_group(SECURITY_GROUP)
+    floating_ip = conn.network.create_ip(floating_network_id=public_network.id)
 
     if network is None:
         n_network = conn.network.create_network(name=NETWORK, admin_state_up=True)
@@ -50,16 +52,22 @@ def create():
     else:
         print(f'Router: {ROUTER} Already Exists')
 
-    for server in SERVER_LIST:
-        n_server = conn.compute.find_server(server)
+    for servername in SERVER_LIST:
+        n_server = conn.compute.find_server(servername)
         if n_server is None:
-            print(f'Creating Server: {server}...')
+            print(f'Creating Server: {servername}...')
 
             server = conn.compute.create_server(
-                name=server, image_id=image.id, flavor_id=flavour.id,
+                name=servername, image_id=image.id, flavor_id=flavour.id,
                 networks=[{'uuid': n_network.id}], key_name=keypair.name,
                 security_groups=[{'name': security_group.name}])
-            server = conn.compute.wait_for_server(server)
+
+            if servername == 'tiddfc1-web':
+                conn.compute.wait_for_server(server)
+                conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
+                print(f'Floating Address: {floating_ip.floating_ip_address} Added To {servername}')
+
+
         else:
             print(f'Server {server} Already Exists')
 
