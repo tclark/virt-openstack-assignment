@@ -57,11 +57,13 @@ def create():
     IMAGE = 'ubuntu-minimal-16.04-x86_64'
     FLAVOUR = 'c1.c1r1'
     NETWORK = 'private-net'
+    SECURITY_GROUP = 'assignment2'
     KEYPAIR = 'bradcw1-key'
 
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
     network = conn.network.find_network(NETWORK)
+    security_group = conn.network.find_security_group(SECURITY_GROUP)
     keypair = conn.compute.find_keypair(KEYPAIR)    
 
     for serverName in serverList:
@@ -69,7 +71,7 @@ def create():
             SERVER = serverName
             server = conn.compute.create_server(
             name=SERVER, image_id=image.id, flavor_id=flavour.id,
-            networks=[{"uuid": network.id}], key_name=keypair.name)
+            networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[security_group])
             server = conn.compute.wait_for_server(server)
             print(serverName + " successfully created.")
 
@@ -168,7 +170,7 @@ def status():
                 "Status: " + ser.status) 
             for value in ser.addresses["private-net"]:
                 print("IP: " + value["addr"])
-            print("\n")
+            print("\n") 
 
     pass
 
