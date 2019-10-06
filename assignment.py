@@ -75,7 +75,19 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
-    pass
+    print('running run fucntion')
+
+    for servername in SERVER_LIST:
+        c_server = conn.compute.find_server(servername)
+        if c_server is not None:
+            c_server = conn.compute.get_server(c_server)
+            if c_server.status == 'SHUTOFF':
+                print(f'{servername} Booting up..')
+                conn.compute.start_server(c_server)
+            elif c_server.status == 'ACTIVE':
+                 print(f'{servername} Is Already Running..')
+        else:
+            print(f'Error: {servername} Does Not Exist..')
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
@@ -84,11 +96,16 @@ def stop():
     print('running stop function..')
 
     for servername in SERVER_LIST:
-         c_server = conn.compute.find_server(servername)
-         if c_server is not None:
-             c_server = conn.compute.get_server(c_server)
-             if c_server.status == 'ACTIVE':
-                print("1")
+        c_server = conn.compute.find_server(servername)
+        if c_server is not None:
+            c_server = conn.compute.get_server(c_server)
+            if c_server.status == 'ACTIVE':
+               print(f'{servername} is Active, Shuting Down..')
+               conn.compute.stop_server(c_server)
+            elif c_server.status == 'SHUTOFF':
+                 print(f'{servername} Shutdown Already..')
+        else:
+            print(f'Error: {servername} Does Not Exist..')
 
 
 def destroy():
