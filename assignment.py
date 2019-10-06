@@ -114,7 +114,6 @@ def destroy():
     '''
     print('running destroy function..')
 
-
     for servers in SERVER_LIST:
         server = conn.compute.find_server(servers)
         if server is not None:
@@ -148,7 +147,15 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    pass
+    print('running status function..')
+    
+    for servername in SERVER_LIST:
+        c_server = conn.compute.find_server(servername)
+        if c_server is not None:
+            c_server = conn.compute.get_server(c_server)
+            print(f'Server: {servername} // Status: {c_server.status} // Addresses: {c_server.addresses}')
+        else:
+            print(f'Error: {servername} Does Not Exist..')
 
 
 ### You should not modify anything below this line ###
