@@ -81,7 +81,15 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
-    pass
+    print('running stop function..')
+
+    for servername in SERVER_LIST:
+         c_server = conn.compute.find_server(servername)
+         if c_server is not None:
+             c_server = conn.compute.get_server(c_server)
+             if c_server.status == 'ACTIVE':
+                print("1")
+
 
 def destroy():
     ''' Tear down the set of Openstack resources 
