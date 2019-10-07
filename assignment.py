@@ -153,7 +153,9 @@ def status():
         c_server = conn.compute.find_server(servername)
         if c_server is not None:
             c_server = conn.compute.get_server(c_server)
-            print(f'Server: {servername} // Status: {c_server.status} // Addresses: {c_server.addresses}')
+            for info in c_server.addresses[NETWORK]:
+                print(f'Server: {servername} // Status: {c_server.status} // Addresses: ' + info['addr'] + ' // Type: ' + info['OS-EXT-IPS:type'])
+                ## print(f'{c_server.addresses}')
         else:
             print(f'Error: {servername} Does Not Exist..')
 
