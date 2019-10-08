@@ -84,12 +84,14 @@ def destroy():
     ''' Tear down the set of Openstack resources
     produced by the create action
     '''
-    server = conn.compute.find_server('schrsa1-web')
-    if server is None:
-        print("server already does not exist")
-    else:
-        conn.compute.delete_server(server)
-        print("server has been deleted")
+    server_list = ['schrsa1-web', 'schrsa1-app', 'schrsa1-db']
+    for serv in server_list:
+        server = conn.compute.find_server(serv)
+        if server is None:
+            print(serv + " server already does not exist")
+        else:
+            conn.compute.delete_server(server)
+            print(serv + "server has been deleted")
 
     schrsa1_rtr = conn.network.find_router('schrsa1-rtr')
     if schrsa1_rtr is None:
