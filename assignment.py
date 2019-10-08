@@ -10,6 +10,9 @@ def create():
     schrsa1_network = conn.network.find_network('schrsa1-net')
     if schrsa1_network is None:
         schrsa1_network = conn.network.create_network(name='schrsa1-net')
+        print("Network created")
+    else:
+        print("Network already exists")
 	
     '''create subnet'''		
     schrsa1_subnet = conn.network.find_subnet('schrsa1-subnet')
@@ -20,12 +23,19 @@ def create():
         ip_version='4',
         cidr='192.168.50.0/24',
         gateway_ip='192.168.50.1')
+        print("Subnet created")
+    else:
+        print("Subnet already exists")
 		
     '''create router'''
     public_net = conn.network.find_network('public-net')
     schrsa1_rtr = conn.network.find_router('schrsa1-rtr')
     if schrsa1_rtr is None:
         schrsa1_rtr = conn.network.create_router(name='schrsa1-rtr', admin_state_up=True, ext_gateway_net_id=public_net.id)
+        print("Router created")
+    else:
+        print("Router already exists")
+
 
 	
 
@@ -45,6 +55,7 @@ def create():
     for serv in server_list:
         server = conn.compute.find_server(serv)
         if server is None:
+            print("Creating " + serv + " server...")
             server = conn.compute.create_server(name=serv, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name)
             server = conn.compute.wait_for_server(server)
             print(serv + " server created")
