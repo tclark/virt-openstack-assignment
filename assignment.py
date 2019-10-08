@@ -65,9 +65,32 @@ def stop():
     pass
 
 def destroy():
-    ''' Tear down the set of Openstack resources 
+    ''' Tear down the set of Openstack resources
     produced by the create action
     '''
+    server = conn.compute.find_server('schrsa1-web')
+    if server is None:
+        print("server already does not exist")
+    else:
+        conn.compute.delete_server(server)
+
+    schrsa1_rtr = conn.network.find_router('schrsa1-rtr')
+    if schrsa1_rtr is None:
+        print("router already does not exist")
+    else:
+        conn.network.delete_router(schrsa1_rtr)
+
+    schrsa1_subnet = conn.network.find_subnet('schrsa1-subnet')
+    if schrsa1_subnet is None:
+        print("subnet already does not exist")
+    else:
+        conn.network.delete_subnet(schrsa1_subnet)
+
+    schrsa1_network = conn.network.find_network('schrsa1-net')
+    if schrsa1_network is None:
+        print("network already does not exist")
+    else:
+        conn.network.delete_network(schrsa1_network)
     pass
 
 def status():
