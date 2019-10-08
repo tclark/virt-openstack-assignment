@@ -55,41 +55,25 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
-	subprocess.call(["openstack", "server", "start", "schrsa-web"])
-	subprocess.call(["openstack", "server", "start", "schrsa-app"])
-	subprocess.call(["openstack", "server", "start", "schrsa-db"])
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
-	subprocess.call(["openstack", "server", "stop", "schrsa-web"])
-	subprocess.call(["openstack", "server", "stop", "schrsa-app"])
-	subprocess.call(["openstack", "server", "stop", "schrsa-db"])
     pass
 
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-	subprocess.call(["openstack", "server", "delete", "schrsa1-db"])
-	subprocess.call(["openstack", "server", "delete", "schrsa1-app"])
-	subprocess.call(["openstack", "server", "delete", "schrsa1-web"])
-	subprocess.call(["openstack", "floating", "ip", "delete", "public-net"])
-	subprocess.call(["openstack", "router", "remove", "subnet", "schrsa-router", "schrsa1-subnet"])
-	subprocess.call(["openstack", "router", "delete", "schrsa1-router"])
-	subprocess.call(["openstack", "subnet", "delete", "schrsa1-subnet"])
-	subprocess.call(["openstack", "network", "delete", "schrsa1-net"])
     pass
 
 def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-	subprocess.call(["openstack", "server", "show", "schrsa1-db"])
-	subprocess.call(["openstack", "server", "show", "schrsa1-app"])
-	subprocess.call(["openstack", "server", "show", "schrsa1-web"])
+	
     pass
 
 
