@@ -92,8 +92,9 @@ def run():
     if they are not already running.
     '''
 
+    # Check every server with names inside SERVERLIST list
+    # and turn its status to ACTIVE when it is SHUTOFF
     print("Checking all servers on progress......")
-
     for server in SERVERLIST:
         check_server = conn.compute.find_server(server)
         if check_server:
@@ -106,7 +107,7 @@ def run():
                 conn.compute.start_server(check_server)
                 print("Server [" + server + "] is active")
         else:
-            print("Server [" + server + "] is not existing")
+            print("Server [" + server + "] does not exist")
 
     pass
 
@@ -115,8 +116,9 @@ def stop():
     if they are running.
     '''
 
+    # Check every server with names inside SERVERLIST list
+    # and turn its status to SHUTOFF when it is ACTIVE
     print("Checking all servers on progress......")
-
     for server in SERVERLIST:
         check_server = conn.compute.find_server(server)
         if check_server:
@@ -136,17 +138,59 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    
+    # Find network, subnet and router first
+    network = conn.network.find_network(NETWORK)
+    subnet = conn.network.find_subnet('leejh2-subnet')
+    router = conn.network.find_router('leejh2-rtr')
 
+    # Check every server with names inside SERVERLIST list
+    # and delete those servers if they exist 
+    print("Destroying all servers in progress......")
     for server in SERVERLIST:
         check_server = conn.compute.find_server(server)
+
+        # If server name is [leejh2-web], remove and delete floating IP
+        # before deletion of [leejh2-web] server
         if check_server:
+            if server == 'leejh2-web':
+                web_server = conn.compute.get_server(check_server)
+                web_floating_ip = web_server["addresses"][NETWORK][1]["addr"]
+
+                print("Disassociate floating IP from WEB server......")
+                conn.compute.remove_floating_ip_from_server(web_floating_ip)
+                conn.compute.delete_floating_ip(web_floating_ip)
+                print("Floating IP Released")
+
             conn.compute.delete_server(check_server)
-            conn.compute.wait_for_server(check_server)
             print("Server [" + server + "] has been destroyed")
         else:
             print("Server [" + server + "] is not existing")
 
-    
+    # If router exists, delete it
+    print("Destroying router in progress......")
+    if router:
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router)
+        print("Router has been destroyed")
+    else:
+        print("Router does not exist")
+
+    # If subnet exists, delete it
+    print("Destroying subnet in progress......")
+    if subnet:
+        conn.network.delete_subnet(subnet)
+        print("Router has been destroyed")
+    else:
+        print("Subnet does not exist")
+
+    # If network exists, delete it
+    print("Destroying network in progress......")
+    if network:
+        conn.network.delete_network(network)
+        print("Network has been destroyed")
+    else:
+        print("Network does not exist")
 
     pass
 
