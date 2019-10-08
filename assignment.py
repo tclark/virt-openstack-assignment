@@ -14,6 +14,7 @@ def create():
     else:
         print("Network already exists")
 	
+
     '''create subnet'''		
     schrsa1_subnet = conn.network.find_subnet('schrsa1-subnet')
     if schrsa1_subnet is None:
@@ -27,6 +28,7 @@ def create():
     else:
         print("Subnet already exists")
 		
+
     '''create router'''
     public_net = conn.network.find_network('public-net')
     schrsa1_rtr = conn.network.find_router('schrsa1-rtr')
@@ -37,12 +39,10 @@ def create():
         print("Router already exists")
 
 
-	
-
     '''create servers'''
     IMAGE = 'ubuntu-minimal-16.04-x86_64'
     FLAVOUR = 'c1.c1r1'
-    NETWORK = 'private-net'
+    NETWORK = 'schrsa1-net'
     KEYPAIR = 'schrsa1-key'
 
     image = conn.compute.find_image(IMAGE)
@@ -64,7 +64,6 @@ def create():
 
 
     #floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
-
     #conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
     pass
 
@@ -72,12 +71,28 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    server_list = ['schrsa1-web', 'schrsa1-app', 'schrsa1-db']
+    for serv in server_list:
+        server = conn.compute.find_server(serv)
+        if server is None:
+            print ("Error: Tried to start " + serv + " but it does not exist")
+        else:
+            conn.compute.start_server(server)
+            print (serv + " is ACTIVE")
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    server_list = ['schrsa1-web', 'schrsa1-app', 'schrsa1-db']
+    for serv in server_list:
+        server = conn.compute.find_server(serv)
+        if server is None:
+            print ("Error: Tried to stop " + serv + " but it does not exist")
+        else:
+            conn.compute.stop_server(server)
+            print (serv + " is SHUTOFF")
     pass
 
 def destroy():
