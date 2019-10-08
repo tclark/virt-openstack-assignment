@@ -1,5 +1,6 @@
 import argparse
 import openstack
+import time # Just for some delay during destory function
 
 conn = openstack.connect(cloud_name='openstack')
 
@@ -158,14 +159,19 @@ def destroy():
                 web_floating_ip = web_server["addresses"][NETWORK][1]["addr"]
 
                 print("Disassociate floating IP from WEB server......")
-                conn.compute.remove_floating_ip_from_server(web_floating_ip)
-                conn.compute.delete_floating_ip(web_floating_ip)
+                conn.compute.remove_floating_ip_from_server(web_server, web_floating_ip)
+
+                check_ip = conn.network.find_ip(web_floating_ip)
+                conn.network.delete_ip(check_ip)
                 print("Floating IP Released")
 
             conn.compute.delete_server(check_server)
             print("Server [" + server + "] has been destroyed")
         else:
             print("Server [" + server + "] is not existing")
+
+    # Wait 5 seconds for servers to be deleted completely
+    time.sleep(5)
 
     # If router exists, delete it
     print("Destroying router in progress......")
@@ -180,7 +186,7 @@ def destroy():
     print("Destroying subnet in progress......")
     if subnet:
         conn.network.delete_subnet(subnet)
-        print("Router has been destroyed")
+        print("Subnet has been destroyed")
     else:
         print("Subnet does not exist")
 
@@ -198,6 +204,31 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+
+    # Check every server name inside SERVERLIST
+    # and display their status if they exist
+    for server in SERVERLIST:
+        check_server = conn.compute.find_server(server)
+
+        if check_server:
+            check_server = conn.compute.get_server(check_server)
+            check_server_ip = check_server["addresses"][NETWORK][0]["addr"]
+
+            # If server name is [leejh2-web] which has floating IP associated,
+            # display its floating IP as well
+            if server == 'leejh2-web':
+                check_server_floating_ip = check_server["addresses"][NETWORK][1]["addr"]
+            else:
+                check_server_floating_ip = "Not Available"
+            
+            print("======================================")
+            print("Server Name: [" + server + "]")
+            print("Server IP: [" + check_server_ip + "]")
+            print("Server Floating IP: [" + check_server_floating_ip + "]")
+            print("Server Status: [" + check_server.status + "]")
+            print("======================================")
+        else:
+            print("Server [" + server + "] does not exist")
     pass
 
 
