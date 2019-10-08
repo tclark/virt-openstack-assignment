@@ -3,30 +3,35 @@ import openstack
 
 def create():
     ''' Create a set of Openstack resources '''
+    
     pass
 
 def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    
     pass
 
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    
     pass
 
 def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    
     pass
 
 
