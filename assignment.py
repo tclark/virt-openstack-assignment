@@ -1,9 +1,18 @@
 import argparse
 import openstack
 
+#  Connect to the openstack service
+conn = openstack.connect(cloud_name=’openstack’)
+
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
+FLAVOUR = 'c1.c1r1'
+NETWORK = 'clarjc3-net'
+KEYPAIR = 'clarjc3-key'
+
 def create():
     ''' Create a set of Openstack resources '''
-    
+    #  Create Network
+    openstack network create --internal NETWORK
     pass
 
 def run():
