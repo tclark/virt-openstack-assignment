@@ -1,5 +1,6 @@
 import argparse
 import openstack
+import time
 
 conn = openstack.connect(cloud_name='openstack')
 
@@ -44,12 +45,13 @@ def create():
     FLAVOUR = 'c1.c1r1'
     NETWORK = 'schrsa1-net'
     KEYPAIR = 'schrsa1-key'
+    GROUP = 'assignment2'
 
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
     network = conn.network.find_network(NETWORK)
     keypair = conn.compute.find_keypair(KEYPAIR)
-    sec_group = conn.network.find_security_group
+    sec_group = conn.network.find_security_group(GROUP)
     server_list = ['schrsa1-web', 'schrsa1-app', 'schrsa1-db']
 
     for serv in server_list:
@@ -58,13 +60,16 @@ def create():
             print("Creating " + serv + " server...")
             server = conn.compute.create_server(name=serv, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name)
             server = conn.compute.wait_for_server(server)
+            conn.compute.add_security_group_to_server(server, sec_group)
             print(serv + " server created")
         else:
             print(serv + " server already exists")
 
 
-    #floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
-    #conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
+    '''create and assign floating IP'''
+    server = conn.compute.find_server('schrsa1-web')
+    floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
+    conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
     pass
 
 def run():
@@ -115,6 +120,7 @@ def destroy():
         conn.network.delete_router(schrsa1_rtr)
         print("router has been deleted")
 
+    time.sleep(5)
     schrsa1_subnet = conn.network.find_subnet('schrsa1-subnet')
     if schrsa1_subnet is None:
         print("subnet already does not exist")
@@ -134,7 +140,8 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-	
+	#servers = conn.compute.servers(details=True, name='schrsa1-')
+    #print(servers)
     pass
 
 
