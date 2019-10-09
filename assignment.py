@@ -148,8 +148,15 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-	#servers = conn.compute.servers(details=True, name='schrsa1-')
-    #print(servers)
+    server_list = ['schrsa1-web', 'schrsa1-app', 'schrsa1-db']
+    for serv in server_list:
+        server = conn.compute.find_server(serv)
+        if server is None:
+            print (serv + " does not exist so there are no available details")
+        else:
+            gotserver = conn.compute.get_server(server)
+            status = gotserver.status
+            print(serv + "is currently " + status)
     pass
 
 
