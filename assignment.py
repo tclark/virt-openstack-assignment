@@ -1,6 +1,14 @@
 import argparse
 import openstack
 
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
+FLAVOR = 'c1.c1r1'
+IP
+NETWORK = 'chauw2-network'
+SUBNET = 'chauw2-subnet'
+ROUTER = 'chauw2-router'
+
+
 def create():
     ''' Create a set of Openstack resources '''
     pass
