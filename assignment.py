@@ -3,6 +3,10 @@ import argparse
 import openstack
 import utility
 
+
+conn = openstack.connect(cloud_name='openstack', region_name='nz_wlg_2')
+
+#IMAGE = 'ubuntu-minimal-16.04-x86_64'
 NETWORK_NAME = 'zetksm1-net'
 SUBNET_NAME = 'zetksm1-subnet'
 
@@ -10,8 +14,11 @@ print("Attempting to create network")
 
 def create():
     ''' Create a set of Openstack resources '''
-    
-    
+    try:
+    print("Creating network...")    
+    network = conn.network.find_network(NETWORK_NAME)
+    if network is None:
+    network = conn.network.create_network(NETWORK_NAME)
     pass
 
 def run():
