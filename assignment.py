@@ -1,5 +1,19 @@
+"""
+Author: James Grigg
+"""
+
 import argparse
 import openstack
+
+conn = openstack.connect(cloud_name='openstack')
+
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
+FLAVOUR = 'c1.c1r1'
+NETWORK = 'grigjm1-net'
+KEYPAIR = 'grigjm1-key'
+SECURITY = 'assignment2'
+SUBNET = '192.168.50.0/24'
+SERVERLIST = { 'grigjm1-web', 'grigjm1-app', 'grigjm1-db' }
 
 def create():
     ''' Create a set of Openstack resources '''
