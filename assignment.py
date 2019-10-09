@@ -1,6 +1,7 @@
 #!/usr/bin/env
 import argparse
 import openstack
+import utility
 
 NETWORK_NAME = 'zetksm1-net'
 SUBNET_NAME = 'zetksm1-subnet'
