@@ -13,6 +13,7 @@ SUBNET = 'clarjc3-subnet'
 ROUTER = 'clarjc3-rtr'
 SECURITY_GROUP = 'assignment2'
 WEB_SERVER = 'clarjc3-web'
+FLOATING_IP = 'clarjc3-ip'
 
 def create():
     ''' Create a set of Openstack resources '''
@@ -87,7 +88,7 @@ def destroy():
     network = conn.network.find_network(NETWORK)
     subnet = conn.network.find_subnet(SUBNET)
     web_server = conn.compute.find_server(WEB_SERVER)
-    #floating_ip = conn.network.find_ip('clarjc3-floating_ip')
+    #floating_ip = conn.network.find_ip()
     #  Delete Server
     if web_server:
         conn.compute.delete_server(web_server)
@@ -98,9 +99,11 @@ def destroy():
     #  Delete Router
     if router:
         try:
-            conn.network.remove_interface_from_router(router, subnet.id)
+            conn.network.remove_interface_from_router(router.id, subnet.id)
         except:
             pass
+        for port in conn.network.get_subnet_ports(subnet.id):
+            conn.network.delete_port(port)
         conn.network.delete_router(router)
     #  Delete Network and Subnet
     if network:
