@@ -7,11 +7,12 @@ conn = openstack.connect(cloud_name='openstack')
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOR = 'c1.c1r1'
 KEYPAIR = 'clarjc3-key'
-PUBLIC_NETWORK = 'public-net'
+PUBLIC_NET = 'public-net'
 NETWORK = 'clarjc3-net'
 SUBNET = 'clarjc3-subnet'
 ROUTER = 'clarjc3-rtr'
-SECURITY_GROUP='assignment2'
+SECURITY_GROUP = 'assignment2'
+WEB_SERVER = 'clarjc3-web'
 
 def create():
     ''' Create a set of Openstack resources '''
@@ -37,30 +38,29 @@ def create():
             gateway_ip='192.168.50.1')
     
     #  Create Router
-    public_network = conn.network.find_network(PUBLIC_NETWORK)
+    public_net = conn.network.find_network(PUBLIC_NET)
     router = conn.network.find_router(ROUTER)
     if not router:
         router = conn.network.create_router(
             name=ROUTER,
-            external_gateway_info={"network_id": public_network.id})
-        conn.network.router_add_interface(router, subnet.id)
+            external_gateway_info={"network_id": public_net.id})
+        conn.network.add_interface_to_router(router, subnet.id)
     
     #  Create floating IP address
-    floating_ip = conn.network.create_ip(floating_network_id=network.id)
+    floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
     
     #  Create Server
-    SERVER = 'clarjc3-server'
     #clarjc3-web, clarjc3-app, clarjc3-db
-    server = conn.compute.find_server(SERVER)
-    if not server:
-        server = conn.compute.create_server(
-            name=SERVER,
+    web_server = conn.compute.find_server(WEB_SERVER)
+    if not web_server:
+        web_server = conn.compute.create_server(
+            name=WEB_SERVER,
             image_id=image.id,
             flavor_id=flavor.id,
             networks=[{"uuid": network.id}],
             key_name=keypair.name)
-        server = conn.compute.wait_for_server(server)
-        conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address) #  Assign floating IP to web server
+        web_server = conn.compute.wait_for_server(web_server)
+        conn.compute.add_floating_ip_to_server(web_server, floating_ip.floating_ip_address) #  Assign floating IP to web server
     
     pass
 
@@ -86,11 +86,11 @@ def destroy():
     router = conn.network.find_router(ROUTER)
     network = conn.network.find_network(NETWORK)
     subnet = conn.network.find_subnet(SUBNET)
-    server = conn.compute.find_server(SERVER)
-    #floating_ip = server.addresses()
+    web_server = conn.compute.find_server(WEB_SERVER)
+    #floating_ip = conn.network.find_ip('clarjc3-floating_ip')
     #  Delete Server
-    if server:
-        conn.compute.delete_server(server)
+    if web_server:
+        conn.compute.delete_server(web_server)
     #  Delete Floating IP
     #if floating_ip:
     #    conn.compute.remove_floating_ip_from_server(server, floating_ip)
@@ -98,7 +98,7 @@ def destroy():
     #  Delete Router
     if router:
         try:
-            conn.network.router_remove_interface(router, subnet.id)
+            conn.network.remove_interface_from_router(router, subnet.id)
         except:
             pass
         conn.network.delete_router(router)
