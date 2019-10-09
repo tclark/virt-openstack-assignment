@@ -2,7 +2,7 @@ import argparse
 import openstack
 
 #  Connect to the openstack service
-conn = openstack.connect(cloud_name=’openstack’)
+conn = openstack.connect(cloud_name='openstack')
 #  Creating resource name variables
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
