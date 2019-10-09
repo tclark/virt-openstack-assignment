@@ -5,7 +5,7 @@ import openstack
 conn = openstack.connect(cloud_name='openstack')
 #  Creating resource name variables
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
-FLAVOUR = 'c1.c1r1'
+FLAVOR = 'c1.c1r1'
 KEYPAIR = 'clarjc3-key'
 PUBLIC_NETWORK = 'public-net'
 NETWORK = 'clarjc3-net'
@@ -17,7 +17,7 @@ def create():
     ''' Create a set of Openstack resources '''
     #  Get resources from the cloud
     image = conn.compute.find_image(IMAGE)
-    flavour = conn.compute.find_flavour(FLAVOUR)
+    flavor = conn.compute.find_flavor(FLAVOR)
     keypair = conn.compute.find_keypair(KEYPAIR)
     security_group = conn.network.find_security_group(SECURITY_GROUP)
     
@@ -56,7 +56,7 @@ def create():
         server = conn.compute.create_server(
             name=SERVER,
             image_id=image.id,
-            flavour_id=flavour.id,
+            flavor_id=flavor.id,
             networks=[{"uuid": network.id}],
             key_name=keypair.name)
         server = conn.compute.wait_for_server(server)
@@ -82,17 +82,27 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    #  Delete Server
-    
-    #  Delete Floating IP
-    
-    #  Delete Router
+    #  Finding resources
     router = conn.network.find_router(ROUTER)
-    if router:
-        conn.network.
-        conn.network.delete_router(ROUTER)
-    #  Delete Network
     network = conn.network.find_network(NETWORK)
+    subnet = conn.network.find_subnet(SUBNET)
+    server = conn.compute.find_server(SERVER)
+    #floating_ip = server.addresses()
+    #  Delete Server
+    if server:
+        conn.compute.delete_server(server)
+    #  Delete Floating IP
+    #if floating_ip:
+    #    conn.compute.remove_floating_ip_from_server(server, floating_ip)
+    #    conn.network.delete_ip(floating_ip)
+    #  Delete Router
+    if router:
+        try:
+            conn.network.router_remove_interface(router, subnet.id)
+        except:
+            pass
+        conn.network.delete_router(router)
+    #  Delete Network and Subnet
     if network:
         for subnet in network.subnet_ids:
             conn.network.delete_subnet(subnet)
