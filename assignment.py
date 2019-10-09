@@ -9,7 +9,7 @@ import openstack
 def create():
     ''' Create a set of Openstack resources '''
     
-    print("Attempting to create network")
+    #print("Attempting to create network")
     
     pass
 
