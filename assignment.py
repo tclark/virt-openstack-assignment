@@ -1,8 +1,31 @@
 import argparse
 import openstack
+import time
 
+   con = openstack.connect(cloud_name="openstack", region_name="nz_hlz_1")
+    
+    IMAGE = "ubuntu-minimal-16.04-x86_64"
+    FLAVOUR = "c1.c1r1"
+    NETWORK = "mccacj3-net"
+    SECURITY_GROUP = "assignment2"
+    SUBNET = "mccacj3-subnet"
+    ROUTER = "mccacj3-rtr"
+    KEYPAIR = "mccacj3-key" 
+    SERVER_LIST = ['mccacj3-web', 'mccacj3-app', 'mccacj3-db'] 
+    SUBNET_IP = '192.168.50.0/24'
+
+    
+    network = conn.network.find_network(NETWORK)
+    router = conn.network.find_router(ROUTER)
+    subnet = conn.network.find_subnet(SUBNET)
+    public_network = conn.network.find_network(PUBLICNET)
+    image = conn.compute.find_image(IMAGE)
+    flavour = conn.compute.find_flavor(FLAVOUR)
+    keypair = conn.compute.find_keypair(KEYPAIR)
+    
 def create():
-    ''' Create a set of Openstack resources '''
+    
+ 
     pass
 
 def run():
