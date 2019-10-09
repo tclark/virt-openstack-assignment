@@ -2,8 +2,8 @@
 import argparse
 import openstack
 
-NETWORK_NAME = 'zetksm1-net'
-SUBNET_NAME = 'zetksm1-subnet'
+#NETWORK_NAME = 'zetksm1-net'
+#SUBNET_NAME = 'zetksm1-subnet'
 
 
 def create():
