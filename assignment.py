@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/python
 import argparse
 import openstack
 
