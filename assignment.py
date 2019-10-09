@@ -82,8 +82,12 @@ def run():
         if server is None:
             print ("Error: Tried to start " + serv + " but it does not exist")
         else:
-            conn.compute.start_server(server)
-            print (serv + " is ACTIVE")
+            try:
+                conn.compute.start_server(server)
+            except:
+                print (serv + " is already ACTIVE")
+            else:
+                print (serv + " is ACTIVE")
     pass
 
 def stop():
@@ -96,8 +100,12 @@ def stop():
         if server is None:
             print ("Error: Tried to stop " + serv + " but it does not exist")
         else:
-            conn.compute.stop_server(server)
-            print (serv + " is SHUTOFF")
+            try:
+                conn.compute.stop_server(server)
+            except:
+                print (serv + " is already SHUTOFF")
+            else:
+                print (serv + " is SHUTOFF")
     pass
 
 def destroy():
