@@ -64,6 +64,7 @@ def create():
     floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
     
     #  Create Servers
+    print("------------------------------")
     web_server = conn.compute.find_server(WEB_SERVER)
     if not web_server:
         print("Creating server:", str(WEB_SERVER))
@@ -81,6 +82,7 @@ def create():
     else:
         print("Server already exists:", str(web_server.name))
     
+    print("------------------------------")
     app_server = conn.compute.find_server(APP_SERVER)
     if not app_server:
         print("Creating server:", str(APP_SERVER))
@@ -95,6 +97,7 @@ def create():
     else:
         print("Server already exists:", str(app_server.name))
     
+    print("------------------------------")
     db_server = conn.compute.find_server(DB_SERVER)
     if not db_server:
         print("Creating server:", str(DB_SERVER))
@@ -119,33 +122,39 @@ def run():
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
     
+    print("------------------------------")
     if web_server:
         web_server = conn.compute.get_server(web_server.id)
         print(str(web_server.name))
-        print("Current state:", str(web_server.power_state))
-        if web_server.power_state == '':
+        print("Current status:", str(web_server.status))
+        if web_server.status == 'SHUTOFF':
+            print("Starting web server...")
             conn.compute.start_server(web_server.id)
         else:
             print("Server already running:", str(web_server.name))
     else:
         print("No server named:", str(WEB_SERVER))
     
+    print("------------------------------")
     if app_server:
         app_server = conn.compute.get_server(app_server.id)
         print(str(app_server.name))
-        print("Current state:", str(web_server.power_state))
-        if app_server.power_state == '':
+        print("Current status:", str(app_server.status))
+        if app_server.status == 'SHUTOFF':
+            print("Starting app server...")
             conn.compute.start_server(app_server.id)
         else:
             print("Server already running:", str(app_server.name))
     else:
         print("No server named:", str(APP_SERVER))
     
+    print("------------------------------")
     if db_server:
         db_server = conn.compute.get_server(db_server.id)
         print(str(db_server.name))
-        print("Current state:", str(db_server.power_state))
-        if db_server.power_state == '':
+        print("Current status:", str(db_server.status))
+        if db_server.status == 'SHUTOFF':
+            print("Starting db server...")
             conn.compute.start_server(db_server.id)
         else:
             print("Server already running:", str(db_server.name))
@@ -162,18 +171,42 @@ def stop():
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
     
+    print("------------------------------")
     if web_server:
-        conn.compute.stop_server(web_server.id)
+        web_server = conn.compute.get_server(web_server.id)
+        print(str(web_server.name))
+        print("Current status:", str(web_server.status))
+        if web_server.status == 'ACTIVE':
+            print("Stopping web server...")
+            conn.compute.stop_server(web_server.id)
+        else:
+            print("Server already stopped:", str(web_server.name))
     else:
         print("No server named:", str(WEB_SERVER))
     
+    print("------------------------------")
     if app_server:
-        conn.compute.stop_server(app_server.id)
+        app_server = conn.compute.get_server(app_server.id)
+        print(str(app_server.name))
+        print("Current status:", str(app_server.status))
+        if app_server.status == 'ACTIVE':
+            print("Stopping app server...")
+            conn.compute.stop_server(app_server.id)
+        else:
+            print("Server already stopped:", str(app_server.name))
     else:
         print("No server named:", str(APP_SERVER))
     
+    print("------------------------------")
     if db_server:
-        conn.compute.stop_server(db_server.id)
+        db_server = conn.compute.get_server(db_server.id)
+        print(str(db_server.name))
+        print("Current status:", str(db_server.status))
+        if db_server.status == 'ACTIVE':
+            print("Stopping db server...")
+            conn.compute.stop_server(db_server.id)
+        else:
+            print("Server already stopped:", str(db_server.name))
     else:
         print("No server named:", str(DB_SERVER))
     
@@ -265,6 +298,7 @@ def status():
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
     
+    print("------------------------------")
     if web_server:
         web_server = conn.compute.get_server(web_server.id)
         print(web_server.name)
@@ -277,6 +311,7 @@ def status():
     else:
         print(str(WEB_SERVER), "does not exist!")
     
+    print("------------------------------")
     if app_server:
         app_server = conn.compute.get_server(app_server.id)
         print(app_server.name)
@@ -289,6 +324,7 @@ def status():
     else:
         print(str(APP_SERVER), "does not exist!")
     
+    print("------------------------------")
     if db_server:
         db_server = conn.compute.get_server(db_server.id)
         print(db_server.name)
