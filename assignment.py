@@ -13,6 +13,8 @@ SUBNET = 'clarjc3-subnet'
 ROUTER = 'clarjc3-rtr'
 SECURITY_GROUP = 'assignment2'
 WEB_SERVER = 'clarjc3-web'
+APP_SERVER = 'clarjc3-app'
+DB_SERVER = 'clarjc3-db'
 FLOATING_IP = 'clarjc3-ip'
 
 def create():
@@ -50,8 +52,7 @@ def create():
     #  Create floating IP address
     floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
     
-    #  Create Server
-    #clarjc3-web, clarjc3-app, clarjc3-db
+    #  Create Servers
     web_server = conn.compute.find_server(WEB_SERVER)
     if not web_server:
         web_server = conn.compute.create_server(
@@ -62,6 +63,24 @@ def create():
             key_name=keypair.name)
         web_server = conn.compute.wait_for_server(web_server)
         conn.compute.add_floating_ip_to_server(web_server, floating_ip.floating_ip_address) #  Assign floating IP to web server
+    app_server = conn.compute.find_server(APP_SERVER)
+    if not app_server:
+        app_server = conn.compute.create_server(
+            name=APP_SERVER,
+            image_id=image.id,
+            flavor_id=flavor.id,
+            networks=[{"uuid": network.id}],
+            key_name=keypair.name)
+        app_server = conn.compute.wait_for_server(app_server)
+    db_server = conn.compute.find_server(DB_SERVER)
+    if not db_server:
+        db_server = conn.compute.create_server(
+            name=DB_SERVER,
+            image_id-image.id,
+            flavor_id=flavor.id,
+            networks[{"uuid": network.id}],
+            key_name=keypair.name)
+        db_server = conn.compute.wait_for_server(db_server)
     
     pass
 
