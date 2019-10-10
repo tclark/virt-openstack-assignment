@@ -123,7 +123,7 @@ def run():
         web_server = conn.compute.get_server(web_server.id)
         print(str(web_server.name))
         print("Current state:", str(web_server.power_state))
-        if web_server.power_state == ''
+        if web_server.power_state == '':
             conn.compute.start_server(web_server.id)
         else:
             print("Server already running:", str(web_server.name))
@@ -134,7 +134,7 @@ def run():
         app_server = conn.compute.get_server(app_server.id)
         print(str(app_server.name))
         print("Current state:", str(web_server.power_state))
-        if app_server.power_state == ''
+        if app_server.power_state == '':
             conn.compute.start_server(app_server.id)
         else:
             print("Server already running:", str(app_server.name))
@@ -145,7 +145,7 @@ def run():
         db_server = conn.compute.get_server(db_server.id)
         print(str(db_server.name))
         print("Current state:", str(db_server.power_state))
-        if db_server.power_state == ''
+        if db_server.power_state == '':
             conn.compute.start_server(db_server.id)
         else:
             print("Server already running:", str(db_server.name))
