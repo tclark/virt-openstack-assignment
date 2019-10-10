@@ -107,10 +107,16 @@ def destroy():
     network = conn.network.find_network(NETWORK)
     subnet = conn.network.find_subnet(SUBNET)
     web_server = conn.compute.find_server(WEB_SERVER)
+    app_server = conn.compute.find_server(APP_SERVER)
+    db_server = conn.compute.find_server(DB_SERVER)
     #floating_ip = conn.network.find_ip()
     #  Delete Server
     if web_server:
         conn.compute.delete_server(web_server)
+    if app_server:
+        conn.compute.delete_server(app_server)
+    if db_server:
+        conn.compute.delete_server(db_server)
     #  Delete Floating IP
     #if floating_ip:
     #    conn.compute.remove_floating_ip_from_server(server, floating_ip)
