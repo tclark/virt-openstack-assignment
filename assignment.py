@@ -60,7 +60,8 @@ def create():
             image_id=image.id,
             flavor_id=flavor.id,
             networks=[{"uuid": network.id}],
-            key_name=keypair.name)
+            key_name=keypair.name,
+            security_groups=[security_group])
         web_server = conn.compute.wait_for_server(web_server)
         conn.compute.add_floating_ip_to_server(web_server, floating_ip.floating_ip_address) #  Assign floating IP to web server
     app_server = conn.compute.find_server(APP_SERVER)
@@ -70,16 +71,18 @@ def create():
             image_id=image.id,
             flavor_id=flavor.id,
             networks=[{"uuid": network.id}],
-            key_name=keypair.name)
+            key_name=keypair.name,
+            security_groups=[security_group])
         app_server = conn.compute.wait_for_server(app_server)
     db_server = conn.compute.find_server(DB_SERVER)
     if not db_server:
         db_server = conn.compute.create_server(
             name=DB_SERVER,
-            image_id-image.id,
+            image_id=image.id,
             flavor_id=flavor.id,
-            networks[{"uuid": network.id}],
-            key_name=keypair.name)
+            networks=[{"uuid": network.id}],
+            key_name=keypair.name,
+            security_groups=[security_group])
         db_server = conn.compute.wait_for_server(db_server)
     
     pass
