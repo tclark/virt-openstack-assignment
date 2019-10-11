@@ -42,12 +42,13 @@ def create():
     else
         print('Creating', NETWORK)
         network = conn.network.create_network(name=NETWORK)
+         
     #Find Subnet
     subnet = conn.network.find_subnet(SUBNET)
     if subnet exist:
         print("Searching Subnet...")
     else
-        subnet = conn.netowork.create_subnet(name=SUBNET,cidr,ip_verison=4
+        subnet = conn.netowork.create_subnet(name=SUBNET,network_id =network.id,cidr,ip_verison=4)
     
     # Find server
     print("Searching Server...")    
@@ -76,13 +77,25 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+                                             
+                                             
     pass
 
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    pass
+  # NETWORK = 'chauw2-net'
+  # SUBNET = 'chauw2-subnet'
+   #ROUTER = 'chauw2-router'
+                                             
+   drouter = conn.network.find_router(ROUTER)
+   if router is not None:
+      conn.network.delete_router
+   else
+      print(ROUETR + "does not exist")
+                                         
+                                           
 
 def status():
     ''' Print a status report on the OpenStack
