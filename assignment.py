@@ -111,7 +111,7 @@ def create():
         db_server = conn.compute.wait_for_server(db_server)
     else:
         print("Server already exists:", str(db_server.name))
-    
+    print("------------------------------")
     pass
 
 def run():
@@ -160,7 +160,7 @@ def run():
             print("Server already running:", str(db_server.name))
     else:
         print("No server named:", str(DB_SERVER))
-    
+    print("------------------------------")
     pass
 
 def stop():
@@ -209,7 +209,7 @@ def stop():
             print("Server already stopped:", str(db_server.name))
     else:
         print("No server named:", str(DB_SERVER))
-    
+    print("------------------------------")
     pass
 
 def destroy():
@@ -340,7 +340,7 @@ def status():
             print(str(address.network_label), str(address.address))
     else:
         print(str(DB_SERVER), "does not exist!")
-    
+    print("------------------------------")
     pass
 
 
