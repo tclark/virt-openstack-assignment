@@ -133,7 +133,7 @@ def run():
         else:
             print("Server already running:", str(web_server.name))
     else:
-        print("No server named:", str(WEB_SERVER))
+        print(str(WEB_SERVER), "does not exist!")
     
     print("------------------------------")
     if app_server:
@@ -146,7 +146,7 @@ def run():
         else:
             print("Server already running:", str(app_server.name))
     else:
-        print("No server named:", str(APP_SERVER))
+        print(str(APP_SERVER), "does not exist!")
     
     print("------------------------------")
     if db_server:
@@ -159,7 +159,7 @@ def run():
         else:
             print("Server already running:", str(db_server.name))
     else:
-        print("No server named:", str(DB_SERVER))
+        print(str(DB_SERVER), "does not exist!")
     print("------------------------------")
     pass
 
@@ -182,7 +182,7 @@ def stop():
         else:
             print("Server already stopped:", str(web_server.name))
     else:
-        print("No server named:", str(WEB_SERVER))
+        print(str(WEB_SERVER), "does not exist!")
     
     print("------------------------------")
     if app_server:
@@ -195,7 +195,7 @@ def stop():
         else:
             print("Server already stopped:", str(app_server.name))
     else:
-        print("No server named:", str(APP_SERVER))
+        print(str(APP_SERVER), "does not exist!")
     
     print("------------------------------")
     if db_server:
@@ -208,7 +208,7 @@ def stop():
         else:
             print("Server already stopped:", str(db_server.name))
     else:
-        print("No server named:", str(DB_SERVER))
+        print(str(DB_SERVER), "does not exist!")
     print("------------------------------")
     pass
 
@@ -230,19 +230,19 @@ def destroy():
         conn.compute.delete_server(web_server)
         time.sleep(5)
     else:
-        print("No server named:", str(WEB_SERVER))
+        print(str(WEB_SERVER), "does not exist!")
     if app_server:
         print("Deleting server:", str(app_server.name))
         conn.compute.delete_server(app_server)
         time.sleep(5)
     else:
-        print("No server named:", str(APP_SERVER))
+        print(str(APP_SERVER), "does not exist!")
     if db_server:
         print("Deleting server:", str(db_server.name))
         conn.compute.delete_server(db_server)
         time.sleep(5)
     else:
-        print("No server named:", str(DB_SERVER))
+        print(str(DB_SERVER), "does not exist!")
     
     #  Delete Floating IP
     query = {'status': 'DOWN'}
