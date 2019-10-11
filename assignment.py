@@ -280,7 +280,7 @@ def destroy():
         else:
             print("Router successfully deleted!")
     else:
-        print("No router named:", str(ROUTER))
+        print(str(ROUTER), "does not exist!")
     
     #  Delete Network and Subnet
     if network:
@@ -290,7 +290,7 @@ def destroy():
         print("Deleting network:", str(network.name))
         conn.network.delete_network(network)
     else:
-        print("No network named:", str(NETWORK))
+        print(str(NETWORK), "does not exist!")
     
     pass
 
