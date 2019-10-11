@@ -1,6 +1,18 @@
 import argparse
 import openstack
 
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
+FLAVOR = 'c1.c1r1'
+KEYPAIR = 'hayeska2-key'
+SUBNET = 'hayeska2-subnet'
+NETWORK = 'hayeska2-net'
+ROUTER = 'hayeska2-router'
+SECURITY_GROUP = 'assignment2'
+PUBNET_NAME = 'public-net'
+SERVER_NAMES = ['hayeska2-web', 'hayeska2-app', 'hayeska2-db']
+
+conn = openstack.connect(cloud_name='openstack')
+
 def create():
     ''' Create a set of Openstack resources '''
     pass
