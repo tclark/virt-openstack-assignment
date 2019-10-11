@@ -12,9 +12,11 @@ def create():
     keypair = conn.compute.find_keypair('kate')
     network = conn.network.find_network('shinrl1-net')
     router = conn.network.find_router('shinrl1-rtr')
+    public_net = conn.network.find_network('public-net')
+    subnet = conn.network.find_subnet('shinrl1-subnet')
+    cidr = "192.168.50.0/24"
 
     #create network
-
     if not network:
         network = conn.network.create_network(name='shinrl1-net')
         print(network)
@@ -25,7 +27,25 @@ def create():
         gateway_ip='192.168.50.1'
         print("Network created ^_^")
     else:
-        print("Borked")
+        print("Network Borked")
+    
+    #create subnet
+    if not subnet:
+        subnet = conn.network.create_subnet(name='shinrl1-subnet',
+                network_id=network.id, ip_version='4', cidr=cidr)
+        print("Subnet Created")
+    else:
+        print("Subnet borked")
+    #create router
+    if not router:
+    
+        args = {'name': "shinrl1-rtr", 'external_gateway_info': {'network_id': public_net.id}}
+        router = conn.network.create_router(**args)
+        conn.network.add_interface_to_router(router, subnet.id)
+
+        print("Router Created ^_^")
+    else:
+        print ("Router Borked")
     pass
 
 def run():
@@ -44,6 +64,9 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    conn.network.delete_router('shinrl1-rtr')
+    conn.network.delete_network('shinrl2-net')
+    conn.network.delete_subnet('shinrl1-subnet')
     pass
 
 def status():
