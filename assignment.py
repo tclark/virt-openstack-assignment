@@ -1,5 +1,6 @@
 import argparse
 import openstack
+import time
 
 #  Connect to the openstack service
 conn = openstack.connect(cloud_name='openstack')
@@ -224,29 +225,33 @@ def destroy():
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
     
-    #  Delete Server
+    #  Delete Servers
     if web_server:
         print("Deleting server:", str(web_server.name))
         conn.compute.delete_server(web_server)
+        time.sleep(5)
     else:
         print("No server named:", str(WEB_SERVER))
     if app_server:
         print("Deleting server:", str(app_server.name))
         conn.compute.delete_server(app_server)
+        time.sleep(5)
     else:
         print("No server named:", str(APP_SERVER))
     if db_server:
         print("Deleting server:", str(db_server.name))
         conn.compute.delete_server(db_server)
+        time.sleep(5)
     else:
         print("No server named:", str(DB_SERVER))
     
     #  Delete Floating IP
     query = {'status': 'DOWN'}
     floating_ips = conn.network.ips(**query)
-    if floating_ips:
-        for ip in floating_ips:
-            conn.network.delete_ip(ip)
+    for ip in floating_ips:
+        print("Deleting floating IP:", str(ip.floating_ip_address))
+        conn.network.delete_ip(ip)
+        time.sleep(1)
     
     #  Delete Router
     if subnet:
@@ -262,9 +267,8 @@ def destroy():
         for port in conn.network.get_subnet_ports(subnet.id):
             try:
                 print("Deleting port:", str(port.id))
-                conn.network.remove_interface_from_router(router, port.id)
-                #conn.network.remove_ip_from_port('192.168.50.1')
                 conn.network.delete_port(port)
+                time.sleep(3)
             except Exception as e:
                 print("The following error occured when deleting port:", str(e))
     
@@ -288,6 +292,7 @@ def destroy():
         conn.network.delete_network(network)
     else:
         print("No network named:", str(NETWORK))
+    
     pass
 
 def status():
