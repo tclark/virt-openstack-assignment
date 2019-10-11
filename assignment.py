@@ -16,7 +16,6 @@ SECURITY_GROUP = 'assignment2'
 WEB_SERVER = 'clarjc3-web'
 APP_SERVER = 'clarjc3-app'
 DB_SERVER = 'clarjc3-db'
-FLOATING_IP = 'clarjc3-ip'
 
 def create():
     ''' Create a set of Openstack resources '''
