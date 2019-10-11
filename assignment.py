@@ -1,25 +1,43 @@
 #!/usr/bin/env
 import argparse
 import openstack
-import utility
 
 
-conn = openstack.connect(cloud_name='openstack', region_name='nz_wlg_2')
+conn = openstack.connect(cloud_name='openstack')
 
 #IMAGE = 'ubuntu-minimal-16.04-x86_64'
-NETWORK_NAME = 'zetksm1-net'
+#FLAVOUR = 'c1.c1r1'
+#KEYPAIR = 'zetksm1'
+#NETWORK = 'zetksm1-net'
 SUBNET_NAME = 'zetksm1-subnet'
+IP_VERSION='4'
+CIDR='192.168.50.0/24'
 
-print("Attempting to create network")
+
+#NETWORK_NAME = 'zetksm1_network'
 
 def create():
     ''' Create a set of Openstack resources '''
-    try:
-    print("Creating network...")    
-    network = conn.network.find_network(NETWORK_NAME)
+
+    network = conn.network.find_network('zetksm1-network')
     if network is None:
-    network = conn.network.create_network(NETWORK_NAME)
-    pass
+        network = conn.network.create_network(name='zetksm1-network')
+        print("Network succesfully created")
+    else: 
+        print("This network already exists")
+    
+
+    subnet = conn.network.find_subnet('zetksm1-subnet')
+    if subnet is None:
+         subnet = conn.network.create_subnet(
+         name=SUBNET_NAME,
+         network_id=network.id,
+         ip_version=IP_VERSION,
+         cidr=CIDR
+         )
+         print("Subnet has been successfully created")
+    else:
+         print("Subnet has already been created")
 
 def run():
     ''' Start  a set of Openstack virtual machines
