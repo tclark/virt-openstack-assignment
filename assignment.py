@@ -49,11 +49,11 @@ def create():
         pass
     
     # Create the server
-     for server in server_list:
+     for server in SERVER_NAMES:
         server = conn.compute.find_server(server)
         if server is None:
             print("Creating " + server + " the server")
-            server = conn.compute.create_server(name=serv, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name)
+            server = conn.compute.create_server(name=server, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name)
             server = conn.compute.wait_for_server(server)
             conn.compute.add_security_group_to_server(server, sec_group)
             print(server + " Server has been created")
