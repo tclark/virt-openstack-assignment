@@ -125,7 +125,7 @@ def stop():
             try:
                 conn.compute.stop_server(s.id)
             except openstack.exceptions.ConflictException:
-                print('Already stoped.')
+                print(f'The server {server} already stoped.')
             else:
                 conn.compute.wait_for_server(s, status='SHUTOFF')
                 print(f'Operation completed.')
