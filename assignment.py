@@ -52,7 +52,10 @@ def create():
     # start create server from SERVERLIST
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
-        if(s == None):
+        if s:
+            print(
+                f'The server {server} has already exists. terminate operation...')
+        else:
             print(f"Create Server {server}...")
             s = conn.compute.create_server(
                 name=server,
@@ -62,10 +65,6 @@ def create():
                 key_name=keypair.name,
                 security_groups=[{'sgid': security_group.id}]
             )
-        else:
-            print(
-                f'The server {server} has already exists. terminate operation...')
-            break
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
@@ -78,7 +77,6 @@ def create():
                     floating_network_id=public_net.id).floating_ip_address
                 conn.compute.add_floating_ip_to_server(s, floating_ip)
                 print(f'Floating IP {floating_ip} added to {server}.')
-    print('Operation completed.')
 
 
 def run():
