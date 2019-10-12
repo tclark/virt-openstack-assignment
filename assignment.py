@@ -1,33 +1,25 @@
 import argparse
 import openstack
+conn = openstack.connect(cloud_name='openstack')
 
+# I ran it using modules because I thought that way you can run the different functions seperately
+# The create, run, stop, destroy and status functions are created under modules.
+# You can run each function by running python assignment.py <function> eg: create...
 def create():
-    ''' Create a set of Openstack resources '''
-    pass
+    from modules.create import create
 
 def run():
-    ''' Start  a set of Openstack virtual machines
-    if they are not already running.
-    '''
-    pass
+    from modules.run import run
 
 def stop():
-    ''' Stop  a set of Openstack virtual machines
-    if they are running.
-    '''
-    pass
+    from modules.stop import stop
 
 def destroy():
-    ''' Tear down the set of Openstack resources 
-    produced by the create action
-    '''
-    pass
+    from modules.destroy import destroy
 
 def status():
-    ''' Print a status report on the OpenStack
-    virtual machines created by the create action.
-    '''
-    pass
+    from modules.status import status
+    
 
 
 ### You should not modify anything below this line ###
