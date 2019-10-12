@@ -166,7 +166,7 @@ def status():
     '''
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
-        if s:
+        if(s == None):
             print(
                 f'The Server {server} has not created yet. Please run this script with [create] parameter first.')
             break
