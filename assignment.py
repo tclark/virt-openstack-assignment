@@ -141,7 +141,7 @@ def destroy():
             conn.compute.delete_server(s)
             conn.compute.wait_for_server(s)
         else:
-            print(f'Server {server} does not exists')
+            print(f'Server {server} does not exists. skip...')
 
     if network:
         print(f'clearing subnet interface...')
@@ -162,10 +162,9 @@ def status():
     '''
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
-        if(s == None):
+        if s:
             print(
                 f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
-            break
         else:
             ss = conn.compute.get_server(s.id)
             print(f'The status of server {server} is: {ss.status}')
