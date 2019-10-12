@@ -103,10 +103,8 @@ def run():
         else:
             print(f'running {server} ...')
             conn.compute.start_server(s)
-
-        conn.compute.wait_for_server(s)
-
-    print('Operation completed.')
+            conn.compute.wait_for_server(s)
+            print('Operation completed.')
 
 
 def stop():
@@ -128,10 +126,9 @@ def stop():
         else:
             print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
-
-        conn.compute.wait_for_server(s)
-
-    print('Operation completed.')
+            conn.compute.wait_for_server(s)
+            print('Operation completed.')
+    
 
 
 def destroy():
