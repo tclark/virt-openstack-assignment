@@ -198,10 +198,10 @@ def status():
                     ips.append(temp)
             print(f'Server: {server}')
             print(f'Status: {ss.status}')
-            print(f'IP Address:')
+            print(f'IP Address:', end = '')
             if ips:
                 for i in ips:
-                    print(i)
+                    print(i, end=' ')
             print(' ')
         else:
             print(
