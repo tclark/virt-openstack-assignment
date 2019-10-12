@@ -139,17 +139,17 @@ def destroy():
         else:
             print(f'Server {server} does not exists. skip...')
 
-    if network:
-        print(f'clearing subnet interface...')
-        conn.network.delete_subnet(subnet, ignore_missing=True)
-        print(f'clearing network interface...')
-        conn.network.delete_network(network, ignore_missing=True)
-        print(f'Operation completed.')
-
     if router:
         print(f'clearing router interface...')
         conn.network.remove_interface_from_router(router, subnet.id)
-        conn.network.delete_router(router, ignore_missing=True)
+        conn.network.delete_router(router)
+
+    if network:
+        print(f'clearing subnet interface...')
+        conn.network.delete_subnet(subnet)
+        print(f'clearing network interface...')
+        conn.network.delete_network(network)
+        print(f'Operation completed.')
 
 
 def status():
