@@ -97,7 +97,7 @@ def run():
         # 1. create server when server does not exists 2. check the server whehter running 3. start server
         if(s == None):
             print(
-                f'The Server {server} has not created. Please run this script with create parameter first.')
+                f'The Server {server} has not created. Please run this script with [create] parameter first.')
         elif(ss.status == 'ACTIVE'):
             print(f'The Server {server} already running.')
         else:
@@ -139,10 +139,6 @@ def destroy():
     produced by the create action
     '''
 
-    # display current status before destroy
-    print(f'Current status:')
-    status()
-
     # remove network, router and subnet interface
     network = conn.network.find_network(NETWORK)
     subnet = conn.network.find_subnet(SUBNET)
@@ -182,7 +178,7 @@ def status():
         s = conn.compute.find_server(server)
         if(s == None):
             print(
-                f'The Server {server} has not created yet. Please run this script with create parameter first.')
+                f'The Server {server} has not created yet. Please run this script with [create] parameter first.')
             break
         else:
             ss = conn.compute.get_server(s.id)
