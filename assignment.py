@@ -54,7 +54,7 @@ def create():
         s = conn.compute.find_server(server)
         if s:
             print(
-                f'The server {server} has already exists. terminate operation...')
+                f'The server {server} has already exists. Terminating operation...')
         else:
             print(f"Create Server {server}...")
             s = conn.compute.create_server(
@@ -114,7 +114,7 @@ def stop():
             try:
                 conn.compute.stop_server(s.id)
             except openstack.exceptions.ConflictException:
-                print('Already shut down')
+                print('Already stoped.')
             else:
                 conn.compute.wait_for_server(s, status='SHUTOFF')
                 print(f'Operation completed.')
@@ -136,7 +136,6 @@ def destroy():
         if s:
             print(f'Deleting server {server}...')
             conn.compute.delete_server(s)
-            conn.compute.wait_for_server(s)
         else:
             print(f'Server {server} does not exists. skip...')
 
