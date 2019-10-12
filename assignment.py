@@ -189,16 +189,19 @@ def status():
         s = conn.compute.find_server(server)
         if s:
             ss = conn.compute.get_server(s.id)
+
+            # get all ip address put it in ips list
             ips=[]
             for net in ss.addresses:
                 for a in ss.addresses[net]:
                     temp=a['addr']
+                    # put a placeholder 'N/A' when server does not have ip address
                     if temp is None:
                         temp='N/A'
                     ips.append(temp)
             print(f'Server: {server}')
             print(f'Status: {ss.status}')
-            print(f'IP Address:', end = '')
+            print(f'IP Address: ', end = '')
             if ips:
                 for i in ips:
                     print(i, end=' ')
