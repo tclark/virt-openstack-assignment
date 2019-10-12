@@ -121,7 +121,7 @@ def stop():
                 f'The Server {server} does not exists, skip...')
         else:
             s = conn.compute.get_server(s.id)
-            print('Shutting off {}... '.format(server), end='')
+            print('Shutting off {}... '.format(server), end='\n')
             try:
                 conn.compute.stop_server(s.id)
             except openstack.exceptions.ConflictException:
