@@ -124,7 +124,7 @@ def stop():
         if(server == None):
             print(
                 f'The Server {server} has not created. Please run this script with [create] parameter first.')
-            return
+            break
         else:
             print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
@@ -143,32 +143,35 @@ def destroy():
     print(f'Current status:')
     status()
 
+    # remove network, router and subnet interface
+    network = conn.network.find_network(NETWORK)
+    subnet = conn.network.find_subnet(SUBNET)
+    router = conn.network.find_router(ROUTER)
+
     # delete the server list
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
         if(s != None):
             print(f'Deleting server {server}...')
             conn.compute.delete_server(s)
+            conn.compute.wait_for_server(s)
+        else:
+            print(f'Server {server} does not exists')
+            break
 
-        #conn.compute.wait_for_server(s)
-
-    # remove network, router and subnet interface
-    print(f'clearing network interface...')
-    network = conn.network.find_network(NETWORK)
-    subnet = conn.network.find_subnet(SUBNET)
-    router = conn.network.find_router(ROUTER)
     if (router != None):
+        print(f'clearing router interface...')
         conn.network.remove_interface_from_router(router, subnet.id)
         conn.network.delete_router(router)
 
     if(subnet != None):
+        print(f'clearing subnet interface...')
         conn.network.delete_subnet(subnet)
 
     if(network != None):
+        print(f'clearing network interface...')
         conn.network.delete_network(network)
-
-    print(f'Operation completed.')
-
+        print(f'Operation completed.')
 
 
 def status():
