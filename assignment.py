@@ -151,9 +151,11 @@ def destroy():
         conn.network.remove_interface_from_router(router, subnet.id)
         conn.network.delete_router(router, ignore_missing=True)
 
-    if network:
+    if subnet:
         print(f'clearing subnet interface...')
         conn.network.delete_subnet(subnet, ignore_missing=True)
+
+    if network:
         print(f'clearing network interface...')
         conn.network.delete_network(network, ignore_missing=True)
         print(f'Operation completed.')
