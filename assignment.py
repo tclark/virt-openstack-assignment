@@ -103,7 +103,7 @@ def run():
         elif(conn.compute.get_server(conn.compute.find_server(server).id).status == 'ACTIVE'):
             print(f'The Server {server} already running.')
         else:
-            print(f'running {server} ...')
+            print(f'System is running {server} ...')
             conn.compute.start_server(s)
             conn.compute.wait_for_server(s)
             print('Operation completed.')
@@ -121,7 +121,7 @@ def stop():
                 f'The Server {server} does not exists, skip...')
         else:
             s = conn.compute.get_server(s.id)
-            print('Shutting off {}... '.format(server), end='\n')
+            print('Stoping {}... '.format(server), end='\n')
             try:
                 conn.compute.stop_server(s.id)
             except openstack.exceptions.ConflictException:
