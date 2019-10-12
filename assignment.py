@@ -91,7 +91,7 @@ def run():
         # 1. create server when server does not exists 2. check the server whehter running 3. start server
         if(s == None):
             print(
-                f'The Server {server} has not created. Please run this script with [create] parameter first.')
+                f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
         elif(conn.compute.get_server(conn.compute.find_server(server).id).status == 'ACTIVE'):
             print(f'The Server {server} already running.')
         else:
@@ -106,22 +106,16 @@ def stop():
     if they are running.
     '''
 
-    # display current status before stoping
-    print(f'Current status:')
-    status()
-
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
         if not s:
             print(
-                f'The Server {server} has not created. Please run this script with [create] parameter first.')
+                f'The Server {server} does not exists, skip...')
         else:
             s = conn.compute.get_server(s.id)
             print('Shutting off {}... '.format(server), end='')
             try:
                 conn.compute.stop_server(s.id)
-            # Openstack will raise a ConflictExpection here
-            # is the server is already shut down.
             except openstack.exceptions.ConflictException:
                 print('Already shut down')
             else:
@@ -171,7 +165,7 @@ def status():
         s = conn.compute.find_server(server)
         if(s == None):
             print(
-                f'The Server {server} has not created yet. Please run this script with [create] parameter first.')
+                f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
             break
         else:
             ss = conn.compute.get_server(s.id)
