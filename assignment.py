@@ -86,10 +86,6 @@ def run():
     if they are not already running.
     '''
 
-    # display current status before running
-    print(f'Current status:')
-    status()
-
     for server in SERVERLIST:
         s = conn.compute.find_server(server)  # get server
         # 1. create server when server does not exists 2. check the server whehter running 3. start server
@@ -149,20 +145,19 @@ def destroy():
         else:
             print(f'Server {server} does not exists')
             break
+        
 
-    if (router != None):
+    if network:
+        print(f'clearing subnet interface...')
+        conn.network.delete_subnet(subnet, ignore_missing=True)
+        print(f'clearing network interface...')
+        conn.network.delete_network(network, ignore_missing=True)
+        print(f'Operation completed.')
+
+    if router:
         print(f'clearing router interface...')
         conn.network.remove_interface_from_router(router, subnet.id)
-        conn.network.delete_router(router)
-
-    if(subnet != None):
-        print(f'clearing subnet interface...')
-        conn.network.delete_subnet(subnet)
-
-    if(network != None):
-        print(f'clearing network interface...')
-        conn.network.delete_network(network)
-        print(f'Operation completed.')
+        conn.network.delete_router(router, ignore_missing=True)
 
 
 def status():
@@ -171,7 +166,7 @@ def status():
     '''
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
-        if(s == None):
+        if s:
             print(
                 f'The Server {server} has not created yet. Please run this script with [create] parameter first.')
             break
