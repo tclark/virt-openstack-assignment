@@ -92,13 +92,11 @@ def run():
 
     for server in SERVERLIST:
         s = conn.compute.find_server(server)  # get server
-        ss = conn.compute.get_server(
-            conn.compute.find_server(server).id)  # get status
         # 1. create server when server does not exists 2. check the server whehter running 3. start server
         if(s == None):
             print(
                 f'The Server {server} has not created. Please run this script with [create] parameter first.')
-        elif(ss.status == 'ACTIVE'):
+        elif(conn.compute.get_server(conn.compute.find_server(server).id).status == 'ACTIVE'):
             print(f'The Server {server} already running.')
         else:
             print(f'running {server} ...')
@@ -118,7 +116,7 @@ def stop():
 
     for server in SERVERLIST:
         s = conn.compute.find_server(server)  # find server
-        ss = conn.compute.get_server(s.id)  # get server
+        #ss = conn.compute.get_server(s.id)  # get server
         if(server == None):
             print(
                 f'The Server {server} has not created. Please run this script with [create] parameter first.')
