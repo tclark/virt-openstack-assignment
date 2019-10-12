@@ -136,13 +136,12 @@ def destroy():
     # delete the server list
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
-        if(s != None):
+        if s:
             print(f'Deleting server {server}...')
             conn.compute.delete_server(s)
             conn.compute.wait_for_server(s)
         else:
             print(f'Server {server} does not exists')
-            break
 
     if network:
         print(f'clearing subnet interface...')
