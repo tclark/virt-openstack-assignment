@@ -33,6 +33,7 @@ def extract_floating_ips(server):
         ips.extend(addrs)
     return ips
 
+
 def create():
     ''' Create a set of Openstack resources '''
 
@@ -146,12 +147,13 @@ def destroy():
         s = conn.compute.find_server(server)
         if s:
             print(f'Deleting server {server}...')
-            if s == "wangh21-web":
-                # Finds floating ip address of web server and deletes it first.
-                conn.network.delete_ip(conn.network.find_ip(
-                    conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
+            # if s == "wangh21-web":
+            #     # Finds floating ip address of web server and deletes it first.
+            #     conn.network.delete_ip(conn.network.find_ip(
+            #         conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
 
-            conn.compute.delete_server(s, ignore_missing=True)
+            conn.compute.delete_server(
+                s, wait=True, timeout=180, delete_ips=True, delete_ip_retry=3)
         else:
             print(f'Server {server} does not exists. skip...')
 
@@ -166,8 +168,6 @@ def destroy():
         print(f'clearing network interface...')
         conn.network.delete_network(network, ignore_missing=True)
         print(f'Operation completed.')
-
-
 
 
 def status():
