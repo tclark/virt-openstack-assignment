@@ -22,11 +22,11 @@ KEYPAIRNAME = 'hua'
 conn = openstack.connect(cloud_name='openstack')
 
 
-def extract_floating_ips(server):
-    """Return a list of floating IPs of a Server as strings."""
+def getIPs(s):
+    '''Return a list of floating IPs of a Server'''
     ips = []
-    for net in server.addresses:
-        for a in server.addresses[net]:
+    for net in s.addresses:
+        for a in s.addresses[net]:
             addrs = []
             if a['OS-EXT-IPS:type'] == 'floating':
                 addrs.append(a['addr'])
@@ -145,20 +145,21 @@ def destroy():
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
         if s:
-            # print(f'Deleting server {server}...')
-            # conn.compute.delete_server(s)
             s = conn.compute.get_server(s)
-            ips = extract_floating_ips(s)
-            # Release any floating IP addresses.
+
+            # get ip address list
+            ips = getIPs(s)
+
+            # remove floating IP addresses.
             for ip in ips:
                 addr = conn.network.find_ip(ip)
-                print('Releasing floating IP', ip)
+                print('Removing floating IP', ip)
                 conn.network.delete_ip(addr)
-            print('Deleting', server)
+            print(f'System is deleting {server}')
+
+            # Delete server as well as delete any ports
             conn.compute.delete_server(s, ignore_missing=True)
-            # Waiting for the servers to actually be deleted ensures
-            # their ports are also deleted so we can delete the network.
-            print('Waiting for {} to be deleted'.format(server))
+            print(f'System is deleting {server}')
             while s:
                 s = conn.compute.find_server(server)
         else:
