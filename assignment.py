@@ -21,6 +21,18 @@ KEYPAIRNAME = 'hua'
 # connect to openstack
 conn = openstack.connect(cloud_name='openstack')
 
+
+def extract_floating_ips(server):
+    """Return a list of floating IPs of a Server as strings."""
+    ips = []
+    for net in server.addresses:
+        for a in server.addresses[net]:
+            addrs = []
+            if a['OS-EXT-IPS:type'] == 'floating':
+                addrs.append(a['addr'])
+        ips.extend(addrs)
+    return ips
+
 def create():
     ''' Create a set of Openstack resources '''
 
@@ -133,11 +145,25 @@ def destroy():
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
         if s:
-            print(f'Deleting server {server}...')
-            conn.compute.delete_server(s)
+            # print(f'Deleting server {server}...')
+            # conn.compute.delete_server(s)
+            s = conn.compute.get_server(s)
+            ips = extract_floating_ips(s)
+            # Release any floating IP addresses.
+            for ip in ips:
+                addr = conn.network.find_ip(ip)
+                print('Releasing floating IP', ip)
+                conn.network.delete_ip(addr)
+            print('Deleting', server)
+            conn.compute.delete_server(s, ignore_missing=True)
+            # Waiting for the servers to actually be deleted ensures
+            # their ports are also deleted so we can delete the network.
+            print('Waiting for {} to be deleted'.format(server))
+            while s:
+                s = conn.compute.find_server(server)
         else:
             print(f'Server {server} does not exists. skip...')
-            
+
     if router:
         print(f'clearing router interface...')
         conn.network.remove_interface_from_router(router, subnet.id)
