@@ -143,11 +143,6 @@ def destroy():
         else:
             print(f'Server {server} does not exists. skip...')
 
-    if router:
-        print(f'clearing router interface...')
-        conn.network.remove_interface_from_router(router, subnet.id)
-        conn.network.delete_router(router)
-
     if network:
         print(f'clearing subnet interface...')
         conn.network.delete_subnet(subnet)
@@ -155,6 +150,10 @@ def destroy():
         conn.network.delete_network(network)
         print(f'Operation completed.')
 
+    if router:
+        print(f'clearing router interface...')
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router)
 
 def status():
     ''' Print a status report on the OpenStack
