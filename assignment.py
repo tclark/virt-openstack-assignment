@@ -189,12 +189,20 @@ def status():
         s = conn.compute.find_server(server)
         if s:
             ss = conn.compute.get_server(s.id)
-            ip = ss.addresses[NETWORK][0]['addr']
-            if ip is None:
-                ip= 'N/A'
+            ips=[]
+            for net in ss.addresses:
+                for a in ss.addresses[net]:
+                    temp=a['addr']
+                    if temp is None:
+                        temp='N/A'
+                    ips.append(temp)
             print(f'Server: {server}')
             print(f'Status: {ss.status}')
-            print(f'Ip Address: {ip}')
+            print(f'IP Address:')
+            if ips:
+                for i in ips:
+                    print(i)
+            print(' ')
         else:
             print(
                 f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
