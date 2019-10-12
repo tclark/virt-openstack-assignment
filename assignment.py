@@ -189,7 +189,12 @@ def status():
         s = conn.compute.find_server(server)
         if s:
             ss = conn.compute.get_server(s.id)
-            print(f'{server}: {ss.status}')
+            ip = server.addresses[NETWORK][0]['addr']
+            if ip is None:
+                ip= 'N/A'
+            print(f'Server: {server}')
+            print(f'Status: {ss.status}')
+            print(f'Ip Address: {ip}')
         else:
             print(
                 f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
