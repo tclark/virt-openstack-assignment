@@ -150,7 +150,7 @@ def destroy():
             print(f'Deleting server {server}...')
             conn.compute.delete_server(s)
 
-        conn.compute.wait_for_server(s)
+        #conn.compute.wait_for_server(s)
 
     # remove network, router and subnet interface
     print(f'clearing network interface...')
