@@ -136,7 +136,7 @@ def destroy():
         if s:
             print(f'Deleting server {server}...')
             conn.network.delete_ip(conn.network.find_ip(
-                web_server["addresses"][NETWORK][1]["addr"]))
+                conn.compute.get_server('wangh21-web')["addresses"][NETWORK][1]["addr"]))
             conn.compute.delete_server(s)
         else:
             print(f'Server {server} does not exists. skip...')
