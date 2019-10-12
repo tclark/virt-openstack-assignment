@@ -202,7 +202,7 @@ def status():
             if ips:
                 for i in ips:
                     print(i, end=' ')
-            print(' ')
+            print('\n')
         else:
             print(
                 f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
