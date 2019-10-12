@@ -111,16 +111,22 @@ def stop():
     status()
 
     for server in SERVERLIST:
-        s = conn.compute.find_server(server)  # find server
-        # ss = conn.compute.get_server(s.id)  # get server
-        if server:
-            print(f'Stopping server {server}...')
-            conn.compute.stop_server(s)
-            conn.compute.wait_for_server(s)
-            print('Operation completed.')
-        else:
+        s = conn.compute.find_server(server)
+        if not s:
             print(
                 f'The Server {server} has not created. Please run this script with [create] parameter first.')
+        else:
+            s = conn.compute.get_server(s.id)
+            print('Shutting off {}... '.format(server), end='')
+            try:
+                conn.compute.stop_server(s.id)
+            # Openstack will raise a ConflictExpection here
+            # is the server is already shut down.
+            except openstack.exceptions.ConflictException:
+                print('Already shut down')
+            else:
+                conn.compute.wait_for_server(s, status='SHUTOFF')
+                print(f'Operation completed.')
 
 
 def destroy():
