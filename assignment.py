@@ -139,6 +139,8 @@ def destroy():
                 # Finds floating ip address of web server and deletes it first.
                 conn.network.delete_ip(conn.network.find_ip(
                     conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
+                conn.network.delete_ip(conn.network.find_ip(
+                    conn.compute.get_server(server).addresses[NETWORK][0]["addr"]))
             conn.compute.delete_server(s)
         else:
             print(f'Server {server} does not exists. skip...')
