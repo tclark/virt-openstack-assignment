@@ -25,7 +25,7 @@ conn = openstack.connect(cloud_name='openstack')
 def create():
     ''' Create a set of Openstack resources '''
 
-    print('Preparing to create resources, please wait...')
+    print('Preparing resources, please wait...')
     # declare variable ref from:  https://github.com/openstack/openstacksdk/blob/master/examples/compute/create.py
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
@@ -68,7 +68,6 @@ def create():
 
         # add floating ip for wangh21-web server
         if(server == SERVERLIST[0]):
-            print(f'The system is looking for floating ip address...')
             conn.compute.wait_for_server(s)
             # if the web server only already have one ip
             # add floating ip
