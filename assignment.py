@@ -64,22 +64,31 @@ def create():
       print(ROUTER, 'exists in the network')
                                                                               
     # Find server
-    print("Searching Server...")    
+  
+    print("Searching Server...") 
+    '''
     if webserver = conn.compute.find_server(WEB-SERVER)
-    if webser Exist:
+    if webser is None:
         print(WEB-SERVER ,'exist')
     else
+    # create servers
        server = conn.compute.create_server(
         name=SERVER_NAME, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name)
-      
+    '''                                                                   
+    for servername in ALLSERVERSLIST:
+      ser = conn.compute.find_server(servername)
+    if ser is None:
+         print('Creating server', eachserver)
+           ser = conn.compute.create_server() 
+      else
+      pint(eachserver, 'exists in the server')
+                                                                             
+                                                                              
     print("Waiting for the server to come up")
     server = conn.compute.wait_for_server(server)
       
-      
-             
-    
-# create server
+
 
     
 
