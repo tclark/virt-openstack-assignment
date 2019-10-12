@@ -34,16 +34,16 @@ def create():
 
     # check network subnet router whether exists to avoid recreate
     network = conn.network.find_network(NETWORK)
-    if(network == None):
+    if(network is None):
         network = conn.network.create_network(name=NETWORK)
 
     subnet = conn.network.find_subnet(SUBNET)
-    if(subnet == None):
+    if(subnet is None):
         subnet = conn.network.create_subnet(
             name=SUBNET, network_id=network.id, ip_version=4, cidr=CIDR)
 
     router = conn.network.find_router(ROUTER)
-    if (router == None):
+    if (router is None):
         router = conn.network.create_router(name=ROUTER,
                                             external_gateway_info={'network_id': public_net.id})
         router = conn.network.add_interface_to_router(router, subnet.id)
@@ -137,7 +137,11 @@ def destroy():
             conn.compute.delete_server(s)
         else:
             print(f'Server {server} does not exists. skip...')
-
+            
+    if router:
+        print(f'clearing router interface...')
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router, ignore_missing=True)
 
     if subnet:
         print(f'clearing subnet interface...')
@@ -148,10 +152,7 @@ def destroy():
         conn.network.delete_network(network, ignore_missing=True)
         print(f'Operation completed.')
 
-    if router:
-        print(f'clearing router interface...')
-        conn.network.remove_interface_from_router(router, subnet.id)
-        conn.network.delete_router(router, ignore_missing=True)
+
 
 
 def status():
