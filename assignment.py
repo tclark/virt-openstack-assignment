@@ -112,17 +112,15 @@ def stop():
 
     for server in SERVERLIST:
         s = conn.compute.find_server(server)  # find server
-        #ss = conn.compute.get_server(s.id)  # get server
-        if(server == None):
-            print(
-                f'The Server {server} has not created. Please run this script with [create] parameter first.')
-            break
-        else:
+        # ss = conn.compute.get_server(s.id)  # get server
+        if server:
             print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
             conn.compute.wait_for_server(s)
             print('Operation completed.')
-    
+        else:
+            print(
+                f'The Server {server} has not created. Please run this script with [create] parameter first.')
 
 
 def destroy():
@@ -145,7 +143,6 @@ def destroy():
         else:
             print(f'Server {server} does not exists')
             break
-        
 
     if network:
         print(f'clearing subnet interface...')
