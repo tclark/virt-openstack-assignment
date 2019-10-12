@@ -23,7 +23,8 @@ conn = openstack.connect(cloud_name='openstack')
 
 
 def getIPs(s):
-    '''Return a list of floating IPs of a Server'''
+    '''Return a list of floating IPs'''
+    '''Accept a parameter which is server name'''
     ips = []
     for net in s.addresses:
         for a in s.addresses[net]:
@@ -32,6 +33,7 @@ def getIPs(s):
                 addrs.append(a['addr'])
         ips.extend(addrs)
     return ips
+
 
 def create():
     ''' Create a set of Openstack resources '''
@@ -67,7 +69,7 @@ def create():
             print(
                 f'The server {server} has already exists. Terminating operation...')
         else:
-            print(f"Create Server {server}...")
+            print(f"Creating Server {server}...")
             s = conn.compute.create_server(
                 name=server,
                 image_id=image.id,
@@ -153,33 +155,30 @@ def destroy():
             # remove floating IP addresses.
             for ip in ips:
                 addr = conn.network.find_ip(ip)
-                print('Removing floating IP', ip)
+                print(f'Removing floating IP {ip}')
                 conn.network.delete_ip(addr)
             print(f'System is deleting {server}')
 
             # Delete server as well as delete any ports
             conn.compute.delete_server(s, ignore_missing=True)
-            print(f'System is deleting {server}')
             while s:
                 s = conn.compute.find_server(server)
         else:
             print(f'Server {server} does not exists. skip...')
 
     if router:
-        print(f'clearing router interface...')
+        print(f'Clearing router interface...')
         conn.network.remove_interface_from_router(router, subnet.id)
         conn.network.delete_router(router, ignore_missing=True)
 
     if subnet:
-        print(f'clearing subnet interface...')
+        print(f'Clearing subnet interface...')
         conn.network.delete_subnet(subnet, ignore_missing=True)
 
     if network:
-        print(f'clearing network interface...')
+        print(f'Clearing network interface...')
         conn.network.delete_network(network, ignore_missing=True)
         print(f'Operation completed.')
-
-
 
 
 def status():
@@ -190,7 +189,7 @@ def status():
         s = conn.compute.find_server(server)
         if s:
             ss = conn.compute.get_server(s.id)
-            print(f'The status of server {server} is: {ss.status}')
+            print(f'{server}: {ss.status}')
         else:
             print(
                 f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
