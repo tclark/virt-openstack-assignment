@@ -79,7 +79,6 @@ def create():
                 conn.compute.add_floating_ip_to_server(s, floating_ip)
                 print(f'Floating IP {floating_ip} added to {server}.')
     print('Operation completed.')
-    pass
 
 
 def run():
@@ -124,8 +123,8 @@ def stop():
         ss = conn.compute.get_server(s.id)  # get server
         if(server == None):
             print(
-                f'The Server {server} has not created. Please run this script with create parameter first.')
-            break
+                f'The Server {server} has not created. Please run this script with [create] parameter first.')
+            return
         else:
             print(f'Stopping server {server}...')
             conn.compute.stop_server(s)
