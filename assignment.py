@@ -163,11 +163,11 @@ def status():
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
         if s:
-            print(
-                f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
-        else:
             ss = conn.compute.get_server(s.id)
             print(f'The status of server {server} is: {ss.status}')
+        else:
+            print(
+                f'The Server {server} does not exists. You may create by running this script with [create] paramter first')
 
 
 ### You should not modify anything below this line ###
