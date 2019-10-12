@@ -80,17 +80,14 @@ def create():
       ser = conn.compute.find_server(servername)
     if ser is None:
          print('Creating server', eachserver)
-           ser = conn.compute.create_server() 
+           ser = conn.compute.create_server(
+           name=servername, image_id=image.id, flavor_id=flavor.id, networks=[{"uuid": conn.compute.network.find_network(NETWORK).id}], key_name=keypair.name ,security_groups=[{"sgid":security_group.id)}])
       else
       pint(eachserver, 'exists in the server')
-                                                                             
-                                                                              
+                                                                                                                                                          
     print("Waiting for the server to come up")
     server = conn.compute.wait_for_server(server)
       
-
-
-    
 
 def run():
     ''' Start  a set of Openstack virtual machines
@@ -131,7 +128,28 @@ def destroy():
    else
       print(ROUETR + "does not exist")
                                          
-                                           
+  credentials = get_nova_credentials_v2()
+nova_client = Client(**credentials)
+
+'''
+example
+https://docs.openstack.org/ocata/user-guide/sdk-compute-apis.html#create-server-api-v2
+servers_list = nova_client.servers.list()
+server_del = "vm1"
+server_exists = False
+
+for s in servers_list:
+    if s.name == server_del:
+        print("This server %s exists" % server_del)
+        server_exists = True
+        break
+if not server_exists:
+    print("server %s does not exist" % server_del)
+else:
+    print("deleting server..........")
+    nova_client.servers.delete(s)
+    print("server %s deleted" % server_del)     
+'''                    
 
 def status():
     ''' Print a status report on the OpenStack
