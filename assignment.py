@@ -18,6 +18,7 @@ SERVERLIST = ['wangh21-web', 'wangh21-app', 'wangh21-db']
 SECURITYGROUP = 'assignment2'
 KEYPAIRNAME = 'hua'
 
+# connect to openstack
 conn = openstack.connect(cloud_name='openstack')
 
 
@@ -71,6 +72,7 @@ def create():
             print(f'The system is looking for floating ip address...')
             conn.compute.wait_for_server(s)
             # if the web server only already have one ip
+            # add floating ip
             if(len(conn.compute.get_server(s.id)['addresses']['wangh21-net']) < 2):
                 floating_ip = conn.network.create_ip(
                     floating_network_id=public_net.id).floating_ip_address
@@ -84,6 +86,8 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+
+    # display current status before running
     print(f'Current status:')
     status()
 
@@ -104,13 +108,14 @@ def run():
         conn.compute.wait_for_server(s)
 
     print('Operation completed.')
-    pass
 
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+
+    # display current status before stoping
     print(f'Current status:')
     status()
 
@@ -128,7 +133,6 @@ def stop():
         conn.compute.wait_for_server(s)
 
     print('Operation completed.')
-    pass
 
 
 def destroy():
@@ -145,7 +149,7 @@ def destroy():
 
         conn.compute.wait_for_server(s)
 
-    # remove network router interface
+    # remove network, router and subnet interface
     print(f'clearing network interface...')
     network = conn.network.find_network(NETWORK)
     subnet = conn.network.find_subnet(SUBNET)
@@ -162,7 +166,6 @@ def destroy():
 
     print(f'Operation completed.')
 
-    pass
 
 
 def status():
@@ -178,7 +181,6 @@ def status():
         else:
             ss = conn.compute.get_server(s.id)
             print(f'The status of server {server} is: {ss.status}')
-    pass
 
 
 ### You should not modify anything below this line ###
