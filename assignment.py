@@ -10,18 +10,20 @@ for server in conn.compute.servers():
 
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOR = 'c1.c1r1'
+SECURITYGROUP = "assignment2"
+KEYPAIR = 'chauw2key'
+PUBLICNET = 'public-net'
+
+cidr = '192.168.50.0/24'
 NETWORK = 'chauw2-net'
 SUBNET = 'chauw2-subnet'
-ROUTER = 'chauw2-router'
-KEYPAIR = 'chauw2key'
-SECURITYGROUP = "assignment2"
-PUBLICNET = 'public-net'
+ROUTER = 'chauw2-rtr'
 ALLSERVERSLIST = ['chauw2-web','chauw2-app','chauw2-db']
 #WEB-SERVER = 'chauw2-web'
 #APP-SERVER = 'chauw2-app'
 #DB-SERVER = 'chauw2-db'
 
-cidr = '192.168.10.0/24'
+
 # Create openstack rescore
 #https://docs.openstack.org/openstacksdk/latest/user/guides/compute.html
 image = conn.compute.find_image(IMAGE)
@@ -37,19 +39,30 @@ def create():
     # Find network
     print("Searching Network...")
     network = conn.network.find_network(NETWORK)
-    if network Exisit:
-        print(NETWORK, 'exists')
-    else
-        print('Creating', NETWORK)
+    if network is None:
+         print('Creating', NETWORK)
         network = conn.network.create_network(name=NETWORK)
+    else
+        print(NETWORK, 'exists in the network')
          
     #Find Subnet
     subnet = conn.network.find_subnet(SUBNET)
-    if subnet exist:
-        print("Searching Subnet...")
+      print("Searching Subnet...")
+    if subnet is None:
+       print('Creating', SUBNET)
+      subnet = conn.network.create_subnet(name=SUBNET,network_id=network.id,cidr,ip_verison=4)
     else
-        subnet = conn.netowork.create_subnet(name=SUBNET,network_id =network.id,cidr,ip_verison=4)
+        print(SUBNET, 'exists in the network')
     
+   #Find Router
+   #https://docs.catalystcloud.nz/first-instance/shade-sdk.html
+   router = conn.network.find_router(ROUTER)
+   if router is None
+      print('Creating' , ROUTER)
+      router = conn.network.create_router(name=ROUTER, external_gateway_info={ext_gateway_net_id=external_net.id)
+   else
+      print(ROUTER, 'exists in the network')
+                                                                              
     # Find server
     print("Searching Server...")    
     if webserver = conn.compute.find_server(WEB-SERVER)
@@ -59,8 +72,11 @@ def create():
        server = conn.compute.create_server(
         name=SERVER_NAME, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name)
-
+      
+    print("Waiting for the server to come up")
     server = conn.compute.wait_for_server(server)
+      
+      
              
     
 # create server
@@ -88,7 +104,18 @@ def destroy():
   # NETWORK = 'chauw2-net'
   # SUBNET = 'chauw2-subnet'
    #ROUTER = 'chauw2-router'
-                                             
+               
+      
+   print("Delete Network:")
+    example_network = conn.network.find_network(
+        'openstacksdk-example-project-network')
+
+    for example_subnet in example_network.subnet_ids:
+        conn.network.delete_subnet(example_subnet, ignore_missing=False)
+    conn.network.delete_network(example_network, ignore_missing=False) 
+   
+   
+      
    drouter = conn.network.find_router(ROUTER)
    if router is not None:
       conn.network.delete_router
