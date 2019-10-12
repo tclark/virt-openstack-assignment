@@ -21,19 +21,6 @@ KEYPAIRNAME = 'hua'
 # connect to openstack
 conn = openstack.connect(cloud_name='openstack')
 
-
-def extract_floating_ips(server):
-    """Return a list of floating IPs of a Server as strings."""
-    ips = []
-    for net in server.addresses:
-        for a in server.addresses[net]:
-            addrs = []
-            if a['OS-EXT-IPS:type'] == 'floating':
-                addrs.append(a['addr'])
-        ips.extend(addrs)
-    return ips
-
-
 def create():
     ''' Create a set of Openstack resources '''
 
@@ -147,11 +134,10 @@ def destroy():
         s = conn.compute.find_server(server)
         if s:
             print(f'Deleting server {server}...')
-            #if s == "wangh21-web":
+            if s == "wangh21-web":
                 # Finds floating ip address of web server and deletes it first.
-
-                # conn.network.delete_ip(conn.network.find_ip(
-                #     conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
+                conn.network.delete_ip(conn.network.find_ip(
+                    conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
 
             conn.compute.delete_server(s)
         else:
