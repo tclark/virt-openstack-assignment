@@ -134,31 +134,25 @@ def destroy():
         s = conn.compute.find_server(server)
         if s:
             print(f'Deleting server {server}...')
-            if s == "wangh21-web":
-                # Finds floating ip address of web server and deletes it first.
-                conn.network.delete_ip(conn.network.find_ip(
-                    conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
-
             conn.compute.delete_server(s)
         else:
             print(f'Server {server} does not exists. skip...')
 
-    while conn.network.find_available_ip():
-        conn.network.delete_ip(conn.network.find_available_ip())
 
-    if router:
-        print(f'clearing router interface...')
-        conn.network.remove_interface_from_router(router, subnet.id)
-        conn.network.delete_router(router, ignore_missing=True)
+    if subnet:
+        print(f'clearing subnet interface...')
+        conn.network.delete_subnet(subnet, ignore_missing=True)
 
     if network:
         print(f'clearing network interface...')
         conn.network.delete_network(network, ignore_missing=True)
         print(f'Operation completed.')
 
-    if subnet:
-        print(f'clearing subnet interface...')
-        conn.network.delete_subnet(subnet, ignore_missing=True)
+    if router:
+        print(f'clearing router interface...')
+        conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router, ignore_missing=True)
+
 
 def status():
     ''' Print a status report on the OpenStack
