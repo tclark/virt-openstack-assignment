@@ -189,7 +189,7 @@ def status():
         s = conn.compute.find_server(server)
         if s:
             ss = conn.compute.get_server(s.id)
-            ip = server.addresses[NETWORK][0]['addr']
+            ip = ss.addresses[NETWORK][0]['addr']
             if ip is None:
                 ip= 'N/A'
             print(f'Server: {server}')
