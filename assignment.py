@@ -142,6 +142,24 @@ def destroy():
     subnet = conn.network.find_subnet(SUBNET)
     router = conn.network.find_router(ROUTER)
 
+    # delete the server list
+    for server in SERVERLIST:
+        s = conn.compute.find_server(server)
+        if s:
+            print(f'Deleting server {server}...')
+            #if s == "wangh21-web":
+                # Finds floating ip address of web server and deletes it first.
+
+                # conn.network.delete_ip(conn.network.find_ip(
+                #     conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
+
+            conn.compute.delete_server(s)
+        else:
+            print(f'Server {server} does not exists. skip...')
+
+    while conn.network.find_available_ip():
+        conn.network.delete_ip(conn.network.find_available_ip())
+
     if router:
         print(f'clearing router interface...')
         conn.network.remove_interface_from_router(router, subnet.id)
@@ -154,22 +172,6 @@ def destroy():
         conn.network.delete_network(network, ignore_missing=True)
         print(f'Operation completed.')
 
-    # delete the server list
-    for server in SERVERLIST:
-        s = conn.compute.find_server(server)
-        if s:
-            print(f'Deleting server {server}...')
-            if s == "wangh21-web":
-                # Finds floating ip address of web server and deletes it first.
-                print(conn.network.find_ip(
-                    conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
-                    
-                conn.network.delete_ip(conn.network.find_ip(
-                    conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
-
-            conn.compute.delete_server(s)
-        else:
-            print(f'Server {server} does not exists. skip...')
 
 
 def status():
