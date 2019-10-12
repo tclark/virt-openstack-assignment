@@ -135,7 +135,7 @@ def destroy():
         s = conn.compute.find_server(server)
         if s:
             print(f'Deleting server {server}...')
-            if server == "wangh21-web":
+            if s == "wangh21-web":
                 # Finds floating ip address of web server and deletes it first.
                 conn.network.delete_ip(conn.network.find_ip(
                     conn.compute.get_server(server).addresses[NETWORK][1]["addr"]))
