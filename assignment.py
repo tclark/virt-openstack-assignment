@@ -140,6 +140,10 @@ def destroy():
     produced by the create action
     '''
 
+    # display current status before destroy
+    print(f'Current status:')
+    status()
+
     # delete the server list
     for server in SERVERLIST:
         s = conn.compute.find_server(server)
