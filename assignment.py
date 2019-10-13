@@ -86,10 +86,7 @@ def create():
         print("db server borked")
 
     
-        #add floating ips to servers
-        webserver_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
-        conn.compute.add_floating_ip_to_server(webserver, address=webserver_ip.floating_ip_address)
-        print ("ip attatched to web server:", webserver_ip.floating_ip_address)
+        
 
         if not n_appserver:
             appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
