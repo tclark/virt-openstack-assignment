@@ -45,10 +45,12 @@ def create_subnet(subnet_name, network_name):
                 ip_version=SUBNET_IP_VERSION,
                 cidr=SUBNET_CIDR,
             )
-        except:
+        except Exception as e:
             print(f"CREATING SUBNET {subnet_name} FAILED")
             if network_name is None:
                 print(f"\tCOULD NOT FIND NETWORK {network_name}")
+            else:
+                print(e)
     else:
         already_exists("Subnet", subnet_name)
 
@@ -67,12 +69,15 @@ def create_router(router_name, subnet_name, network_name):
                 name=router_name, external_gateway_info={"network_id": network.id}
             )
             router = connection.network.add_interface_to_router(router, subnet.id)
-        except:
+        except Exception as e:
             print(f"CREATING ROUTER {router_name} FAILED")
             if network is None:
                 print(f"\tCOULD NOT FIND NETWORK {network_name}")
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
+            if network is None and subnet is None:
+                print(e)
+
     else:
         already_exists("Router", router_name)
 
@@ -99,7 +104,7 @@ def create_server(server_name, network_name):
                 security_groups=[{"sgid": security_group.id}],
             )
             connection.compute.wait_for_server(server)
-        except:
+        except Exception as e:
             print(f"CREATING SERVER {server_name} FAILED")
             if security_group is None:
                 print(f"\tCOULD NOT FIND SECURITY GROUP {SECURITY_GROUP}")
@@ -111,6 +116,14 @@ def create_server(server_name, network_name):
                 print(f"\tCOULD NOT FIND FLAVOUR {FLAVOUR}")
             if image is None:
                 print(f"\tCOULD NOT FIND IMAGE {IMAGE}")
+            if (
+                image is None
+                and flavour is None
+                and keypair is None
+                and network is None
+                and security_group is None
+            ):
+                print(e)
     else:
         already_exists("Server", server_name)
 
@@ -152,12 +165,14 @@ def add_floating_ip_to_server(server_name, network_name):
             print(f'\tAdded address {floating_ip["floating_ip_address"]}')
         else:
             already_exists("Floating IP address for", server_name)
-    except:
+    except Exception as e:
         print(f"\nADDING FLOATING IP TO {server_name} FAILED")
         if server is None:
             print(f"\tCOULD NOT FIND SERVER {server_name}")
         if network is None:
             print(f"\tCOULD NOT FIND NETWORK {network_name}")
+        if server is None and network is None:
+            print(e)
 
 
 def destroy_server(server_name):
@@ -193,10 +208,12 @@ def destroy_router(router_name, subnet_name):
             connection.network.remove_interface_from_router(router, subnet.id)
             print(f"\tFinishing up deleting router {router_name}...")
             connection.network.delete_router(router, ignore_missing=True)
-        except:
+        except Exception as e:
             print(f"DELETING ROUTER {router_name} FAILED")
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
+            else:
+                print(e)
     else:
         doesnt_exist("Router", router_name)
 
@@ -208,8 +225,9 @@ def destroy_subnet(subnet_name):
         print(f"\nDeleting subnet {subnet_name}...")
         try:
             connection.network.delete_subnet(subnet, ignore_missing=True)
-        except:
+        except Exception as e:
             print(f"DELETING SUBNET {subnet_name} FAILED")
+            print(e)
             print(
                 f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
@@ -228,8 +246,9 @@ def destroy_network(network_name):
             connection.network.delete(subnet)
         try:
             connection.network.delete_network(network, ignore_missing=True)
-        except:
+        except Exception as e:
             print(f"DELETING NETWORK {network_name} FAILED")
+            print(e)
             print(
                 f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
