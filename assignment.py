@@ -73,18 +73,63 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    for server in SERVER_NAMES:
+        check_server = conn.compute.find_server(server)
+        if check_server:
+            check_server = conn.compute.get_server(check_server)
+            if check_server.status == "ACTIVE":
+                print("Server [" + server + "] is active")
+            elif check_server.status == "SHUTOFF":
+                print("Server [" + server + "] is not active")
+                print("Starting server [" + server + "] ")
+                conn.compute.start_server(check_server)
+                print("Server [" + server + "] is active")
+        else:
+            print("Server [" + server + "] does not exist")
+
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    for server in SERVER_NAMES:
+        check_server = conn.compute.find_server(server)
+        if check_server:
+            check_server = conn.compute.get_server(check_server)
+            if check_server.status == "ACTIVE":
+                print("Server [" + server + "] is active")
+                print("Starting server [" + server + "]......")
+                conn.compute.stop_server(check_server)
+                print("Server [" + server + "] is not active")
+            elif check_server.status == "SHUTOFF":
+                print("Server [" + server + "] is already shut down")
+        else:
+            print("Server [" + server + "] does not exist")
     pass
 
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+     #Delete the network
+    network = conn.network.find_network("hayeska2-net")
+    delNetwork = conn.network.delete_network(network)
+    print("Network has been destroyed")
+    
+    #Delete the router
+    router = conn.network.find_router("hayeska2-router")
+    delRouter = conn.network.delete_router(router)
+    print("Router has been destroyed")
+
+    #Delete the servers
+    for server in SERVER_NAMES:
+        server = conn.compute.find_server(name_or_id=server)
+        if server is not None:
+            conn.compute.delete_server(server)
+            print(server.name + " Destroyed.")
+        else:
+            print(server + " does not exist.")
     pass
 
 def status():
