@@ -66,7 +66,7 @@ def create():
     web_server = conn.compute.find_server(WEB_SERVER)
     if web_server is None:
         print("Creating Web Server...")
-        web_server = conn.compte.create_server(
+        web_server = conn.compute.create_server(
             name=WEB_SERVER, 
               image_id=image.id, 
               flavor_id=flavor.id, 
@@ -74,8 +74,7 @@ def create():
               key_name=keypair.name ,
               security_groups=[{"sgid":security_group.id}]
         )
-        print("Waiting for WEB server to come up")
-        web_server = conn.compute.wait_for_server(web_server)
+        
     else:
         print(WEB_SERVER,"WEB server already exist in the network")
         print("------------------------------")
@@ -85,7 +84,7 @@ def create():
     web_server = conn.compute.find_server(DB_SERVER)
     if web_server is None:
         print("Creating DB Server...")
-        db_server = conn.compte.create_server(
+        db_server = conn.compute.create_server(
             name=DB_SERVER, 
               image_id=image.id, 
               flavor_id=flavor.id, 
@@ -104,7 +103,7 @@ def create():
     app_server = conn.compute.find_server(APP_SERVER)
     if app_server is None:
         print("Creating APP Server...")
-        app_server = conn.compte.create_server(
+        app_server = conn.compute.create_server(
             name=APP_SERVER, 
               image_id=image.id, 
               flavor_id=flavor.id, 
@@ -112,8 +111,7 @@ def create():
               key_name=keypair.name ,
               security_groups=[{"sgid":security_group.id}]
         )
-        print("Waiting for App server to come up")
-        app_server = conn.compute.wait_for_server(app_server)
+        
     else:
         print(APP_SERVER,"APP server already exist in the network")
         print("------------------------------")
@@ -122,21 +120,55 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    '''
     web_server = conn.compute.find_server(WEB_SERVER)
+    if web_server is None:
+        print("Cannot find server")
+    else:
+        web_server = conn.compute.get_server(WEB_SERVER)
+        web_server = conn.compute.start_server(WEB_SERVER)
+        print("Waiting for WEB server to come up")
+        web_server = conn.compute.wait_for_server(web_server)
+
     app_server = conn.compute.find_server(APP_SERVER)
+
     db_server = conn.compute.find_server(DB_SERVER)
+    '''
+    for servername in ALLSERVERSLIST:
+        server = conn.compute.find_server(servername)
+        if server is None:
+             print("Cannot find server")
+        else:
+            server = conn.compute.get_server(server)
+        if server.status != 'ACTIVE':
+            conn.compute.start_server(server)
+            server = conn.compute.wait_for_server(server)
+    
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    app_server = conn.compute.find_server(APP_SERVER)
+    db_server = conn.compute.find_server(DB_SERVER)
+
+    for servername in ALLSERVERSLIST:
+        server = conn.find_server(servername) #find each server from the list
+        if server.status == 'ACTIVE':
+            conn.compute.stop_server(server)
+        else:
+            print("server already stop")
+
     pass
 
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    network = conn.network.find_network(NETWORK)
+    router = conn.network.find_router(ROUTER)
+    
     pass
 
 def status():
