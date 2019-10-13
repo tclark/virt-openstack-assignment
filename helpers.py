@@ -1,4 +1,3 @@
-import openstack
 from connection import connection
 
 KEYPAIR = "sysadminapp"
