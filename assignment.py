@@ -1,20 +1,17 @@
 import argparse
 import openstack
 
-
+#connect to OpenStack
 conn = openstack.connect(cloud_name='openstack', region_name ='nz-hlz-1a')
 
-for server in conn.compute.servers():
-   # pprint(server)
     
-
+#Variables
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOR = 'c1.c1r1'
 SECURITYGROUP = "assignment2"
 KEYPAIR = 'chauw2key'
 PUBLICNET = 'public-net'
-
-cidr = '192.168.50.0/24'
+CIDR = '192.168.50.0/24'
 NETWORK = 'chauw2-net'
 SUBNET = 'chauw2-subnet'
 ROUTER = 'chauw2-rtr'
@@ -28,10 +25,10 @@ ALLSERVERSLIST = ['chauw2-web','chauw2-app','chauw2-db']
 #https://docs.openstack.org/openstacksdk/latest/user/guides/compute.html
 image = conn.compute.find_image(IMAGE)
 flavor  = conn.compute.find_flavor(FLAVOR)
-public_network = conn.compute.find_network(PUBLICNET)
 keypair = conn.compute.find_keypair(KEYPAIR)
 security_group = conn.network.find_security_group(SECURITYGROUP)
 publicnet = conn.network.find_network(PUBLICNET)
+
 
 
 def create():
@@ -50,21 +47,23 @@ def create():
       print("Searching Subnet...")
     if subnet is None:
        print('Creating', SUBNET)
-      subnet = conn.network.create_subnet(name=SUBNET,network_id=network.id,cidr,ip_verison=4)
+      subnet = conn.network.create_subnet(name=SUBNET,network_id=network.id,cidr=CIDR,ip_verison=4)
     else
         print(SUBNET, 'exists in the network')
     
    #Find Router
    #https://docs.catalystcloud.nz/first-instance/shade-sdk.html
    router = conn.network.find_router(ROUTER)
-   if router is None
+   if router is None:
       print('Creating' , ROUTER)
-      router = conn.network.create_router(name=ROUTER, external_gateway_info={ext_gateway_net_id=external_net.id)
+      router = conn.network.create_router(name=ROUTER, external_gateway_info={ext_gateway_net_id=external_net.id})
    else
       print(ROUTER, 'exists in the network')
-                                                                              
+   
+    #Create floation IP
+      floating_ip = conn.network.create_ip(floating_network_id=publicnet.id)
+      
     # Find server
-  
     print("Searching Server...") 
     '''
     if webserver = conn.compute.find_server(WEB-SERVER)
@@ -81,7 +80,12 @@ def create():
     if ser is None:
          print('Creating server', eachserver)
            ser = conn.compute.create_server(
-           name=servername, image_id=image.id, flavor_id=flavor.id, networks=[{"uuid": conn.compute.network.find_network(NETWORK).id}], key_name=keypair.name ,security_groups=[{"sgid":security_group.id)}])
+           name=servername, 
+              image_id=image.id, 
+              flavor_id=flavor.id, 
+              networks=[{"uuid": conn.compute.network.find_network(NETWORK).id}], 
+              key_name=keypair.name ,
+              security_groups=[{"sgid":security_group.id)}])
       else
       pint(eachserver, 'exists in the server')
                                                                                                                                                           
@@ -93,6 +97,7 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+      
     pass
 
 def stop():
