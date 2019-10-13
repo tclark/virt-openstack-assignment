@@ -190,6 +190,8 @@ def destroy_network(network_name):
     network = connection.network.find_network(network_name)
     if network != None:
         print(f"\nDeleting network {network_name}...")
+        for subnet in network.subnet_ids:
+            connection.network.delete(subnet)
         connection.network.delete_network(network, ignore_missing=True)
     else:
         print(f"\nNetwork {network_name} does not exist - skipping")
