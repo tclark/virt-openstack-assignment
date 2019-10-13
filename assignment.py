@@ -15,8 +15,6 @@ IP_VERSION='4'
 CIDR='192.168.50.0/24'
 
 
-#NETWORK_NAME = 'zetksm1_network'
-
 def create():
     ''' Create a set of Openstack resources '''
     '''Creating the network'''
@@ -194,7 +192,7 @@ def status():
         else:
             server = conn.compute.get_server(server)
             status = server.status
-            print(serv + " status is " + status)#.format(server.status))
+            print(serv + " status is " + status)
     pass
 
 
