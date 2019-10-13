@@ -248,7 +248,7 @@ def destroy_subnet(subnet_name):
             print(
                 (
                     f"\nThis may be due to servers with ips in its range still "
-                    "building if they were just deleted you may want to run the"
+                    "building if they were just deleted you may want to run the "
                     "destroy command again"
                 )
             )
