@@ -1,4 +1,3 @@
-#import argparse
 import openstack
 
 # After we have done our imports we need to instantiate a connection.
@@ -103,7 +102,7 @@ def create(conn):
         floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
         conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
 
-    print(floating_ip.floating_ip_address)
+    print(" > Floating IP '" + floating_ip.floating_ip_address + "' added.")
 
 # CREATE: Now lets call our function
 create(conn)
