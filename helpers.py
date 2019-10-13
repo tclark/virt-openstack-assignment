@@ -207,6 +207,6 @@ def get_server_status(server_name):
     else:
         server = connection.compute.get_server(server.id)
         print(f'\nGetting status of server {server_name}...')
-        print(server.status)
-        print('IP adresses: ',extract_all_ips(server))
+        print('Status:', server.status)
+        print('IP adresses:', extract_all_ips(server))
 
