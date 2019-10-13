@@ -1,8 +1,12 @@
+#Flinn Tiddy
+#Openstack Assignment
+#October 2019
+
 import argparse
 import openstack
 import time #Importing in-built time module used in my destroy function.
 
-conn = openstack.connect(cloud_name='openstack', region_name='nz_wlg_2') #Creating my connection object to openstack, included my region.
+conn = openstack.connect(cloud_name='openstack') #Creating my connection object to openstack
 
 #Defining all my constants.
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
@@ -70,10 +74,8 @@ def create():
                 conn.compute.wait_for_server(server) #Waiting for server to finish creation.
                 conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address) #Adding floating ip.
                 print(f'Floating Address: {floating_ip.floating_ip_address} Added To {servername}')
-
-
         else:
-            print(f'Server {server} Already Exists')
+            print(f'Server {servername} Already Exists')
 
 def run():
     ''' Start  a set of Openstack virtual machines
@@ -106,6 +108,7 @@ def stop():
             if c_server.status == 'ACTIVE': # If status of server is Active/Live enter if.
                print(f'{servername} is Active, Shuting Down..')
                conn.compute.stop_server(c_server) # Shutdown server.
+               time.sleep(5)
             elif c_server.status == 'SHUTOFF':
                  print(f'{servername} Shutdown Already..') # Log out status to user.
         else:
@@ -123,6 +126,14 @@ def destroy():
     for servers in SERVER_LIST: # Running for loop through sernames array.
         server = conn.compute.find_server(servers) 
         if server is not None: # If current server is not null.
+            if servers == 'tiddfc1-web':
+                c_server = conn.compute.get_server(server)
+                c_server_floating_ip = c_server['addresses'][NETWORK][1]['addr'] # Search addresses information and find floating address at position #1.
+                print('Disassociating IP From Web Server')
+                conn.compute.remove_floating_ip_from_server(c_server, c_server_floating_ip) # Remove ip from server, servername first parameter, ip too remove second parameter.
+                del_ip = conn.network.find_ip(c_server_floating_ip) # New variable search and match floating ip into variable.
+                print('Releasing IP Back To Pool')
+                conn.network.delete_ip(del_ip) # Delete IP/Release IP.
             conn.compute.delete_server(server) # Delete current server in loop.
             print(f'{servers} Being Deleted, This Can Take A Few Seconds..') # Log action to user.
             time.sleep(3) # Used a .sleep here due to script moving to fast not allowing server to delete in time. conn.wait_for_server did not work. Used sleep instead.
@@ -161,7 +172,7 @@ def status():
             c_server = conn.compute.get_server(c_server) # Get current server information.
             for info in c_server.addresses[NETWORK]: # c.server.addresses returns a large array of information on the server, run loop to filter through for each server.
                 print(f'Server: {servername} // Status: {c_server.status} // Address: ' + info['addr'] + ' // Type: ' + info['OS-EXT-IPS:type']) # Pull out addr which is address and OS-EXT-IPS:type which is the type of IP.
-                ## print(f'{c_server.addresses}')
+               ##  print(f'{c_server.addresses}')
         else:
             print(f'Error: {servername} Does Not Exist..') # Log non existing error out to user.
 
