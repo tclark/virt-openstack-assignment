@@ -228,7 +228,8 @@ def destroy_router(router_name, subnet_name):
                 print(
                     (
                         f"\nThis is sometimes due to the router still being "
-                        "created if that is the case running the destroy command again should resolve"
+                        "created if that is the case running the destroy "
+                        "command again should resolve"
                     )
                 )
     else:
