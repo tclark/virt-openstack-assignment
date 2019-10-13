@@ -1,6 +1,6 @@
 #!/usr/bin/env
 import argparse
-import utilities
+import utility
 
 NETWORK_NAME = 'chril2-net'
 SUBNET_NAME = 'chril2-subnet'
@@ -19,22 +19,22 @@ SUBNET_CIDR = '192.168.50.0/24'
 
 def create():
     ''' Create a set of Openstack resources '''
-    utilities.create_network(NETWORK_NAME)
-    utilities.create_subnet(
+    utility.create_network(NETWORK_NAME)
+    utility.create_subnet(
         SUBNET_NAME, NETWORK_NAME,
         SUBNET_IP_VERSION, SUBNET_CIDR)
-    utilities.find_public_network(PUBLIC_NETWORK_NAME)
-    utilities.create_router(
+    utility.find_public_network(PUBLIC_NETWORK_NAME)
+    utility.create_router(
         ROUTER_NAME, SUBNET_NAME,
         PUBLIC_NETWORK_NAME)
 
     for server_name in SERVER_NAMES:
-        utilities.create_server(
+        utility.create_server(
             server_name, IMAGE_NAME, FLAVOUR_NAME,
             KEYPAIR_NAME, SECURITY_GROUP_NAME, NETWORK_NAME)
-        if server_name == 'chril2-web':
-            utilities.add_floating_ip_to_server(
-                server_name, PUBLIC_NETWORK_NAME)
+
+    utility.add_floating_ip_to_server(
+        'chril2-web', PUBLIC_NETWORK_NAME)
 
 
 def run():
@@ -42,7 +42,7 @@ def run():
     if they are not already running.
     '''
     for server_name in SERVER_NAMES:
-        utilities.start_server(server_name)
+        utility.start_server(server_name)
 
 
 def stop():
@@ -50,7 +50,7 @@ def stop():
     if they are running.
     '''
     for server_name in SERVER_NAMES:
-        utilities.stop_server(server_name)
+        utility.stop_server(server_name)
 
 
 def destroy():
@@ -58,11 +58,11 @@ def destroy():
     produced by the create action
     '''
     for server_name in SERVER_NAMES:
-        utilities.destroy_server(server_name)
+        utility.destroy_server(server_name)
 
-    utilities.destroy_router(ROUTER_NAME, SUBNET_NAME)
-    utilities.destroy_subnet(SUBNET_NAME)
-    utilities.destroy_network(NETWORK_NAME)
+    utility.destroy_router(ROUTER_NAME, SUBNET_NAME)
+    utility.destroy_subnet(SUBNET_NAME)
+    utility.destroy_network(NETWORK_NAME)
 
 
 def status():
@@ -70,7 +70,7 @@ def status():
     virtual machines created by the create action.
     '''
     for server_name in SERVER_NAMES:
-        utilities.get_server_status(server_name)
+        utility.get_server_status(server_name)
 
 
 # You should not modify anything below this line
