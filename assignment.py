@@ -1,3 +1,22 @@
+import argparse
+import openstack
+import time
+
+#create connection object
+conn = openstack.connect(cloud_name="openstack")
+
+#create variables for conn object to find easily
+IMAGE = "ubuntu-minimal-16.04-x86_64"
+FLAVOUR = "c1.c1r1"
+NETWORK = "mccacj3-net"
+SECURITY_GROUP = "assignment2"
+SUBNET = "mccacj3-subnet"
+ROUTER = "mccacj3-rtr"
+KEYPAIR = "Chas"
+SERVER_LIST = ['mccacj3-web', 'mccacj3-app', 'mccacj3-db']
+SUBNET_IP = '192.168.50.0/24'
+
+# variables finding results of above variables
 network = conn.network.find_network(NETWORK)
 router = conn.network.find_router(ROUTER, ignore_missing=True)
 subnet = conn.network.find_subnet(SUBNET)
@@ -7,39 +26,43 @@ keypair = conn.compute.find_keypair(KEYPAIR)
 
 
 def create():
-
+    #If the network doesnt exist, create it. If not report it exists
     if network is None:
         Network = conn.network.create_network(name=NETWORK, admin_state_up=True)
         print('Created Network: '+ NETWORK)
     else:
         print('Network: ' + NETWORK +' already Exists')
-
+        
+    #If the network doesnt exist, create it. If not report it exists
     if subnet is None:
         Subnet = conn.network.create_subnet(name=SUBNET, network_id=Network.id, ip_version='4', cidr=SUBNET_IP)
         print('Created Subnet: '+ SUBNET)
     else:
         print('Subnet: '+SUBNET+' already Exists')
-
+        
+    #If the router doesnt exist, create it. If not report it exist
     router = conn.network.find_router(ROUTER, ignore_missing=True)
     if router is None:
         print('Attempting to create router '+ROUTER)
         router = conn.network.create_router(name=ROUTER, external_gateway_info={"network_id" : conn.network.find_network("public-net").id})
         Subnet = conn.network.find_subnet(SUBNET)
         conn.network.add_interface_to_router(router,Subnet.id)
-
-
-        print("Router "+ ROUTER +" has been created successfully.")
-
+        print("Router "+ ROUTER +" was created successfully.")
+    else:
+        print("Router "+ROUTER+" already exists.")
+    #Create servers, looping through the names in my SERVER_LIST array
     for name in SERVER_LIST:
         server = conn.compute.find_server(name)
         print("Trying to create server "+name)
         if server is None:
+            #Must wait for each server to create to avoid errors
             new_server = conn.compute.wait_for_server(conn.compute.create_server(name=name,
                 image_id=image.id,
                 flavor_id=flavour.id,
                 networks=[{"uuid": Network.id}],
                 key_name=keypair.name,
                 security_groups=[{"name": SECURITY_GROUP}]))
+            #Assigning a floating IP to the Web server
             if name == "mccacj3-web":
                 floating_ip = conn.network.create_ip(floating_network_id=conn.network.find_network('public-net').id)
                 conn.compute.add_floating_ip_to_server(new_server, address=floating_ip.floating_ip_address)
@@ -52,6 +75,7 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    #Loop through the server names and start them if not already active, report if already active
     for name in SERVER_LIST:
         print("Starting server "+name)
         server = conn.compute.find_server(name)
@@ -70,6 +94,7 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    #Loop through the server names and stop them, report if not active
     for name in SERVER_LIST:
         print("Stopping server "+name)
         server = conn.compute.find_server(name)
@@ -86,13 +111,15 @@ def destroy():
     ''' Tear down the set of Openstack resources
     produced by the create action
     '''
+    #Loop through server array and delete 
     for name in SERVER_LIST:
         server = conn.compute.find_server(name)
         if server is not None:
             print("Attempting to destroy server "+name)
             conn.compute.delete_server(server)
             print("Destroyed server "+name)
-
+            
+     #Find router , remove all subnets and delete router
         router = conn.network.find_router(ROUTER, ignore_missing=True)
     if router is not None:
         print("Attempting to destroy router "+ROUTER)
@@ -101,17 +128,20 @@ def destroy():
         conn.network.remove_interface_from_router(router, subnet.id)
         conn.network.delete_router(conn.network.find_router(ROUTER, ignore_missing=True))
         print("Router "+ROUTER+" was destroyed.")
-        test = conn.network.find_network(NETWORK, ignore_missing=True)
-    if test is not None:
+        
+      #Find network,sleep to ensure servers have been destroyed to avoid errors 
+        network = conn.network.find_network(NETWORK, ignore_missing=True)  
+    if network is not None:
         print("Attempting to destroy network "+NETWORK)
         time.sleep(5)
-        conn.network.delete_network(test)
+        conn.network.delete_network(network)
         print("Network "+NETWORK+" was destroyed")
 
 def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    #Loop through server array, find and display attributes for each server
     for name in SERVER_LIST:
          server = conn.compute.find_server(name)
          if server is None:
