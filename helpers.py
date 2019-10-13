@@ -134,7 +134,12 @@ def destroy_server(server_name):
     server = connection.compute.find_server(server_name)
     if(server != None):
         print(f"\nDeleting server {server_name}...")
-        connection.compute.delete_server(server)
+        ips = extract_floating_ips(server_name)
+        for ip in ips:
+            addr = conn.network.find_ip(ip)
+            print(f'\nReleasing floating IP {ip}...')
+            connection.network.delete_ip(addr)
+        connection.compute.delete_server(server,ignore_missing=True)
     else:
         print(f"\nServer {server_name} does not exist - skipping")
 
@@ -143,11 +148,11 @@ def destroy_router(router_name, subnet_name):
     subnet = connection.network.find_subnet(subnet_name)
     router = connection.network.find_router(router_name)
     if (router != None):
-        print("Deleting interface for {subnet}...")
+        print(f"\nDeleting interface for {subnet}...")
         connection.network.remove_interface_from_router(router, subnet.id)
         print(f"\nDeleting router {router_name}...")
         connection.network.remove_interface_from_router(router, subnet.id)
-        connection.network.delete_router(router)
+        connection.network.delete_router(router,ignore_missing=True)
     else:
         print(f"\nRouter {router_name} does not exist - skipping")
 
@@ -156,7 +161,7 @@ def destroy_subnet(subnet_name):
     subnet = connection.network.find_subnet(subnet_name)
     if(subnet != None):
         print(f"\nDeleting subnet {subnet_name}...")
-        connection.network.delete_subnet(subnet)
+        connection.network.delete_subnet(subnet,ignore_missing=True)
     else:
         print(f"\nSubnet {subnet_name} does not exist - skipping")
 
@@ -165,7 +170,7 @@ def destroy_network(network_name):
     network = connection.network.find_network(network_name)
     if(network != None):
         print(f"\nDeleting network {network_name}...")
-        connection.network.delete_network(network)
+        connection.network.delete_network(network,ignore_missing=True)
     else:
         print(f"\nNetwork {network_name} does not exist - skipping")
 
