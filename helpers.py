@@ -205,7 +205,7 @@ def destroy_router(router_name, subnet_name):
         print(f"\nDeleting router {router_name}...")
         try:
             print(f"\tDeleting interface for {subnet_name}...")
-            connection.network.remove_interface_from_router(router, subnet.id)
+            router = connection.network.remove_interface_from_router(router, subnet.id)
             print(f"\tFinishing up deleting router {router_name}...")
             connection.network.delete_router(router, ignore_missing=True)
         except Exception as e:
