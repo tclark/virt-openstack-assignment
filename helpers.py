@@ -200,6 +200,5 @@ def get_server_status(server_name):
         server = connection.compute.get_server(server.id)
         print(f'\nGetting status of server {server_name}...')
         print(server.status)
-        addresses = server['addresses']['chril2-net']
-        for address in addresses:
-            print(address['addr'])
+        print(extract_floating_ips(server))
+
