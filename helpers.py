@@ -24,42 +24,44 @@ def create_network(network_name):
 def create_subnet(subnet_name, network_name):
     """Creates a subnet withing the given network"""
     network = connection.network.find_network(network_name)
-    if network_name is None:
-        print(f"\nCOULD NOT FIND NETWORK {network_name}")
-
     subnet = connection.network.find_subnet(subnet_name)
+
     if subnet is None:
         # Move all of these prints to first line.
         print(f"\nCreating subnet {subnet_name}...")
-        subnet = connection.network.create_subnet(
-            name=subnet_name,
-            network_id=network.id,
-            ip_version=SUBNET_IP_VERSION,
-            cidr=SUBNET_CIDR,
-        )
+        try:
+            subnet = connection.network.create_subnet(
+                name=subnet_name,
+                network_id=network.id,
+                ip_version=SUBNET_IP_VERSION,
+                cidr=SUBNET_CIDR,
+            )
+        except:
+            if network_name is None:
+                print(f"\nCOULD NOT FIND NETWORK {network_name}")
     else:
         print(f"\nSubnet {subnet_name} already exists - skipping")
 
 
-# FIXME: this needs broken up
 def create_router(router_name, subnet_name, network_name):
     """Creates a router and adds it to a given network and adds an interface to
     the router for a given subnet"""
     subnet = connection.network.find_subnet(subnet_name)
-    if subnet is None:
-        print(f"\nCOULD NOT FIND SUBNET {subnet_name}")
-
     network = connection.network.find_network(network_name)
-    if network is None:
-        print(f"\nCOULD NOT FIND NETWORK {network_name}")
-
     router = connection.network.find_router(router_name)
+
     if router is None:
         print(f"\nCreating router {router_name}...")
-        router = connection.network.create_router(
-            name=router_name, external_gateway_info={"network_id": network.id}
-        )
-        router = connection.network.add_interface_to_router(router, subnet.id)
+        try:
+            router = connection.network.create_router(
+                name=router_name, external_gateway_info={"network_id": network.id}
+            )
+            router = connection.network.add_interface_to_router(router, subnet.id)
+        except:
+            if network is None:
+                print(f"\nCOULD NOT FIND NETWORK {network_name}")
+            if subnet is None:
+                print(f"\nCOULD NOT FIND SUBNET {subnet_name}")
     else:
         print(f"\nRouter {router_name} already exists - skipping")
 
@@ -67,37 +69,35 @@ def create_router(router_name, subnet_name, network_name):
 def create_server(server_name, network_name):
     """Creates a server and adds it to a given network"""
     image = connection.compute.find_image(IMAGE)
-    if image is None:
-        print(f"\nCOULD NOT FIND IMAGE {IMAGE}")
-
     flavour = connection.compute.find_flavor(FLAVOUR)
-    if flavour is None:
-        print(f"\nCOULD NOT FIND FLAVOUR {FLAVOUR}")
-
     keypair = connection.compute.find_keypair(KEYPAIR)
-    if keypair is None:
-        print(f"\nCOULD NOT FIND KEYPAIR {KEYPAIR}")
-
     security_group = connection.network.find_security_group(SECURITY_GROUP)
-    if security_group is None:
-        print(f"\nCOULD NOT FIND SECURITY GROUP {SECURITY_GROUP}")
-
     network = connection.network.find_network(network_name)
-    if network is None:
-        print(f"\nCOULD NOT FIND NETWORK {network_name}")
-
     server = connection.compute.find_server(server_name)
+
     if server is None:
         print(f"\nCreating server {server_name}...")
-        server = connection.compute.create_server(
-            name=server_name,
-            image_id=image.id,
-            # Should all have IP addresses?
-            flavor_id=flavour.id,
-            networks=[{"uuid": network.id}],
-            key_name=keypair.name,
-            security_groups=[{"sgid": security_group.id}],
-        )
+        try:
+            server = connection.compute.create_server(
+                name=server_name,
+                image_id=image.id,
+                # Should all have IP addresses?
+                flavor_id=flavour.id,
+                networks=[{"uuid": network.id}],
+                key_name=keypair.name,
+                security_groups=[{"sgid": security_group.id}],
+            )
+        except:
+            if security_group is None:
+                print(f"\nCOULD NOT FIND SECURITY GROUP {SECURITY_GROUP}")
+            if network is None:
+                print(f"\nCOULD NOT FIND NETWORK {network_name}")
+            if keypair is None:
+                print(f"\nCOULD NOT FIND KEYPAIR {KEYPAIR}")
+            if flavour is None:
+                print(f"\nCOULD NOT FIND FLAVOUR {FLAVOUR}")
+            if image is None:
+                print(f"\nCOULD NOT FIND IMAGE {IMAGE}")
     else:
         print(f"\nServer {server_name} already exists - skipping")
 
@@ -128,20 +128,21 @@ def extract_all_ips(server):
 def add_floating_ip_to_server(server_name, network_name):
     """Adds a floating ip to the given server from the given network"""
     network = connection.network.find_network(network_name)
-    if network is None:
-        print(f"\nCOULD NOT FIND NETWORK {network_name}")
-
     server = connection.compute.find_server(server_name)
-    if server is None:
-        print(f"\nCOULD NOT FIND SERVER {server_name}")
 
-    connection.compute.wait_for_server(server)
     if not extract_floating_ips(server):
         floating_ip = connection.network.create_ip(floating_network_id=network.id)
-        connection.compute.add_floating_ip_to_server(
-            server, floating_ip.floating_ip_address
-        )
-        print(f'\tAdded floating address {floating_ip["floating_ip_address"]}')
+        print(f"\tAdding floating address...")
+        try:
+            connection.compute.add_floating_ip_to_server(
+                server, floating_ip.floating_ip_address
+            )
+            print(f'\tAdded floating address {floating_ip["floating_ip_address"]}')
+        except:
+            if server is None:
+                print(f"\nCOULD NOT FIND SERVER {server_name}")
+            if network is None:
+                print(f"\nCOULD NOT FIND NETWORK {network_name}")
     else:
         print(f"\t{server_name} already has a floating IP address")
 
