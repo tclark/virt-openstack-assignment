@@ -1,20 +1,3 @@
-import argparse
-import openstack
-import time
-
-conn = openstack.connect(cloud_name="openstack")
-
-IMAGE = "ubuntu-minimal-16.04-x86_64"
-FLAVOUR = "c1.c1r1"
-NETWORK = "mccacj3-net"
-SECURITY_GROUP = "assignment2"
-SUBNET = "mccacj3-subnet"
-ROUTER = "mccacj3-rtr"
-KEYPAIR = "Chas"
-SERVER_LIST = ['mccacj3-web', 'mccacj3-app', 'mccacj3-db']
-SUBNET_IP = '192.168.50.0/24'
-
-
 network = conn.network.find_network(NETWORK)
 router = conn.network.find_router(ROUTER, ignore_missing=True)
 subnet = conn.network.find_subnet(SUBNET)
@@ -69,7 +52,7 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
-     for name in SERVER_LIST:
+    for name in SERVER_LIST:
         print("Starting server "+name)
         server = conn.compute.find_server(name)
         if server is None:
@@ -118,11 +101,11 @@ def destroy():
         conn.network.remove_interface_from_router(router, subnet.id)
         conn.network.delete_router(conn.network.find_router(ROUTER, ignore_missing=True))
         print("Router "+ROUTER+" was destroyed.")
-        network = conn.network.find_network(NETWORK, ignore_missing=True)
-    if network is not None:
+        test = conn.network.find_network(NETWORK, ignore_missing=True)
+    if test is not None:
         print("Attempting to destroy network "+NETWORK)
-        time.sleep(3)
-        conn.network.delete_network(network)
+        time.sleep(5)
+        conn.network.delete_network(test)
         print("Network "+NETWORK+" was destroyed")
 
 def status():
@@ -165,6 +148,7 @@ if __name__ == '__main__':
 
     action = operations.get(operation, lambda: print('{}: no such operation'.format(operation)))
     action()
+
    
                                                                                                                                                                                                                                                          16,0-1        Top
 
