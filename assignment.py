@@ -62,7 +62,13 @@ def create():
         webserver = conn.compute.wait_for_server(webserver)
         conn.compute.add_security_group_to_server(webserver, n_security_group)
         print("shinrl1-web up")
-        #floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
+        floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
+
+        if n_webserver:
+            conn.compute.wait_for_server(n_webserver)
+            conn.compute.add_floating_ip_to_server(n_webserver, floating_ip.floating_ip_address)
+            print("yeet")
+           #floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
         #conn.compute.add_floating_ip_to_server(webserver, floating_ip.floating_ip_address)
         
     else:
@@ -85,7 +91,6 @@ def create():
         print("db server borked")
 
     
-    add_floating_ip_to_server(n_webserver, n_public_net)
         
 
     if not n_appserver:
