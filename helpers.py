@@ -15,6 +15,7 @@ def already_exists(thing, type_of_thing):
     """Prints a message saying type_of_thing already exists"""
     print(f"\n{type_of_thing} {thing} already exists - skipping")
 
+
 def doesnt_exist(thing, type_of_thing):
     """Prints a message saying type_of_thing already exists"""
     print(f"\n{type_of_thing} {thing} does not exist - skipping")
@@ -179,7 +180,7 @@ def destroy_server(server_name):
             if connection.compute.find_server(server) is None:
                 break
     else:
-        doesnt_exist("Server",server_name)
+        doesnt_exist("Server", server_name)
 
 
 def destroy_router(router_name, subnet_name):
@@ -198,7 +199,7 @@ def destroy_router(router_name, subnet_name):
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
     else:
-        doesnt_exist("Router",router_name)
+        doesnt_exist("Router", router_name)
 
 
 def destroy_subnet(subnet_name):
@@ -215,7 +216,7 @@ def destroy_subnet(subnet_name):
             )
 
     else:
-        doesnt_exist("Subnet",subnet_name)
+        doesnt_exist("Subnet", subnet_name)
 
 
 def destroy_network(network_name):
@@ -234,7 +235,7 @@ def destroy_network(network_name):
                 f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
     else:
-        doesnt_exist("Network",network_name)
+        doesnt_exist("Network", network_name)
 
 
 def start_server(server_name):
