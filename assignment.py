@@ -1,7 +1,12 @@
 import argparse
 import openstack
 
-
+print("SHINRL1 openstacksdk assignment: \n Please use the following operation to run script")
+print("create : Creates app, db and web server + required components")
+print("stop : Powers down servers")
+print("run: Restarts servers")
+print("status: Displays the name, IP address and status of each server")
+print("destroy: Tears resources down - currently needs be run twice")
 #create connection to openstack
 conn = openstack.connect(cloudname='openstack')
 def create():
@@ -38,11 +43,11 @@ def create():
     if not n_subnet: 
         subnet = conn.network.create_subnet(name='shinrl1-subnet',
                 network_id=network.id, ip_version='4', cidr=CIDR)
-        print("Subnet Created")
+        print("Subnet Created ^_^")
     else:
         print("Subnet borked") 
+
     #create router
-    
     if not n_router:
     
         args = {'name': "shinrl1-rtr", 'external_gateway_info': {'network_id': n_public_net.id}}
@@ -68,11 +73,10 @@ def create():
         if n_webserver:
             conn.compute.wait_for_server(n_webserver)
             conn.compute.add_floating_ip_to_server(n_webserver, floating_ip.floating_ip_address)
-            print("yeet")
+            print("float ip successfully attached to server")
         else:
             print("floating ip borked")
-           #floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
-        #conn.compute.add_floating_ip_to_server(webserver, floating_ip.floating_ip_address)
+        
 
     if not n_appserver:
         appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
@@ -180,6 +184,7 @@ def destroy():
     else:
         print("dbserver deletion error")
     if n_router:
+        conn.network.remove_interface_from_router(n_router.id, n_subnet.id)
         conn.network.delete_router(n_router)
         print("rtr deleted")
     else:
