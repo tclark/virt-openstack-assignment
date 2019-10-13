@@ -236,6 +236,7 @@ def stop_server(server_name):
         if server.status != "SHUTOFF":
             print(f"\nStopping server {server_name}...")
             connection.compute.stop_server(server)
+            connection.compute.wait_for_server(server, status='SHUTOFF')
         else:
             print(f"\nServer {server_name} has already been stopped - skipping")
 
