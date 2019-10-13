@@ -1,10 +1,19 @@
+#Auther: Ke Wang 10.14.2019
+#
+#https://docs.openstack.org/mitaka/user-guide/sdk.html
+#https://www.youtube.com/watch?v=mMuxy39X5Kw
+#
+#The assignment follow the above introduction
+
+
 import argparse
 import openstack
 import time
 
-#  Connect to the openstack service
 conn = openstack.connect(cloud_name='openstack')
-#  Creating resource name variables
+
+#Defining constants.
+
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOR = 'c1.c1r1'
 KEYPAIR = 'wangk6-key'
@@ -19,6 +28,8 @@ DB_SERVER = 'wangk6-db'
 
 def create():
     ''' Create a set of Openstack resources '''
+    print('running create fucntion')
+
     #  Get resources from the cloud
     image = conn.compute.find_image(IMAGE)
     flavor = conn.compute.find_flavor(FLAVOR)
@@ -29,15 +40,15 @@ def create():
     #  Create Network
     network = conn.network.find_network(NETWORK)
     if not network:
-        print("Creating network:", str(NETWORK))
+        print("Creating network...:", str(NETWORK))
         network = conn.network.create_network(name=NETWORK)
     else:
-        print("Network already exists:", str(network.name))
+        print("Fail beacuse network already exists ! :", str(network.name))
     
     #  Create Subnet
     subnet = conn.network.find_subnet(SUBNET)
     if not subnet:
-        print("Creating subnet:", str(SUBNET))
+        print("Creating subnet...:", str(SUBNET))
         subnet = conn.network.create_subnet(
             name=SUBNET,
             network_id=network.id,
@@ -45,19 +56,19 @@ def create():
             cidr='192.168.50.0/24',
             gateway_ip='192.168.50.1')
     else:
-        print("Subnet already exists:", str(subnet.name))
+        print("Fail beacuse subnet already exists ! :", str(subnet.name))
     
     #  Create Router
     router = conn.network.find_router(ROUTER)
     if not router:
-        print("Creating router:", str(ROUTER))
+        print("Creating router...:", str(ROUTER))
         router = conn.network.create_router(
             name=ROUTER,
             external_gateway_info={"network_id": public_net.id})
         print("Adding interface to router...")
         conn.network.add_interface_to_router(router, subnet.id)
     else:
-        print("Router already exists:", str(router.name))
+        print("Fail beacuse router already exists ! :", str(router.name))
     
     #  Create floating IP address
     print("Creating floating IP...")
@@ -67,7 +78,7 @@ def create():
     print("------------------------------")
     web_server = conn.compute.find_server(WEB_SERVER)
     if not web_server:
-        print("Creating server:", str(WEB_SERVER))
+        print("Creating server...:", str(WEB_SERVER))
         web_server = conn.compute.create_server(
             name=WEB_SERVER,
             image_id=image.id,
@@ -80,12 +91,12 @@ def create():
         print("Assigning floating IP to web server...")
         conn.compute.add_floating_ip_to_server(web_server, floating_ip.floating_ip_address)
     else:
-        print("Server already exists:", str(web_server.name))
+        print("Fail beacuse server already exists ! :", str(web_server.name))
     
     print("------------------------------")
     app_server = conn.compute.find_server(APP_SERVER)
     if not app_server:
-        print("Creating server:", str(APP_SERVER))
+        print("Creating server...:", str(APP_SERVER))
         app_server = conn.compute.create_server(
             name=APP_SERVER,
             image_id=image.id,
@@ -95,12 +106,12 @@ def create():
             security_groups=[security_group])
         app_server = conn.compute.wait_for_server(app_server)
     else:
-        print("Server already exists:", str(app_server.name))
+        print("Fail beacuse server already exists ! :", str(app_server.name))
     
     print("------------------------------")
     db_server = conn.compute.find_server(DB_SERVER)
     if not db_server:
-        print("Creating server:", str(DB_SERVER))
+        print("Creating server...:", str(DB_SERVER))
         db_server = conn.compute.create_server(
             name=DB_SERVER,
             image_id=image.id,
@@ -110,7 +121,7 @@ def create():
             security_groups=[security_group])
         db_server = conn.compute.wait_for_server(db_server)
     else:
-        print("Server already exists:", str(db_server.name))
+        print("Fail beacuse server already exists ! :", str(db_server.name))
     print("------------------------------")
     pass
 
@@ -118,6 +129,8 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    print('running run fucntion...')
+
     web_server = conn.compute.find_server(WEB_SERVER)
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
@@ -131,9 +144,9 @@ def run():
             print("Starting web server...")
             conn.compute.start_server(web_server.id)
         else:
-            print("Server already running:", str(web_server.name))
+            print("Fail beacuse server already running:", str(web_server.name))
     else:
-        print(str(WEB_SERVER), "does not exist!")
+        print(str(WEB_SERVER), "Fail beacuse server does not exist!")
     
     print("------------------------------")
     if app_server:
@@ -144,9 +157,9 @@ def run():
             print("Starting app server...")
             conn.compute.start_server(app_server.id)
         else:
-            print("Server already running:", str(app_server.name))
+            print("Fail beacuse server already running:", str(app_server.name))
     else:
-        print(str(APP_SERVER), "does not exist!")
+        print(str(APP_SERVER), "Fail beacuse server does not exist!")
     
     print("------------------------------")
     if db_server:
@@ -157,9 +170,9 @@ def run():
             print("Starting db server...")
             conn.compute.start_server(db_server.id)
         else:
-            print("Server already running:", str(db_server.name))
+            print("Fail beacuse server already running:", str(db_server.name))
     else:
-        print(str(DB_SERVER), "does not exist!")
+        print(str(DB_SERVER), "Fail beacuse server does not exist!")
     print("------------------------------")
     pass
 
@@ -167,6 +180,8 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    print('running stop fucntion...')
+
     web_server = conn.compute.find_server(WEB_SERVER)
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
@@ -180,9 +195,9 @@ def stop():
             print("Stopping web server...")
             conn.compute.stop_server(web_server.id)
         else:
-            print("Server already stopped:", str(web_server.name))
+            print("Fail beacuse server already stopped:", str(web_server.name))
     else:
-        print(str(WEB_SERVER), "does not exist!")
+        print(str(WEB_SERVER), "Fail beacuse server does not exist!")
     
     print("------------------------------")
     if app_server:
@@ -193,9 +208,9 @@ def stop():
             print("Stopping app server...")
             conn.compute.stop_server(app_server.id)
         else:
-            print("Server already stopped:", str(app_server.name))
+            print("Fail beacuse server already stopped:", str(app_server.name))
     else:
-        print(str(APP_SERVER), "does not exist!")
+        print(str(APP_SERVER), "Fail beacuse server does not exist!")
     
     print("------------------------------")
     if db_server:
@@ -206,9 +221,9 @@ def stop():
             print("Stopping db server...")
             conn.compute.stop_server(db_server.id)
         else:
-            print("Server already stopped:", str(db_server.name))
+            print("Fail beacuse server already stopped:", str(db_server.name))
     else:
-        print(str(DB_SERVER), "does not exist!")
+        print(str(DB_SERVER), "Fail beacuse server does not exist!")
     print("------------------------------")
     pass
 
@@ -216,6 +231,8 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    print('running destroy fucntion...')
+
     #  Finding resources
     router = conn.network.find_router(ROUTER)
     network = conn.network.find_network(NETWORK)
@@ -226,36 +243,36 @@ def destroy():
     
     #  Delete Servers
     if web_server:
-        print("Deleting server:", str(web_server.name))
+        print("Deleting server...:", str(web_server.name))
         conn.compute.delete_server(web_server)
         time.sleep(5)
     else:
-        print(str(WEB_SERVER), "does not exist!")
+        print(str(WEB_SERVER), "Fail beacuse server does not exist!")
     if app_server:
-        print("Deleting server:", str(app_server.name))
+        print("Deleting server...:", str(app_server.name))
         conn.compute.delete_server(app_server)
         time.sleep(5)
     else:
-        print(str(APP_SERVER), "does not exist!")
+        print(str(APP_SERVER), "Fail beacuse server does not exist!")
     if db_server:
-        print("Deleting server:", str(db_server.name))
+        print("Deleting server...:", str(db_server.name))
         conn.compute.delete_server(db_server)
         time.sleep(5)
     else:
-        print(str(DB_SERVER), "does not exist!")
+        print(str(DB_SERVER), "Fail beacuse server does not exist!")
     
     #  Delete Floating IP
     query = {'status': 'DOWN'}
     floating_ips = conn.network.ips(**query)
     for ip in floating_ips:
-        print("Deleting floating IP:", str(ip.floating_ip_address))
+        print("Deleting floating IP...:", str(ip.floating_ip_address))
         conn.network.delete_ip(ip)
         time.sleep(1)
     
     #  Delete Router
     if subnet:
         if router:
-            print("Removing interface from router:", str(subnet.name))
+            print("Removing interface from router...:", str(subnet.name))
             try:
                 conn.network.remove_interface_from_router(router.id, subnet.id)
             except Exception as e:
@@ -265,14 +282,14 @@ def destroy():
                 print("Successfully removed interface!")
         for port in conn.network.get_subnet_ports(subnet.id):
             try:
-                print("Deleting port:", str(port.id))
+                print("Deleting port...:", str(port.id))
                 conn.network.delete_port(port)
                 time.sleep(3)
             except Exception as e:
                 print("The following error occured when deleting port:", str(e))
     
     if router:
-        print("Deleting router:", str(router.name))
+        print("Deleting router...:", str(router.name))
         try:
             conn.network.delete_router(router)
         except Exception as e:
@@ -280,7 +297,7 @@ def destroy():
         else:
             print("Router successfully deleted!")
     else:
-        print(str(ROUTER), "does not exist!")
+        print(str(ROUTER), "Fail beacuse router does not exist!")
     
     #  Delete Network and Subnet
     if network:
@@ -290,7 +307,7 @@ def destroy():
         print("Deleting network:", str(network.name))
         conn.network.delete_network(network)
     else:
-        print(str(NETWORK), "does not exist!")
+        print(str(NETWORK), "Fail beacuse network does not exist!")
     
     pass
 
@@ -298,6 +315,8 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    print('running status fucntion...')
+
     web_server = conn.compute.find_server(WEB_SERVER)
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
@@ -313,7 +332,7 @@ def status():
         for address in web_addresses:
             print(str(address.network_label), str(address.address))
     else:
-        print(str(WEB_SERVER), "does not exist!")
+        print(str(WEB_SERVER), "Fail beacuse status does not exist!")
     
     print("------------------------------")
     if app_server:
@@ -326,7 +345,7 @@ def status():
         for address in app_addresses:
             print(str(address.network_label), str(address.address))
     else:
-        print(str(APP_SERVER), "does not exist!")
+        print(str(APP_SERVER), "Fail beacuse status does not exist!")
     
     print("------------------------------")
     if db_server:
@@ -339,26 +358,6 @@ def status():
         for address in db_addresses:
             print(str(address.network_label), str(address.address))
     else:
-        print(str(DB_SERVER), "does not exist!")
+        print(str(DB_SERVER), "Fail beacuse status does not exist!")
     print("------------------------------")
     pass
-
-
-### You should not modify anything below this line ###
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('operation',
-                        help='One of "create", "run", "stop", "destroy", or "status"')
-    args = parser.parse_args()
-    operation = args.operation
-
-    operations = {
-        'create'  : create,
-        'run'     : run,
-        'stop'    : stop,
-        'destroy' : destroy,
-        'status'  : status
-        }
-
-    action = operations.get(operation, lambda: print('{}: no such operation'.format(operation)))
-    action()
