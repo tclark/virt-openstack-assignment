@@ -187,7 +187,13 @@ def destroy_subnet(subnet_name):
     subnet = connection.network.find_subnet(subnet_name)
     if subnet is not None:
         print(f"\nDeleting subnet {subnet_name}...")
-        connection.network.delete_subnet(subnet, ignore_missing=True)
+        try:
+            connection.network.delete_subnet(subnet, ignore_missing=True)
+        except:
+            print(
+                f"Failed to delete subnet {subnet_name} this may be due to servers with ips in its range still building"
+            )
+
     else:
         print(f"\nSubnet {subnet_name} does not exist - skipping")
 
@@ -199,7 +205,12 @@ def destroy_network(network_name):
         print(f"\nDeleting network {network_name}...")
         for subnet in network.subnet_ids:
             connection.network.delete(subnet)
-        connection.network.delete_network(network, ignore_missing=True)
+        try:
+            connection.network.delete_network(network, ignore_missing=True)
+        except:
+            print(
+                f"Failed to delete network {network_name} this may be due to servers with ips in its range still building"
+            )
     else:
         print(f"\nNetwork {network_name} does not exist - skipping")
 
