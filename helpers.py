@@ -134,7 +134,7 @@ def destroy_server(server_name):
     server = connection.compute.find_server(server_name)
     if(server != None):
         print(f"\nDeleting server {server_name}...")
-        ips = extract_floating_ips(server_name)
+        ips = extract_floating_ips(server)
         for ip in ips:
             addr = conn.network.find_ip(ip)
             print(f'\nReleasing floating IP {ip}...')
