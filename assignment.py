@@ -15,6 +15,9 @@ def create():
     n_subnet = conn.network.find_subnet('shinrl1-subnet')
     CIDR = "192.168.50.0/24"
     n_webserver = conn.compute.find_server('shinrl1-web')
+    n_appserver = conn.compute.find_server('shinrl1-app')
+    n_dbserver = conn.compute.find_server('shinrl1-db')
+    
     n_security_group = conn.network.find_security_group('assignment2')
     n_router = conn.network.find_router('shinrl1-rtr')
 
@@ -31,7 +34,7 @@ def create():
     else:
         print("Network Borked")
     
-    #create subnet
+    #reate subnet
     if not n_subnet: 
         subnet = conn.network.create_subnet(name='shinrl1-subnet',
                 network_id=network.id, ip_version='4', cidr=CIDR)
@@ -57,26 +60,74 @@ def create():
         webserver = conn.compute.wait_for_server(webserver)
         conn.compute.add_security_group_to_server(webserver, n_security_group)
         print("shinrl1-web up")
-    #add floating ips to servers
+         #add floating ips to servers
+      #  webserver_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
+      #  conn.compute.add_floating_ip_to_server(webserver, address=webserver_ip.floating_ip_address)
+      #  print ("ip attatched to web server:", webserver_ip.floating_ip_address)
+    else:
+        print("web server borked")
+    if not n_appserver:
+        appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
+        appserver = conn.compute.wait_for_server(appserver)
+        conn.compute.add_security_group_to_server(appserver, n_security_group)
+        print("shinrl1-app up")
+    else:
+        print("app server borked")
+
+
+    if not n_dbserver:
+        dbserver = conn.compute.create_server(name="shinrl1-db", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
+        dbserver = conn.compute.wait_for_server(dbserver)
+        conn.compute.add_security_group_to_server(dbserver, n_security_group)
+        print("shinrl1-db up")
+    else:
+        print("db server borked")
+
+    
+        #add floating ips to servers
         webserver_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
         conn.compute.add_floating_ip_to_server(webserver, address=webserver_ip.floating_ip_address)
         print ("ip attatched to web server:", webserver_ip.floating_ip_address)
 
-        print("floating ip attatched to shinrl1-web")
-    else:
-        print("Server bORKED")
+        if not n_appserver:
+            appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
+            appserver = conn.compute.wait_for_server(appserver)
+            conn.compute.add_security_group_to_server(appserver, n_security_group)
+            print("shinrl1-app up")
+        else:
+            print("db server borked")
+        
+    
     pass
 
 def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    n_webserver = conn.compute.find_server('shinrl1-web')
+    n_appserver = conn.compute.find_server('shinrl1-app')
+    n_dbserver = conn.compute.find_server('shinrl1-db')
+
+    if not n_webserver:
+        print("shinrl1-web not found, cannot start")
+    else:
+        conn.compute.start_server(n_webserver.id)
+        print("webserver started")
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    n_webserver = conn.compute.find_server('shinrl1-web')
+    n_appserver = conn.compute.find_server('shinrl1-app')
+    n_dbserver = conn.compute.find_server('shinrl1-db')
+    
+    if not n_webserver:
+        print("webserver not found, cannot stop")
+    else:
+        conn.compute.stop_server(n_webserver.id)
+        print("webserver stopped")
     pass
 
 def destroy():
@@ -94,7 +145,7 @@ def destroy():
     else:
         print("rtr deletion error")
     if n_network:
-        conn.network.delete_network('shinrl1-net')
+        conn.network.delete_network('shinrl1-net', ignore_missing=True)
         print("network deleted")
     else:
         print("network deletion error")
