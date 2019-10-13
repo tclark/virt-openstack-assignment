@@ -23,8 +23,12 @@ To-Do
     Fix bug Regarding Double Creation
     Extract the Constants section to a seperate file, and use grep to collect
 
-This code is ANSI Width compliant, and follows PEP8 (Mostly)
+This code is ANSI Width compliant
 This Code was written under GNU GPL3
+
+An Attempt was made to make this Code PEP8 compliant, However,
+Following Hanging Indentation and ANSI Width Compliance makes it
+impossible with my current knowledge
 '''
 
 
@@ -56,7 +60,7 @@ def create():
     os_network = os_connect.network.find_network(NETWORK)
     
     
-    if os_network != None:
+    if os_network is not None:
         print('%s already exists! skipping...' % NETWORK)
         
     else:
@@ -64,7 +68,7 @@ def create():
         os_network = os_connect.network.create_network(name=NETWORK)
 
     os_subnet = os_connect.network.find_subnet(SUBNET)
-    if os_subnet != None:
+    if os_subnet is not None:
         print('%s already exists! skipping... '% SUBNET)
     else:
         print('Creating %s ' % SUBNET)
@@ -74,7 +78,7 @@ def create():
                                             network_id=os_network.id)
 
     os_router = os_connect.network.find_router(ROUTER)
-    if os_router != None:
+    if os_router is not None:
         print('%s already exists! skipping... ' % ROUTER)
     else:
         print('Creating %s '  % ROUTER)
@@ -86,7 +90,7 @@ def create():
 
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
-        if s != None:
+        if s is not None:
             print('%s already exists! skipping...' % server)
         else:
             print('Creating %s' % server)
@@ -131,7 +135,7 @@ def run():
     '''
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
-        if s == None:
+        if s is None:
             print(server, 'not found! skipping...')
         else:
             s = os_connect.compute.get_server(s)
@@ -152,7 +156,7 @@ def stop():
 
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
-        if s == None:
+        if s is None:
             print('%s wasn\'t found! skipping...' % server)
         else:
             s = os_connect.compute.get_server(s.id)
@@ -176,7 +180,7 @@ def destroy():
     os_subnet = os_connect.network.find_subnet(SUBNET)
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
-        if s != None:
+        if s is not None:
             s = os_connect.compute.get_server(s)
             floatingips = []
             for net in s.addresses:
