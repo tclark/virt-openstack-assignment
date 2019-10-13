@@ -226,7 +226,10 @@ def destroy_router(router_name, subnet_name):
             else:
                 print(e)
                 print(
-                    f"\nThis is sometimes due to the router still being created if that is the case running the destroy command again should resolve"
+                    (
+                        f"\nThis is sometimes due to the router still being "
+                        "created if that is the case running the destroy command again should resolve"
+                    )
                 )
     else:
         doesnt_exist("Router", router_name)
@@ -243,7 +246,11 @@ def destroy_subnet(subnet_name):
             print(f"DELETING SUBNET {subnet_name} FAILED")
             print(e)
             print(
-                f"\nThis may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
+                (
+                    f"\nThis may be due to servers with ips in its range still "
+                    "building if they were just deleted you may want to run the"
+                    "destroy command again"
+                )
             )
 
     else:
@@ -264,7 +271,11 @@ def destroy_network(network_name):
             print(f"DELETING NETWORK {network_name} FAILED")
             print(e)
             print(
-                f"\nThis may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
+                (
+                    f"\nThis may be due to servers with ips in its range still "
+                    "building if they were just deleted you may want to run the "
+                    "destroy command again"
+                )
             )
     else:
         doesnt_exist("Network", network_name)
