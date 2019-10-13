@@ -142,7 +142,7 @@ def add_floating_ip_to_server(server_name, network_name):
             )
             print(f'\tAdded address {floating_ip["floating_ip_address"]}')
         else:
-            print(f"\t{server_name} already has a floating IP address")
+            print(f"\t{server_name} already has a floating IP address - skipping")
     except:
         print(f"ADDING FLOATING IP TO {server_name} FAILED")
         if server is None:
@@ -215,7 +215,7 @@ def destroy_network(network_name):
     if network is not None:
         print(f"\nDeleting network {network_name}...")
         for subnet in network.subnet_ids:
-            print(f"\tDeleting subnet {subnet.name}...")
+            print(f"\tDeleting subnet {subnet.id}...")
             connection.network.delete(subnet)
         try:
             connection.network.delete_network(network, ignore_missing=True)
@@ -232,7 +232,7 @@ def start_server(server_name):
     server = connection.compute.find_server(server_name)
     if server is not None:
         server = connection.compute.get_server(server.id)
-        if server.status is not "ACTIVE":
+        if server.status != "ACTIVE" or server.status != "BUILD" :
             print(f"\nStarting server {server_name}...")
             connection.compute.start_server(server)
         else:
