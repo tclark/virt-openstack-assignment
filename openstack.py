@@ -166,9 +166,14 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    print("Deleting  Network:")
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
-    
+    '''
+    for example_subnet in example_network.subnet_ids:
+        conn.network.delete_subnet(example_subnet, ignore_missing=False)
+    conn.network.delete_network(example_network, ignore_missing=False) 
+   '''
     pass
 
 def status():
