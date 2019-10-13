@@ -56,7 +56,6 @@ def destroy():
     for server_name in SERVERS:
         destroy_server(server_name)
     destroy_router(ROUTER_NAME, SUBNET_NAME)
-    # destroy_subnet(SUBNET_NAME)
     destroy_network(NETWORK_NAME)
 
 
