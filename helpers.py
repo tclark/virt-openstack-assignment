@@ -93,20 +93,22 @@ def create_server(server_name, network_name):
 def extract_floating_ips(server):
     """Return a list of floating IPs of a Server as strings."""
     ips = []
-    for net in server.addresses:
-        for a in server.addresses[net]:
-            addrs = []
-            if a["OS-EXT-IPS:type"] == "floating":
-                addrs.append(a["addr"])
-        ips.extend(addrs)
+    if server.addresses is not None:
+        for net in server.addresses:
+            for a in server.addresses[net]:
+                addrs = []
+                if a["OS-EXT-IPS:type"] == "floating":
+                    addrs.append(a["addr"])
+            ips.extend(addrs)
     return ips
 
 def extract_all_ips(server):
     """Return a list of IPs of a Server as strings."""
     ips = []
-    for net in server.addresses:
-        for a in server.addresses[net]:
-            ips.append(a['addr'])
+    if server.addresses is not None:
+        for net in server.addresses:
+            for a in server.addresses[net]:
+                ips.append(a['addr'])
     return ips
 
 def add_floating_ip_to_server(server_name, network_name):
