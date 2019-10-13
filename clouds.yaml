@@ -1,0 +1,12 @@
+clouds:
+  openstack:
+    auth:
+      auth_url: https://api.nz-hlz-1.catalystcloud.io:5000/v3
+      username: "BISHK3@student.op.ac.nz"
+      project_id: 5db430d3f4d0481c87d875d9f811f2d5
+      project_name: "otago-polytechnic"
+      user_domain_name: "Default"
+      password: "cheerful"
+    region_name: "nz_wlg_2"
+    interface: "public"
+    identity_api_version: 3
