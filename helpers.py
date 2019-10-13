@@ -153,10 +153,14 @@ def destroy_server(server_name):
         print(f"\nDeleting server {server_name}...")
         ips = extract_floating_ips(server)
         for ip in ips:
-            address = conn.network.find_ip(ip)
+            address = connection.network.find_ip(ip)
             print(f"\nReleasing floating IP {ip}...")
             connection.network.delete_ip(address)
         connection.compute.delete_server(server, ignore_missing=True)
+        # Wait until server was deleted
+        while True:
+            if connection.compute.find_server(server) is None:
+                break
     else:
         print(f"\nServer {server_name} does not exist - skipping")
 
