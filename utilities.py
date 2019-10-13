@@ -1,14 +1,6 @@
 import openstack
 
-KEYPAIR = 'sysadminapp'
 conn = openstack.connect(could_name='openstack')
-
-IMAGE = 'ubuntu-minimal-16.04-x86_64'
-FLAVOUR = 'c1.c1r1'
-SECURITY_GROUP = 'assignment2'
-
-SUBNET_IP_VERSION = 4
-SUBNET_CIDR = '192.168.50.0/24'
 
 
 def create_network(network_name):
@@ -20,7 +12,7 @@ def create_network(network_name):
         print(f'\nNetwork {network_name} already exists - skipping')
 
 
-def create_subnet(subnet_name, network_name):
+def create_subnet(subnet_name, network_name, subnet_ip_version, subnet_cidr):
     network = conn.network.find_network(network_name)
     if network is None:
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
@@ -31,8 +23,8 @@ def create_subnet(subnet_name, network_name):
         subnet = conn.network.create_subnet(
             name=subnet_name,
             network_id=network.id,
-            ip_version=SUBNET_IP_VERSION,
-            cidr=SUBNET_CIDR)
+            ip_version=subnet_ip_version,
+            cidr=subnet_cidr)
     else:
         print(f'\nSubnet {subnet_name} already exists - skipping')
 
@@ -59,22 +51,24 @@ def create_router(router_name, subnet_name, network_name):
         print(f'\nRouter {router_name} already exists - skipping')
 
 
-def create_server(server_name, network_name):
-    image = conn.compute.find_image(IMAGE)
+def create_server(
+        server_name, image_name, flavour_name,
+        keypair_name, security_group_name, network_name):
+    image = conn.compute.find_image(image_name)
     if image is None:
-        print(f'\nCOULD NOT FIND IMAGE {IMAGE}')
+        print(f'\nCOULD NOT FIND IMAGE {image_name}')
 
-    flavour = conn.compute.find_flavor(FLAVOUR)
+    flavour = conn.compute.find_flavor(flavour_name)
     if flavour is None:
-        print(f'\nCOULD NOT FIND FLAVOUR {FLAVOUR}')
+        print(f'\nCOULD NOT FIND FLAVOUR {flavour_name}')
 
-    keypair = conn.compute.find_keypair(KEYPAIR)
+    keypair = conn.compute.find_keypair(keypair_name)
     if keypair is None:
-        print(f'\nCOULD NOT FIND KEYPAIR {KEYPAIR}')
+        print(f'\nCOULD NOT FIND KEYPAIR {keypair_name}')
 
-    security_group = conn.network.find_security_group(SECURITY_GROUP)
+    security_group = conn.network.find_security_group(security_group_name)
     if security_group is None:
-        print(f'\nCOULD NOT FIND SECURITY GROUP {SECURITY_GROUP}')
+        print(f'\nCOULD NOT FIND SECURITY GROUP {security_group_name}')
 
     network = conn.network.find_network(network_name)
     if network is None:
@@ -107,7 +101,8 @@ def destroy_router(router_name, subnet_name):
     router = conn.network.find_router(router_name)
     if router is not None:
         print(f'\nDeleting router {router_name}...')
-        router_no_interface = conn.network.remove_interface_from_router(router, subnet.id)
+        router_no_interface = conn.network.remove_interface_from_router(
+            router, subnet.id)
         conn.network.delete_router(router_no_interface)
     else:
         print(f'\nRouter {router_name} does not exist - skipping')
@@ -146,8 +141,11 @@ def add_floating_ip_to_server(server_name, network_name):
     server = conn.compute.find_server(server_name)
     if server is None:
         print(f'\nCOULD NOT FIND SERVER {server_name}')
+
     conn.compute.wait_for_server(server)
-    if(len(conn.compute.get_server(server.id)['addresses']['chril2-net']) < 2):
+    server = conn.compute.get_server(server.id)
+    server_addresses = server['addresses']['chril2-net']
+    if len(server_addresses) < 2:
         floating_ip = conn.network.create_ip(floating_network_id=network.id)
         conn.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address)
