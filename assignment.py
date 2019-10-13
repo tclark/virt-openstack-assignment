@@ -73,7 +73,7 @@ def status():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("operation",
-                        help="One of "create", "run", "stop", "destroy", or "status"")
+                        help='One of "create", "run", "stop", "destroy", or "status"')
     args = parser.parse_args()
     operation = args.operation
 
