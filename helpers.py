@@ -3,7 +3,7 @@ from connection import connection
 
 KEYPAIR = "sysadminapp"
 
-IMAGE = "ubuntu-minimal-16.04-x86_64esjdak"
+IMAGE = "ubuntu-minimal-16.04-x86_64"
 FLAVOUR = "c1.c1r1"
 SECURITY_GROUP = "assignment2"
 
