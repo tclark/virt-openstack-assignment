@@ -1,4 +1,34 @@
 #!/usr/bin/env python
+
+'''
+Simple Script Written in Python to Create, Destroy, Run, Stop and Show the 
+    status of servers using openstack!
+
+@author James McKenzie
+@date October 2019
+@usage ./assignment [-h] [create, stop, run, destroy, status]
+@lang python 3.7 (Perl version not working)
+
+
+Known Bugs:
+    Creating a server when its already created will throw an error regarding
+    IP's as there is already a floating Ip on the port. I would fix this with
+    a try catch loop, however, I was not able to contain the error correctly
+
+Lacked Features:
+    Any Packaging System
+    OS PATH/source Control
+
+To-Do
+    Fix bug Regarding Double Creation
+    Extract the Constants section to a seperate file, and use grep to collect
+
+This code is ANSI Width compliant, and follows PEP8 (Mostly)
+This Code was written under GNU GPL3
+'''
+
+
+
 import argparse
 import openstack
 
@@ -27,7 +57,7 @@ def create():
     
     
     if os_network != None:
-        print('%s already exists! Skipping...' % NETWORK)
+        print('%s already exists! skipping...' % NETWORK)
         
     else:
         print('Creating %s '% NETWORK)
@@ -35,7 +65,7 @@ def create():
 
     os_subnet = os_connect.network.find_subnet(SUBNET)
     if os_subnet != None:
-        print('%s already exists' % SUBNET)
+        print('%s already exists! skipping... '% SUBNET)
     else:
         print('Creating %s ' % SUBNET)
         os_subnet = os_connect.network.create_subnet(name=SUBNET,
@@ -45,7 +75,7 @@ def create():
 
     os_router = os_connect.network.find_router(ROUTER)
     if os_router != None:
-        print('%s already exists' % ROUTER)
+        print('%s already exists! skipping... ' % ROUTER)
     else:
         print('Creating %s '  % ROUTER)
         ext = {'network_id': os_public_net.id}
@@ -57,7 +87,7 @@ def create():
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
         if s != None:
-            print('%s already exists' % server)
+            print('%s already exists! skipping...' % server)
         else:
             print('Creating %s' % server)
             s = os_connect.compute.create_server(name=server,
@@ -79,15 +109,16 @@ def create():
             if a['OS-EXT-IPS:type'] == 'floating':
                 addrs.append(a['addr'])
         floatingips.extend(addrs)
-    #Closes the program if no floating IPS are avaliable
+    #Closes the program if no floating IPS avaliable
     if floatingips.__len__ == 0:
         print("There are no floating ips avalible")
         exit
 
     print('Creating floating IP address for mckeja4-web... ', end='')
+    #Grabbing one of the IPs
     web_ip = os_connect.network.create_ip(floating_network_id=os_public_net.id)
     print('Got IP:', web_ip.floating_ip_address)
-
+    #Assigning said IP
     print('Assigning address to mckeja4-web')
     os_connect.compute.add_floating_ip_to_server(web,
                                            web_ip.floating_ip_address)
@@ -101,14 +132,14 @@ def run():
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
         if s == None:
-            print(server, 'not found, skipping!')
+            print(server, 'not found! skipping...')
         else:
             s = os_connect.compute.get_server(s)
             print('Starting %s... ' % server, end='')
             try:
                 os_connect.compute.start_server(s.id)
             except openstack.exceptions.ConflictException:
-                print('The Server is Currently Running!, skipping!')
+                print('Currently Running!, skipping...')
             else:
                 os_connect.compute.wait_for_server(s)
                 print('OK')
@@ -118,17 +149,18 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
         if s == None:
-            print('%s not found, skipping!' % server)
+            print('%s wasn\'t found! skipping...' % server)
         else:
             s = os_connect.compute.get_server(s.id)
             print('Shutting off %s... ' % server, end='')
             try:
                 os_connect.compute.stop_server(s.id)
             except openstack.exceptions.ConflictException:
-                print('%s was already shut off!' % server)
+                print('%s was already shut off! skipping...' % server)
             else:
                 os_connect.compute.wait_for_server(s, status='SHUTOFF')
                 print('OK')
@@ -138,6 +170,9 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    # THIS IS NOT A SAFE DESTROY METHOD AND IS MAINLY WRITTEN TO BE
+    # SCRIPTABLE WITH NO ADDITIONAL INPUT FROM THE USER
+    # PLEASE EXERCISE CAUTION WHEN USING THIS
     os_subnet = os_connect.network.find_subnet(SUBNET)
     for server in SERVER_NAMES:
         s = os_connect.compute.find_server(server)
@@ -151,10 +186,6 @@ def destroy():
                         addrs.append(addr['addr'])
                 floatingips.extend(addrs)
 
-
-
-
-
             for ip in floatingips:
                 os_addr = os_connect.network.find_ip(ip)
                 print('Releasing floating IP', ip)
@@ -165,7 +196,7 @@ def destroy():
             while s:
                 s = os_connect.compute.find_server(server)
         else:
-            print('Unable to find %s, skipping' % server)
+            print('Can\'t find %s! skipping...' % server)
     os_router = os_connect.network.find_router(ROUTER)
     if os_router:
         print('Deleting interface for', SUBNET)
@@ -173,7 +204,7 @@ def destroy():
         print('Deleting', ROUTER)
         os_connect.network.delete_router(os_router, ignore_missing=True)
     else:
-        print('Unable to find %s skipping' % ROUTER)
+        print('Can\'t to find %s! skipping...' % ROUTER)
 
     # Delete network if it exists.
     os_network = os_connect.network.find_network(NETWORK)
@@ -183,7 +214,7 @@ def destroy():
         print('Deleting', NETWORK)
         os_connect.network.delete_network(os_network, ignore_missing=True)
     else:
-        print('Unable to find %s , skipping' % NETWORK)
+        print('Can\'t find %s! skipping...' % NETWORK)
 
 
 def status():
@@ -193,7 +224,7 @@ def status():
     servers = []
     # Get info for  servers.
     for name in SERVER_NAMES:
-        print('Fetching status of %s...' % name , end=' ')
+        print('Getting status of %s...' % name , end=' ')
         s = os_connect.compute.find_server(name)
         # Get full server info.
         if s:
@@ -211,7 +242,7 @@ def status():
             for a in server.addresses[net]:
                 iplist.append(a['addr'])
         if iplist:
-            print('IP Addresses:')
+            print('IP\'s:')
             for i in iplist:
                 print(i)
         else:
