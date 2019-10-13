@@ -17,22 +17,22 @@ def run(conn):
         all_server_names.append(server.name)
 
         if server.name in my_server_names:
-            print(">>> Checking for existing " + server.name + " server...")
-            print("  > Found server " + server.name + "...")
-            print("  > " + server.name + " has a status of: '" + server.status + "'")
+            print("Checking for existing " + server.name + " server...")
+            print(" > Found server " + server.name + "...")
+            print(" > " + server.name + " has a status of: '" + server.status + "'")
             if server.status != 'ACTIVE':
                 conn.compute.start_server(server)
                 conn.compute.wait_for_server(server,status='ACTIVE')
-                print("  > " + server.name + " is now '" + server.status + "'")
+                print(" > " + server.name + " is now '" + server.status + "'")
             else:
-                print("  > " + server.name + " is already 'ACTIVE'.")
+                print(" > " + server.name + " is already 'ACTIVE'.")
             print()
 
 #   Check that my servers are all here
     for server_name in my_server_names:
         if server_name not in all_server_names:
-            print(">>> Checking for existing " + server_name + " server...")
-            print("  > Unable to find server: " + server_name + ", please create the server first...\n")
+            print("Checking for existing " + server_name + " server...")
+            print(" > Unable to find server: " + server_name + ", please create the server first...\n")
 
 # RUN: Now lets call our function
 run(conn)

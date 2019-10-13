@@ -22,11 +22,12 @@ def status(conn):
             print(" > Status: " + server.status)
 
             for address_data in server['addresses']['osbots1-net']:
-                #for address_datum in address_data:
+#               for address_datum in address_data:
                     if address_data['OS-EXT-IPS:type'] == 'fixed':
                         print(" > Fixed IP: " + address_data['addr'])
                     if address_data['OS-EXT-IPS:type'] == 'floating':
                         print(" > Floating IP: " + address_data['addr'])
+            print()
 
 # STATUS: Now lets call our function
 status(conn)
