@@ -13,8 +13,9 @@ def create():
     print ("connecting to Openstack")
     conn = openstack.connect(cloud_name='openstack')
 
+    print (" creating network, name: dackja1 ")
     if conn.network.find_network('dackja1-net') is None:
-        print (" creating network, name: dackja1 ")
+       
         network=conn.network.create_network(
             name='dackja1-net')
         print("Network created")
@@ -136,7 +137,7 @@ def destroy():
         delNetwork = conn.network.delete_network(network)
         print("Network Destroyed")
     else:
-        Print("Network does not exist")
+        print("Network does not exist")
 
 
     router = conn.network.find_router("dackja1-rtr")
