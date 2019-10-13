@@ -33,37 +33,36 @@ def create():
         print("Network Borked")
     
     #create subnet
-    #if not subnet:
-     #   subnet = conn.network.create_subnet(name='shinrl1-subnet',
-      ##          network_id=network.id, ip_version='4', cidr=cidr)
-     #   print("Subnet Created")
-    #else:
-     #   print("Subnet borked") 
+    if not subnet: 
+        subnet = conn.network.create_subnet(name='shinrl1-subnet',
+                network_id=network.id, ip_version='4', cidr=cidr)
+        print("Subnet Created")
+    else:
+        print("Subnet borked") 
     #create router
     if not router:
     
         args = {'name': "shinrl1-rtr", 'external_gateway_info': {'network_id': public_net.id}}
         router = conn.network.create_router(**args)
-        conn.network.add_interface_to_router(router, subnet)
+        conn.network.add_interface_to_router(router, subnet_id=subnet.ids[0])
 
         print("Router Created ^_^")
     else:
         print ("Router Borked")
 
-         #create subnet
-    if not subnet:
-        subnet = conn.network.create_subnet(name='shinrl1-subnet',
-        network_id=network.id, ip_version='4', cidr=cidr)
-        print("Subnet Created")
-    else:
-        print("Subnet borked")
-
-    #creaete servers
+    #reaete servers
     if not webserver:
+        conn.network.add_interface_to_router(router, subnet_id=network.subnet_ids[0])
         webserver = conn.compute.create_server(name="shinrl1-web", image_id=image.id,  flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name)
         webserver = conn.compute.wait_for_server(webserver)
         conn.compute.add_security_group_to_server(webserver, security_group)
-        print("Web server created")
+        print("shinrl1-web up")
+    #add floating ips to servers
+        webserver_ip = conn.network.create_ip(floating_network_id=public_net.id)
+        conn.compute.add_floating_ip_to_server(webserver, address=webserver_ip.floating_ip_address)
+        print ("ip attatched to web server:", webserver_ip.floating_ip_address)
+
+        print("floating ip attatched to shinrl1-web")
     else:
         print("Server bORKED")
     pass
@@ -88,7 +87,7 @@ def destroy():
     conn.network.delete_router('shinrl1-rtr')
     print("rtr deleted")
     #if network:
-    conn.network.delete_network('shinrl2-net')
+    conn.network.delete_network('shinrl1-net')
     print("network deleted")
     #if subnet:
     conn.network.delete_subnet('shinrl1-subnet')
