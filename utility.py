@@ -142,17 +142,17 @@ def add_floating_ip_to_server(server_name, network_name):
     if server is None:
         print(f'\nCOULD NOT FIND SERVER {server_name}')
 
+    print(f'\nAdding floating address to {server_name}...')
     conn.compute.wait_for_server(server)
     server = conn.compute.get_server(server.id)
     server_addresses = server['addresses']['chril2-net']
     if len(server_addresses) < 2:
-        print(f'Adding floating address to {server_name}...')
         floating_ip = conn.network.create_ip(floating_network_id=network.id)
         conn.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address)
         print(f'\tAssigned address {floating_ip["floating_ip_address"]}')
     else:
-        print(f'{server_name} already has a floating IP address')
+        print(f'\t{server_name} already has a floating IP address - skipping')
 
 
 def start_server(server_name):
