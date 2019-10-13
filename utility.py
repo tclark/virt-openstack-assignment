@@ -157,8 +157,8 @@ def add_interface_to_router(router_name, subnet_name):
     if router is not None:
         router = conn.network.add_interface_to_router(router, subnet.id)
         print('\tInterface added')
-    else
-    print('\tCOULD NOT FIND ROUTER')
+    else:
+        print('\tCOULD NOT FIND ROUTER')
 
 
 def add_floating_ip_to_server(server_name, network_name):
@@ -171,16 +171,19 @@ def add_floating_ip_to_server(server_name, network_name):
         print(f'\nCOULD NOT FIND SERVER {server_name}')
 
     print(f'\nAdding floating address to {server_name}...')
-    conn.compute.wait_for_server(server)
     server = conn.compute.get_server(server.id)
-    server_addresses = server['addresses']['chril2-net']
-    if len(server_addresses) < 2:
-        floating_ip = conn.network.create_ip(floating_network_id=network.id)
-        conn.compute.add_floating_ip_to_server(
-            server, floating_ip.floating_ip_address)
-        print(f'\tAssigned address {floating_ip["floating_ip_address"]}')
+    if server.status == 'ACTIVE':
+        conn.compute.wait_for_server(server)
+        server_addresses = server['addresses']['chril2-net']
+        if len(server_addresses) < 2:
+            floating_ip = conn.network.create_ip(floating_network_id=network.id)
+            conn.compute.add_floating_ip_to_server(
+                server, floating_ip.floating_ip_address)
+            print(f'\tAssigned address {floating_ip["floating_ip_address"]}')
+        else:
+            print('\tThe server already has a floating IP address - skipping')
     else:
-        print(f'\t{server_name} already has a floating IP address - skipping')
+        print('\tThe server must be active to add a floating IP address')
 
 
 def start_server(server_name):
