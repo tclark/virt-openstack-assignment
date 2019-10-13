@@ -1,4 +1,4 @@
-** TODO virtualization assignment two [1/5]
+** TODO virtualization assignment two [5/5]
 - [X] Create [4/4]
       - [X] Network named nichtj3-net [1/1]
             - [X] subnet 192.168.50.0 255.255.255.0
@@ -10,14 +10,14 @@
             - [X] flavour: c1.c1r1
             - [X] names: nichtj3-web,nichtj3-app,nichtj3-db
             - [X] security-group: assignment2
-- [ ] Run: Start the three servers created above. If any of them do not
+- [X] Run: Start the three servers created above. If any of them do not
   exist, print an error message. If any of the them are already
   running, do not restart them or otherwise change their state.
-- [ ] Stop: Stop the three servers. If any are not running, then leave
+- [X] Stop: Stop the three servers. If any are not running, then leave
   them in that state. If any do not exist, display an error message.
 - [X] Destroy: Remove all of the resources created by the create
   action. If any of the resources do not exisit, ignore them and
   destroy whatever ones do.
-- [ ] Status: Print a status report on each of the three servers
+- [X] Status: Print a status report on each of the three servers
   indcating each servers state and their IP addresses if they have
   addresses assigned.
