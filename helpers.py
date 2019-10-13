@@ -20,12 +20,39 @@ def doesnt_exist(thing, type_of_thing):
     print(f"\n{type_of_thing} {thing} does not exist - skipping")
 
 
+def extract_floating_ips(server):
+    """Return a list of floating IPs of a Server as strings."""
+    ips = []
+    if server.addresses is not None:
+        for net in server.addresses:
+            for a in server.addresses[net]:
+                addrs = []
+                if a["OS-EXT-IPS:type"] is "floating":
+                    addrs.append(a["addr"])
+            ips.extend(addrs)
+    return ips
+
+
+def extract_all_ips(server):
+    """Return a list of IPs of a Server as strings."""
+    ips = []
+    if server.addresses is not None:
+        for net in server.addresses:
+            for a in server.addresses[net]:
+                ips.append(a["addr"])
+    return ips
+
+
 def create_network(network_name):
     """Creates a network"""
     network = connection.network.find_network(network_name)
     if network is None:
         print(f"\nCreating network {network_name}...")
         network = connection.network.create_network(name=network_name)
+        # Wait for network to be created
+        while True:
+            if connection.network.find_network(network_name):
+                break
     else:
         already_exists("Network", network_name)
 
@@ -45,6 +72,10 @@ def create_subnet(subnet_name, network_name):
                 ip_version=SUBNET_IP_VERSION,
                 cidr=SUBNET_CIDR,
             )
+            # Wait for subnet to be created
+            while True:
+                if connection.network.find_subnet(subnet_name):
+                    break
         except Exception as e:
             print(f"CREATING SUBNET {subnet_name} FAILED")
             if network_name is None:
@@ -69,6 +100,10 @@ def create_router(router_name, subnet_name, network_name):
                 name=router_name, external_gateway_info={"network_id": network.id}
             )
             router = connection.network.add_interface_to_router(router, subnet.id)
+            # Wait for router to be created
+            while True:
+                if connection.network.find_router(router_name):
+                    break
         except Exception as e:
             print(f"CREATING ROUTER {router_name} FAILED")
             if network is None:
@@ -120,29 +155,6 @@ def create_server(server_name, network_name):
                 print(e)
     else:
         already_exists("Server", server_name)
-
-
-def extract_floating_ips(server):
-    """Return a list of floating IPs of a Server as strings."""
-    ips = []
-    if server.addresses is not None:
-        for net in server.addresses:
-            for a in server.addresses[net]:
-                addrs = []
-                if a["OS-EXT-IPS:type"] is "floating":
-                    addrs.append(a["addr"])
-            ips.extend(addrs)
-    return ips
-
-
-def extract_all_ips(server):
-    """Return a list of IPs of a Server as strings."""
-    ips = []
-    if server.addresses is not None:
-        for net in server.addresses:
-            for a in server.addresses[net]:
-                ips.append(a["addr"])
-    return ips
 
 
 def add_floating_ip_to_server(server_name, network_name):
