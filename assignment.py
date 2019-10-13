@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
 import argparse
+
+from connection import connection
 from helpers import (
-    create_subnet,
+    add_floating_ip_to_server,
+    create_network,
     create_router,
     create_server,
-    create_network,
-    add_floating_ip_to_server,
-    destroy_server,
-    destroy_router,
-    destroy_subnet,
+    create_subnet,
     destroy_network,
+    destroy_router,
+    destroy_server,
+    destroy_subnet,
+    get_server_status,
     start_server,
     stop_server,
-    get_server_status,
 )
 
 ROUTER_NAME = "nichtj3-rtr"
@@ -36,6 +38,9 @@ def create():
     for server_name in SERVERS:
         create_server(server_name, NETWORK_NAME)
         if server_name is WEB_SERVER:
+            connection.compute.wait_for_server(
+                connection.compute.find_server(server_name)
+            )
             add_floating_ip_to_server(server_name, PUBLIC_NETWORK_NAME)
 
 
