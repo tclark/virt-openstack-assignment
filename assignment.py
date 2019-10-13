@@ -18,7 +18,7 @@ def create():
     n_security_group = conn.network.find_security_group('assignment2')
     n_router = conn.network.find_router('shinrl1-rtr')
 
-    #create network
+    #c eate network
     if not n_network:
         network = conn.network.create_network(name='shinrl1-net')
         print(network)
@@ -39,11 +39,12 @@ def create():
     else:
         print("Subnet borked") 
     #create router
+    
     if not n_router:
     
         args = {'name': "shinrl1-rtr", 'external_gateway_info': {'network_id': n_public_net.id}}
         router = conn.network.create_router(**args)
-        conn.network.add_interface_to_router(n_router, subnet_id=n_subnet.ids[0])
+        conn.network.add_interface_to_router(n_router, subnet.id)
 
         print("Router Created ^_^")
     else:
@@ -51,8 +52,8 @@ def create():
 
     #reaete servers
     if not n_webserver:
-        conn.network.add_interface_to_router(n_router, subnet_id=n_network.subnet_ids[0])
-        webserver = conn.compute.create_server(name="shinrl1-web", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": n_network.id}], key_name=n_keypair.name)
+        #conn.network.add_interface_to_router(n_router, subnet_id=n_network.subnet_ids[0])
+        webserver = conn.compute.create_server(name="shinrl1-web", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
         webserver = conn.compute.wait_for_server(webserver)
         conn.compute.add_security_group_to_server(webserver, n_security_group)
         print("shinrl1-web up")
@@ -82,18 +83,31 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    #if router:
-    conn.network.delete_router('shinrl1-rtr')
-    print("rtr deleted")
-    #if network:
-    conn.network.delete_network('shinrl1-net')
-    print("network deleted")
-    #if subnet:
-    conn.network.delete_subnet('shinrl1-subnet')
-    print("subnet deleted");
-    #if webserver:
-    conn.compute.delete_server('shinrl1-web')
-    print("webserver deleted")
+    
+    n_router = conn.network.find_router('shinrl1-rtr')
+    n_network = conn.network.find_network('shinrl1-net')
+    n_subnet = conn.network.find_subnet('shinrl1-subnet')
+    n_webserver = conn.compute.find_server('shinrl1-web')
+    if n_router:
+        conn.network.delete_router(n_router, ignore_missing=True)
+        print("rtr deleted")
+    else:
+        print("rtr deletion error")
+    if n_network:
+        conn.network.delete_network('shinrl1-net')
+        print("network deleted")
+    else:
+        print("network deletion error")
+    if n_subnet:
+        conn.network.delete_subnet('shinrl1-subnet')
+        print("subnet deleted")
+    else:
+        print("subnet deletion error")
+    if n_webserver:
+        conn.compute.delete_server('shinrl1-web')
+        print("webserver deleted")
+    else:
+        print("webserver deletion error")
     pass
 
 def status():
