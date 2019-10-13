@@ -11,6 +11,15 @@ SUBNET_IP_VERSION = 4
 SUBNET_CIDR = "192.168.50.0/24"
 
 
+def already_exists(thing, type_of_thing):
+    """Prints a message saying type_of_thing already exists"""
+    print(f"\n{type_of_thing} {thing} already exists - skipping")
+
+def doesnt_exist(thing, type_of_thing):
+    """Prints a message saying type_of_thing already exists"""
+    print(f"\n{type_of_thing} {thing} does not exist - skipping")
+
+
 def create_network(network_name):
     """Creates a network"""
     network = connection.network.find_network(network_name)
@@ -18,7 +27,7 @@ def create_network(network_name):
         print(f"\nCreating network {network_name}...")
         network = connection.network.create_network(name=network_name)
     else:
-        print(f"\nNetwork {network_name} already exists - skipping")
+        already_exists("Network", network_name)
 
 
 def create_subnet(subnet_name, network_name):
@@ -41,7 +50,7 @@ def create_subnet(subnet_name, network_name):
             if network_name is None:
                 print(f"\tCOULD NOT FIND NETWORK {network_name}")
     else:
-        print(f"\nSubnet {subnet_name} already exists - skipping")
+        already_exists("Subnet", subnet_name)
 
 
 def create_router(router_name, subnet_name, network_name):
@@ -65,7 +74,7 @@ def create_router(router_name, subnet_name, network_name):
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
     else:
-        print(f"\nRouter {router_name} already exists - skipping")
+        already_exists("Router", router_name)
 
 
 def create_server(server_name, network_name):
@@ -102,7 +111,7 @@ def create_server(server_name, network_name):
             if image is None:
                 print(f"\tCOULD NOT FIND IMAGE {IMAGE}")
     else:
-        print(f"\nServer {server_name} already exists - skipping")
+        already_exists("Server", server_name)
 
 
 def extract_floating_ips(server):
@@ -141,7 +150,7 @@ def add_floating_ip_to_server(server_name, network_name):
             )
             print(f'\tAdded address {floating_ip["floating_ip_address"]}')
         else:
-            print(f"\nFloating IP address for {server_name} already exists - skipping")
+            already_exists("Floating IP address for", server_name)
     except:
         print(f"\nADDING FLOATING IP TO {server_name} FAILED")
         if server is None:
@@ -169,7 +178,7 @@ def destroy_server(server_name):
             if connection.compute.find_server(server) is None:
                 break
     else:
-        print(f"\nServer {server_name} does not exist - skipping")
+        doesnt_exist("Server",server_name)
 
 
 def destroy_router(router_name, subnet_name):
@@ -188,7 +197,7 @@ def destroy_router(router_name, subnet_name):
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
     else:
-        print(f"\nRouter {router_name} does not exist - skipping")
+        doesnt_exist("Router",router_name)
 
 
 def destroy_subnet(subnet_name):
@@ -205,7 +214,7 @@ def destroy_subnet(subnet_name):
             )
 
     else:
-        print(f"\nSubnet {subnet_name} does not exist - skipping")
+        doesnt_exist("Subnet",subnet_name)
 
 
 def destroy_network(network_name):
@@ -224,10 +233,11 @@ def destroy_network(network_name):
                 f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
     else:
-        print(f"\nNetwork {network_name} does not exist - skipping")
+        doesnt_exist("Network",network_name)
 
 
 def start_server(server_name):
+    """Starts a given server"""
     server = connection.compute.find_server(server_name)
     if server is not None:
         server = connection.compute.get_server(server.id)
@@ -246,6 +256,7 @@ def start_server(server_name):
 
 
 def stop_server(server_name):
+    """Stops a given server"""
     server = connection.compute.find_server(server_name)
     if server is None:
         print(
@@ -265,6 +276,7 @@ def stop_server(server_name):
 
 
 def get_server_status(server_name):
+    """Prints the status of a given server"""
     server = connection.compute.find_server(server_name)
     if server is None:
         print(
