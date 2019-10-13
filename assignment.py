@@ -1,12 +1,16 @@
 import argparse
 import openstack
-
-print("SHINRL1 openstacksdk assignment: \n Please use the following operation to run script")
-print("create : Creates app, db and web server + required components")
-print("stop : Powers down servers")
-print("run: Restarts servers")
-print("status: Displays the name, IP address and status of each server")
-print("destroy: Tears resources down - currently needs be run twice")
+#Author Bex Shinderman 2019
+#Features
+    #create : Creates app, db and web server + required components")
+    #stop : Powers down servers")
+    #run: Restarts servers")
+    #status: Displays the name, IP address and status of each server")
+    #destroy: Tears resources down - currently needs be run twice")
+#Known bugs ****IMPORTANT*****
+    #Destroy script needs to be run twice - errors first run. What didn't execute in the first run will execute in the second
+    #Floating IP won't attach to webserver
+print("SHINRL1 openstacksdk assignment: \nPlease use one of the following operations to run script: create | destroy | status | run | stop")
 #create connection to openstack
 conn = openstack.connect(cloudname='openstack')
 def create():
@@ -73,7 +77,7 @@ def create():
         if n_webserver:
             conn.compute.wait_for_server(n_webserver)
             conn.compute.add_floating_ip_to_server(n_webserver, floating_ip.floating_ip_address)
-            print("float ip successfully attached to server")
+            print("floating ip successfully attached to server")
         else:
             print("floating ip borked")
         
@@ -240,11 +244,6 @@ def status():
     else:
         status = "%s cannnot be found"%(n_dbserver)
         print(status)
-    def list_networks(conn):
-        print("List Networks:")
-
-    for network in conn.network.networks():
-        print(network)
     
 
     pass
