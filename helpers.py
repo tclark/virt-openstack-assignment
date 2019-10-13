@@ -161,12 +161,12 @@ def destroy_network(network_name):
         print(f"\nNetwork {network_name} does not exist - skipping")
 
 def start_server(server_name):
-    server = conn.compute.find_server(server_name)
+    server = connection.compute.find_server(server_name)
     if server is not None:
-        server = conn.compute.get_server(server.id)
+        server = connection.compute.get_server(server.id)
         if(server.status != 'ACTIVE'):
             print(f'\nStarting server {server_name}...')
-            conn.compute.start_server(server)
+            connection.compute.start_server(server)
         else:
             print(
                 f'\nServer {server_name} is already running - skipping')
@@ -176,28 +176,28 @@ def start_server(server_name):
             ' run this script with the create option.'))
 
 def stop_server(server_name):
-    server = conn.compute.find_server(server_name)
+    server = connection.compute.find_server(server_name)
     if server is None:
         print((
             f'\nServer {server_name} does not exist. To create it,'
             ' run this script with the create option.'))
     else:
-        server = conn.compute.get_server(server.id)
+        server = connection.compute.get_server(server.id)
         if(server.status != 'SHUTOFF'):
             print(f'\nStopping server {server_name}...')
-            conn.compute.stop_server(server)
+            connection.compute.stop_server(server)
         else:
             print(
                 f'\nServer {server_name} has already been stopped - skipping')
 
 def get_server_status(server_name):
-    server = conn.compute.find_server(server_name)
+    server = connection.compute.find_server(server_name)
     if server is None:
         print((
             f'\nServer {server_name} does not exist. To create it,'
             ' run this script with the create option.'))
     else:
-        server = conn.compute.get_server(server.id)
+        server = connection.compute.get_server(server.id)
         print(f'\nGetting status of server {server_name}...')
         print(server.status)
         addresses = server['addresses']['chril2-net']
