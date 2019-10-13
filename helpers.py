@@ -179,6 +179,7 @@ def destroy_server(server_name):
             address = connection.network.find_ip(ip)
             print(f"\tReleasing floating IP {ip}...")
             connection.network.delete_ip(address)
+            # Wait until ip was deleted
             while True:
                 if connection.network.find_ip(ip) is None:
                     break
@@ -202,6 +203,7 @@ def destroy_router(router_name, subnet_name):
             router = connection.network.remove_interface_from_router(router, subnet.id)
             print(f"\tFinishing up deleting router {router_name}...")
             connection.network.delete_router(router, ignore_missing=True)
+            # Wait until router was deleted
             while True:
                 if connection.network.find_router(router_name) is None:
                     break
