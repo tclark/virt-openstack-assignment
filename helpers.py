@@ -143,8 +143,7 @@ def add_floating_ip_to_server(server_name, network_name):
             print(f'\tAdded address {floating_ip["floating_ip_address"]}')
         else:
             print(f"\t{server_name} already has a floating IP address")
-    except Exception as e:
-        print(e)
+    except:
         print(f"ADDING FLOATING IP TO {server_name} FAILED")
         if server is None:
             print(f"\tCOULD NOT FIND SERVER {server_name}")

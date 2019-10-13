@@ -2,7 +2,6 @@
 
 import argparse
 
-from connection import connection
 from helpers import (
     add_floating_ip_to_server,
     create_network,
@@ -38,9 +37,6 @@ def create():
     for server_name in SERVERS:
         create_server(server_name, NETWORK_NAME)
         if server_name is WEB_SERVER:
-            connection.compute.wait_for_server(
-                connection.compute.find_server(server_name)
-            )
             add_floating_ip_to_server(server_name, PUBLIC_NETWORK_NAME)
 
 
