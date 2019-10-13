@@ -75,7 +75,7 @@ def create_router(router_name, subnet_name, network_name):
                 print(f"\tCOULD NOT FIND NETWORK {network_name}")
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
-            if network is None and subnet is None:
+            if network and subnet:
                 print(e)
 
     else:
@@ -116,13 +116,7 @@ def create_server(server_name, network_name):
                 print(f"\tCOULD NOT FIND FLAVOUR {FLAVOUR}")
             if image is None:
                 print(f"\tCOULD NOT FIND IMAGE {IMAGE}")
-            if (
-                image is None
-                and flavour is None
-                and keypair is None
-                and network is None
-                and security_group is None
-            ):
+            if image and flavour and keypair and network and security_group:
                 print(e)
     else:
         already_exists("Server", server_name)
@@ -171,7 +165,7 @@ def add_floating_ip_to_server(server_name, network_name):
             print(f"\tCOULD NOT FIND SERVER {server_name}")
         if network is None:
             print(f"\tCOULD NOT FIND NETWORK {network_name}")
-        if server is None and network is None:
+        if server and network:
             print(e)
 
 
