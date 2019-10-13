@@ -1,14 +1,17 @@
 import argparse
 import openstack
+import time
 
 conn = openstack.connect(cloud_name='openstack')
 
-IMAGE = 'ubuntu-16.04-x86_64'
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
 NETWORK = 'haycc1-net'
 KEYPAIR = 'haycc1-key'
 SUBNET = 'haycc1-sub'
 ROUTER = 'haycc1-rtr'
+CIDR = '192.168.50.0/24'
+IP = '4'
 
 SERVERNAMES = ['haycc1-web', 'haycc1-app', 'haycc1-db']
 
@@ -26,12 +29,12 @@ def create():
     security_group = conn.network.find_security_group('assignment2')
     
    
-
-    # Network creation
+    print("Creating servers, this may take a few minutes...")
+    # Network and Subnet creation
     if net is None:
         new_network = conn.network.create_network(name=NETWORK)
         print('Network created')
-        new_subnet = conn.network.create_subnet(name=SUBNET, cidr='192.168.50.0/24', network_id=new_network.id, ip_version='4')
+        new_subnet = conn.network.create_subnet(name=SUBNET, cidr=CIDR, network_id=new_network.id, ip_version=IP)
         print('Subnet created')
     else:
         print(f'Network already exists: {NETWORK}')
@@ -73,8 +76,9 @@ def run():
             server = conn.compute.get_server(server)
             if server.status == "SHUTOFF":
                 conn.compute.start_server(server)
+                print(f'Server running: {name}')
             elif server.status == "ACTIVE":
-                print(f'Server running: {server}')
+                print(f'Server already running: {name}')
     pass
 
 def stop():
@@ -88,9 +92,9 @@ def stop():
             server = conn.compute.get_server(server)
             if server.status == "ACTIVE":
                 conn.compute.stop_server(server)
-                print('Server stopped')
+                print(f'Server stopped: {name}')
             elif server.status == "SHUTOFF":
-                print('Server already stopped')
+                print(f'Server already stopped: {name}')
 
     pass
 
@@ -98,27 +102,41 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    # Deletes all three servers including, router, network and subnet
+
+        # Deletes all three servers including, router, network and subnet
     for name in SERVERNAMES:
         server = conn.compute.find_server(name_or_id=name)
         if server is not None:
+            #Release floating IP from web server
+            if name == 'haycc1-web':
+                webServer = conn.compute.get_server(server)
+                webFloatIP = webServer["addresses"][NETWORK][1]["addr"]
+                conn.compute.remove_floating_ip_from_server(webServer, webFloatIP)
+                getIP = conn.network.find_ip(webFloatIP)
+                conn.network.delete_ip(getIP)
+                print("Floating IP removed from the web server")
+
+
             conn.delete_server(server)
-            print(f'Servers deleted: {name}')
+            #Gives enough time for the servers to delete
+            time.sleep(3)
+            print(f'Server deleted: {name}')
         else:
-            print(f'Servers already deleted: {name}')
+            print(f'Server already deleted: {name}')
+
 
     router = conn.network.find_router("haycc1-rtr")
     conn.network.remove_interface_from_router(router, sub.id)
     conn.network.delete_router(router)
-    print(f"Router Destroyed: {router}")
-    
+    print(f"Router Destroyed")
+
     subnet = conn.network.find_subnet("haycc1-sub")
     conn.network.delete_subnet(subnet)
-    print(f"Subnet Destroyed: {subnet}")
+    print(f"Subnet Destroyed")
 
     network = conn.network.find_network("haycc1-net")
     conn.network.delete_network(network)
-    print(f"Network Destroyed: {network}")
+    print(f"Network Destroyed")
     pass
 
 def status():
@@ -130,7 +148,10 @@ def status():
         server = conn.compute.find_server(name_or_id=name)
         if server is not None:
             svr = conn.compute.get_server(server)
-            print(f'Sever: {svr.name}, Status: {svr.status}, Address: {svr.addresses}')
+            addresses = []
+            for info in server.addresses[NETWORK]:
+                addresses.append(info['addr'])
+                print(f'Sever: {svr.name}, Status: {svr.status}, Address: {addresses}')
     pass
 
 
