@@ -101,6 +101,14 @@ def extract_floating_ips(server):
         ips.extend(addrs)
     return ips
 
+def extract_all_ips(server):
+    """Return a list of IPs of a Server as strings."""
+    ips = []
+    for net in server.addresses:
+        for a in server.addresses[net]:
+            ips.append(a['addr'])
+    return ips
+
 def add_floating_ip_to_server(server_name, network_name):
     """Adds a floating ip to the given server from the given network"""
     network = connection.network.find_network(network_name)
@@ -200,5 +208,5 @@ def get_server_status(server_name):
         server = connection.compute.get_server(server.id)
         print(f'\nGetting status of server {server_name}...')
         print(server.status)
-        print(extract_floating_ips(server))
+        print('IP adresses: ',extract_all_ips(server))
 
