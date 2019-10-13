@@ -109,7 +109,7 @@ def extract_floating_ips(server):
         for net in server.addresses:
             for a in server.addresses[net]:
                 addrs = []
-                if a["OS-EXT-IPS:type"] == "floating":
+                if a["OS-EXT-IPS:type"] is "floating":
                     addrs.append(a["addr"])
             ips.extend(addrs)
     return ips
@@ -149,7 +149,7 @@ def add_floating_ip_to_server(server_name, network_name):
 def destroy_server(server_name):
     """Destroys the given server"""
     server = connection.compute.find_server(server_name)
-    if server != None:
+    if server is not None:
         print(f"\nDeleting server {server_name}...")
         ips = extract_floating_ips(server)
         for ip in ips:
@@ -172,7 +172,7 @@ def destroy_router(router_name, subnet_name):
     """Destroys the given router"""
     subnet = connection.network.find_subnet(subnet_name)
     router = connection.network.find_router(router_name)
-    if router != None:
+    if router is not None:
         print(f"\nDeleting interface for {subnet_name}...")
         connection.network.remove_interface_from_router(router, subnet.id)
         print(f"\nDeleting router {router_name}...")
@@ -185,7 +185,7 @@ def destroy_router(router_name, subnet_name):
 def destroy_subnet(subnet_name):
     """Destroys a given subnet if no interfaces are connected to it"""
     subnet = connection.network.find_subnet(subnet_name)
-    if subnet != None:
+    if subnet is not None:
         print(f"\nDeleting subnet {subnet_name}...")
         connection.network.delete_subnet(subnet, ignore_missing=True)
     else:
@@ -195,7 +195,7 @@ def destroy_subnet(subnet_name):
 def destroy_network(network_name):
     """Destroys a given network"""
     network = connection.network.find_network(network_name)
-    if network != None:
+    if network is not None:
         print(f"\nDeleting network {network_name}...")
         for subnet in network.subnet_ids:
             connection.network.delete(subnet)
@@ -208,7 +208,7 @@ def start_server(server_name):
     server = connection.compute.find_server(server_name)
     if server is not None:
         server = connection.compute.get_server(server.id)
-        if server.status != "ACTIVE":
+        if server.status is not "ACTIVE":
             print(f"\nStarting server {server_name}...")
             connection.compute.start_server(server)
         else:
@@ -233,10 +233,10 @@ def stop_server(server_name):
         )
     else:
         server = connection.compute.get_server(server.id)
-        if server.status != "SHUTOFF":
+        if server.status is not "SHUTOFF":
             print(f"\nStopping server {server_name}...")
             connection.compute.stop_server(server)
-            connection.compute.wait_for_server(server, status='SHUTOFF')
+            connection.compute.wait_for_server(server, status="SHUTOFF")
         else:
             print(f"\nServer {server_name} has already been stopped - skipping")
 
