@@ -214,7 +214,7 @@ def destroy_network(network_name):
     if network is not None:
         print(f"\nDeleting network {network_name}...")
         for subnet in network.subnet_ids:
-            print(f"\tDeleting subnet {subnet.id}...")
+            print(f"\tDeleting subnet {subnet}...")
             connection.network.delete(subnet)
         try:
             connection.network.delete_network(network, ignore_missing=True)
