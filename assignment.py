@@ -23,7 +23,6 @@ def create():
     utility.create_subnet(
         SUBNET_NAME, NETWORK_NAME,
         SUBNET_IP_VERSION, SUBNET_CIDR)
-    utility.find_public_network(PUBLIC_NETWORK_NAME)
     utility.create_router(
         ROUTER_NAME, PUBLIC_NETWORK_NAME)
     utility.add_interface_to_router(

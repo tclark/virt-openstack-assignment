@@ -85,6 +85,8 @@ def create_server(
             key_name=keypair.name, security_groups=[
                 {'sgid': security_group.id}]
         )
+        print('\tWaiting for server to start')
+        conn.compute.wait_for_server(server)
         print('\tCreated server')
     else:
         print('\tServer already exists - skipping')
@@ -137,13 +139,6 @@ def destroy_network(network_name):
         print('\tNetwork does not exist - skipping')
 
 
-def find_public_network(public_network_name):
-    public_net = conn.network.find_network(public_network_name)
-    if public_net is None:
-        print(f'\nCOULD NOT FIND NETWORK {public_network_name}')
-    return public_net
-
-
 def add_interface_to_router(router_name, subnet_name):
     print((
         f'\nAdding interface for {subnet_name}'
@@ -173,7 +168,6 @@ def add_floating_ip_to_server(server_name, network_name):
     print(f'\nAdding floating address to {server_name}...')
     server = conn.compute.get_server(server.id)
     if server.status == 'ACTIVE':
-        conn.compute.wait_for_server(server)
         server_addresses = server['addresses']['chril2-net']
         if len(server_addresses) < 2:
             floating_ip = conn.network.create_ip(floating_network_id=network.id)
