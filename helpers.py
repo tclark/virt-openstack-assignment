@@ -143,7 +143,7 @@ def add_floating_ip_to_server(server_name, network_name):
         )
         print(f'\tAdded floating address {floating_ip["floating_ip_address"]}')
     else:
-        print(f"{server_name} already has a floating IP address")
+        print(f"\t{server_name} already has a floating IP address")
 
 
 def destroy_server(server_name):
