@@ -130,7 +130,7 @@ def stop():
         get_server = conn.get_server(name_or_id=server)
         # print(get_server)
         if get_server:
-            if get_server["status"] == "ACTIVE":
+            if get_server["status"] != "SHUTOFF":
                 print("------- Stopping server {}... --------".format(server))
                 conn.compute.stop_server(get_server)
                 conn.compute.wait_for_server(
@@ -205,9 +205,10 @@ def status():
     """
     for server in server_list:
         get_server = conn.get_server(name_or_id=server)
-        # s = conn.compute.find_server(server)
         if get_server:
             print("Status of server {} is {}".format(server, get_server["status"]))
+            if get_server['public_v4']:
+                print("IP of server {} is {}".format(server, get_server["public_v4"]))
         else:
             print(
                 "Server {} can not be found. Please check wthether the server exists.".format(
