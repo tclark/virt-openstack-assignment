@@ -117,7 +117,7 @@ def add_floating_ip_to_server(server_name, network_name):
             floating_network_id=network.id)
         connection.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address)
-        print(f"Added address {floating_ip["floating_ip_address"]}")
+        print(f'Added address {floating_ip["floating_ip_address"]}')
     else:
         print(f"{server_name} already has a floating IP address")
 
