@@ -156,6 +156,9 @@ def destroy_server(server_name):
             address = connection.network.find_ip(ip)
             print(f"\nReleasing floating IP {ip}...")
             connection.network.delete_ip(address)
+            while True:
+                if connection.network.find_ip(ip) is None:
+                    break
         connection.compute.delete_server(server, ignore_missing=True)
         # Wait until server was deleted
         while True:
