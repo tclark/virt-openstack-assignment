@@ -10,7 +10,6 @@ SECURITY_GROUP = "assignment2"
 SUBNET_IP_VERSION = 4
 SUBNET_CIDR = "192.168.50.0/24"
 
-
 def create_network(network_name):
     """Creates a network"""
     network = connection.network.find_network(network_name)
@@ -19,7 +18,6 @@ def create_network(network_name):
         network = connection.network.create_network(name=network_name)
     else:
         print(f"\nNetwork {network_name} already exists - skipping")
-
 
 def create_subnet(subnet_name, network_name):
     """Creates a subnet withing the given network"""
@@ -35,7 +33,6 @@ def create_subnet(subnet_name, network_name):
             name=subnet_name, network_id=network.id, ip_version=SUBNET_IP_VERSION, cidr=SUBNET_CIDR)
     else:
         print(f"\nSubnet {subnet_name} already exists - skipping")
-
 
 #FIXME: this needs broken up
 def create_router(router_name, subnet_name, network_name):
@@ -57,7 +54,6 @@ def create_router(router_name, subnet_name, network_name):
         router = connection.network.add_interface_to_router(router, subnet.id)
     else:
         print(f"\nRouter {router_name} already exists - skipping")
-
 
 def create_server(server_name, network_name):
     """Creates a server and adds it to a given network"""
@@ -94,7 +90,6 @@ def create_server(server_name, network_name):
     else:
         print(f"\nServer {server_name} already exists - skipping")
 
-
 def extract_floating_ips(server):
     """Return a list of floating IPs of a Server as strings."""
     ips = []
@@ -105,7 +100,6 @@ def extract_floating_ips(server):
                 addrs.append(a["addr"])
         ips.extend(addrs)
     return ips
-
 
 def add_floating_ip_to_server(server_name, network_name):
     """Adds a floating ip to the given server from the given network"""
@@ -127,7 +121,6 @@ def add_floating_ip_to_server(server_name, network_name):
     else:
         print(f"{server_name} already has a floating IP address")
 
-
 def destroy_server(server_name):
     """Destroys the given server"""
     server = connection.compute.find_server(server_name)
@@ -136,7 +129,6 @@ def destroy_server(server_name):
         connection.compute.delete_server(server)
     else:
         print(f"\nServer {server_name} does not exist - skipping")
-
 
 def destroy_router(router_name, subnet_name):
     """Destroys the given router"""
@@ -150,7 +142,6 @@ def destroy_router(router_name, subnet_name):
     else:
         print(f"\nRouter {router_name} does not exist - skipping")
 
-
 def destroy_subnet(subnet_name):
     """Destroys a given subnet if no interfaces are connected to it"""
     subnet = connection.network.find_subnet(subnet_name)
@@ -160,7 +151,6 @@ def destroy_subnet(subnet_name):
     else:
         print(f"\nSubnet {subnet_name} does not exist - skipping")
 
-
 def destroy_network(network_name):
     """Destroys a given network"""
     network = connection.network.find_network(network_name)
@@ -169,3 +159,33 @@ def destroy_network(network_name):
         connection.network.delete_network(network)
     else:
         print(f"\nNetwork {network_name} does not exist - skipping")
+
+def start_server(server_name):
+    server = conn.compute.find_server(server_name)
+    if server is not None:
+        server = conn.compute.get_server(server.id)
+        if(server.status != 'ACTIVE'):
+            print(f'\nStarting server {server_name}...')
+            conn.compute.start_server(server)
+        else:
+            print(
+                f'\nServer {server_name} is already running - skipping')
+    else:
+        print((
+            f'\nServer {server_name} does not exist. To create it,'
+            ' run this script with the create option.'))
+
+def stop_server(server_name):
+    server = conn.compute.find_server(server_name)
+    if server is None:
+        print((
+            f'\nServer {server_name} does not exist. To create it,'
+            ' run this script with the create option.'))
+    else:
+        server = conn.compute.get_server(server.id)
+        if(server.status != 'SHUTOFF'):
+            print(f'\nStopping server {server_name}...')
+            conn.compute.stop_server(server)
+        else:
+            print(
+                f'\nServer {server_name} has already been stopped - skipping')

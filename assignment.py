@@ -4,7 +4,7 @@ import argparse
 from helpers import (create_subnet, create_router, create_server,
                      create_network, add_floating_ip_to_server,
                      destroy_server, destroy_router, destroy_subnet,
-                     destroy_network)
+                     destroy_network, start_server, stop_server)
 
 ROUTER_NAME = "nichtj3-rtr"
 
@@ -34,7 +34,8 @@ def run():
     Start  a set of Openstack virtual machines
     if they are not already running.
     """
-    pass
+    for server in SERVERS:
+        start_server(server)
 
 
 def stop():
@@ -42,7 +43,8 @@ def stop():
     Stop  a set of Openstack virtual machines
     if they are running.
     """
-    pass
+    for server in SERVERS:
+        stop_server(server)
 
 
 def destroy():
