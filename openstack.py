@@ -211,7 +211,7 @@ def destroy():
         print('Delete App server')
 
     #delete DB server
-    if DB_SERVER is None
+    if DB_SERVER is None:
         print('DB Server already deleted')
     else:
         print("Deleting DB Server...")
