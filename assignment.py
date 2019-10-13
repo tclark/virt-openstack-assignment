@@ -164,26 +164,38 @@ def destroy():
     n_network = conn.network.find_network('shinrl1-net')
     n_subnet = conn.network.find_subnet('shinrl1-subnet')
     n_webserver = conn.compute.find_server('shinrl1-web')
+    n_appserver = conn.compute.find_server('shinrl1-app')
+    n_dbserver = conn.compute.find_server('shinrl1-db')
+    if n_webserver:
+        conn.compute.delete_server(n_webserver)
+        print("webserver deleted")
+    else:
+        print("webserver deletion error")
+    if n_appserver:
+        conn.compute.delete_server(n_appserver)
+        print("appserver deleted")
+    else:
+        print("appserver deletion error")
+    if n_dbserver:
+        conn.compute.delete_server(n_dbserver)
+        print("dbserver deleted")
+    else:
+        print("dbserver deletion error")
     if n_router:
         conn.network.delete_router(n_router, ignore_missing=True)
         print("rtr deleted")
     else:
         print("rtr deletion error")
-    if n_network:
-        conn.network.delete_network('shinrl1-net', ignore_missing=True)
-        print("network deleted")
-    else:
-        print("network deletion error")
     if n_subnet:
-        conn.network.delete_subnet('shinrl1-subnet')
+        conn.network.delete_subnet(n_subnet, ignore_missing=True)
         print("subnet deleted")
     else:
         print("subnet deletion error")
-    if n_webserver:
-        conn.compute.delete_server('shinrl1-web')
-        print("webserver deleted")
+    if n_network:
+        conn.network.delete_network(n_network, ignore_missing=True)
+        print("network deleted")
     else:
-        print("webserver deletion error")
+        print("network deletion error")
     pass
 
 def status():
