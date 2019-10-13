@@ -59,13 +59,13 @@ def create():
     for servername in SERVER_LIST: # Running for loop through servername array.
         n_server = conn.compute.find_server(servername) # Checking if server already exists.
         if n_server is None: # If server doesnt exist.
-            print(f'Creating Server: {servername}...')
+            print(f'Creating Server: {servername}... Please Wait..')
 
             server = conn.compute.create_server(
                 name=servername, image_id=image.id, flavor_id=flavour.id,
                 networks=[{'uuid': n_network.id}], key_name=keypair.name,
                 security_groups=[{'name': security_group.name}]) # Creating server instance, passing all constants defined above.
-
+            conn.compute.wait_for_server(server)
             if servername == 'tiddfc1-web': # Assigning floating ip to web server.
                 conn.compute.wait_for_server(server) #Waiting for server to finish creation.
                 conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address) #Adding floating ip.
@@ -160,7 +160,7 @@ def status():
         if c_server is not None: # If current server exists.
             c_server = conn.compute.get_server(c_server) # Get current server information.
             for info in c_server.addresses[NETWORK]: # c.server.addresses returns a large array of information on the server, run loop to filter through for each server.
-                print(f'Server: {servername} // Status: {c_server.status} // Addresses: ' + info['addr'] + ' // Type: ' + info['OS-EXT-IPS:type']) # Pull out addr which is address and OS-EXT-IPS:type which is the type of IP.
+                print(f'Server: {servername} // Status: {c_server.status} // Address: ' + info['addr'] + ' // Type: ' + info['OS-EXT-IPS:type']) # Pull out addr which is address and OS-EXT-IPS:type which is the type of IP.
                 ## print(f'{c_server.addresses}')
         else:
             print(f'Error: {servername} Does Not Exist..') # Log non existing error out to user.
