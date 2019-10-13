@@ -189,3 +189,17 @@ def stop_server(server_name):
         else:
             print(
                 f'\nServer {server_name} has already been stopped - skipping')
+
+def get_server_status(server_name):
+    server = conn.compute.find_server(server_name)
+    if server is None:
+        print((
+            f'\nServer {server_name} does not exist. To create it,'
+            ' run this script with the create option.'))
+    else:
+        server = conn.compute.get_server(server.id)
+        print(f'\nGetting status of server {server_name}...')
+        print(server.status)
+        addresses = server['addresses']['chril2-net']
+        for address in addresses:
+            print(address['addr'])

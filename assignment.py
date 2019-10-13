@@ -4,7 +4,8 @@ import argparse
 from helpers import (create_subnet, create_router, create_server,
                      create_network, add_floating_ip_to_server,
                      destroy_server, destroy_router, destroy_subnet,
-                     destroy_network, start_server, stop_server)
+                     destroy_network, start_server,
+                     stop_server,get_server_status)
 
 ROUTER_NAME = "nichtj3-rtr"
 
@@ -64,7 +65,8 @@ def status():
     Print a status report on the OpenStack
     virtual machines created by the create action.
     """
-    pass
+    for server in SERVERS:
+        get_server_status(server)
 
 
 ### You should not modify anything below this line ###
