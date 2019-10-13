@@ -69,7 +69,7 @@ def create():
     '''create and assign floating IP'''
     server = conn.compute.find_server('schrsa1-web')
     floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
-    conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
+    #conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
     pass
 
 def run():
@@ -156,7 +156,7 @@ def status():
         else:
             gotserver = conn.compute.get_server(server)
             status = gotserver.status
-            print(serv + "is currently " + status)
+            print(serv + " is currently " + gotserver.status)
     pass
 
 
