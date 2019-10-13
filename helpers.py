@@ -141,7 +141,7 @@ def add_floating_ip_to_server(server_name, network_name):
         connection.compute.add_floating_ip_to_server(
             server, floating_ip.floating_ip_address
         )
-        print(f'Added address {floating_ip["floating_ip_address"]}')
+        print(f'\tAdded floating address {floating_ip["floating_ip_address"]}')
     else:
         print(f"{server_name} already has a floating IP address")
 
@@ -204,6 +204,7 @@ def destroy_network(network_name):
     if network is not None:
         print(f"\nDeleting network {network_name}...")
         for subnet in network.subnet_ids:
+            print(f"\tDeleting subnet {subnet.name}...")
             connection.network.delete(subnet)
         try:
             connection.network.delete_network(network, ignore_missing=True)
