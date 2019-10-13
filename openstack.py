@@ -174,12 +174,28 @@ def destroy():
         conn.network.delete_subnet(example_subnet, ignore_missing=False)
     conn.network.delete_network(example_network, ignore_missing=False) 
    '''
-    pass
+   #delete server 
+    for servername in ALLSERVERSLIST:
+        server = conn.find_server(servername) #find each server from the list
+        if server.status == 'ACTIVE':
+            conn.compute.delete_server(server)
+        else:
+            print("server already deleted")
+   #conn.network.delete_network(NETWORK, ignore_missing=False)
+        pass
 
 def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    '''
+    web_server = conn.compute.find_server(WEB_SERVER)
+    app_server = conn.compute.find_server(APP_SERVER)
+    db_server = conn.compute.find_server(DB_SERVER)
+    '''
+    for servername in ALLSERVERSLIST:
+        server = conn.compute.find_server(server)
+        if server
     pass
 
 
