@@ -133,7 +133,7 @@ def add_floating_ip_to_server(server_name, network_name):
     network = connection.network.find_network(network_name)
     server = connection.compute.find_server(server_name)
     try:
-        if extract_floating_ips(server) is None:
+        if extract_floating_ips(server):
             print(f"\nAdding floating address to {server_name}...")
             floating_ip = connection.network.create_ip(floating_network_id=network.id)
             connection.compute.add_floating_ip_to_server(
