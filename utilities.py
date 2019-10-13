@@ -164,12 +164,13 @@ def start_server(server_name):
             f'\nServer {server_name} does not exist. To create it,'
             ' run this script with the create option.'))
     else:
+        server = conn.compute.get_server(server.id)
         if(server.status != 'ACTIVE'):
             print(f'\nStarting server {server_name}...')
             conn.compute.start_server(server)
         else:
             print(
-                f'\nServer {server_name} has already been started - skipping')
+                f'\nServer {server_name} is already running - skipping')
 
 
 def stop_server(server_name):
@@ -179,6 +180,7 @@ def stop_server(server_name):
             f'\nServer {server_name} does not exist. To create it,'
             ' run this script with the create option.'))
     else:
+        server = conn.compute.get_server(server.id)
         if(server.status != 'SHUTOFF'):
             print(f'\nStopping server {server_name}...')
             conn.compute.stop_server(server)
