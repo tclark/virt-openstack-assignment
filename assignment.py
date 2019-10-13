@@ -214,9 +214,30 @@ def status():
     web_ip_address = n_webserver.addresses['shinrl1-net'][0]["addr"] 
     n_webname = n_webserver.name
     n_webstatus = n_webserver.status
-
-    status = "%s is %s and has the ip address %s"%(n_webname, n_webstatus, web_ip_address)
-    print(status)
+    app_ip_address = n_appserver.addresses['shinrl1-net'][0]["addr"] 
+    n_appname = n_appserver.name
+    n_appstatus = n_appserver.status
+    db_ip_address = n_dbserver.addresses['shinrl1-net'][0]["addr"] 
+    n_dbname = n_dbserver.name
+    n_dbstatus = n_dbserver.status
+    if n_webserver:
+        status = "%s is %s and has the ip address %s"%(n_webname, n_webstatus, web_ip_address)
+        print(status)
+    else:
+        status = "%s cannnot be found"%(n_webserver)
+        print(status)
+    if n_appserver:
+        status = "%s is %s and has the ip address %s"%(n_appname, n_appstatus, app_ip_address)
+        print(status)
+    else:
+        status = "%s cannnot be found"%(n_appserver)
+        print(status)
+    if n_dbserver:
+        status = "%s is %s and has the ip address %s"%(n_dbname, n_dbstatus, db_ip_address)
+        print(status)
+    else:
+        status = "%s cannnot be found"%(n_dbserver)
+        print(status)
     def list_networks(conn):
         print("List Networks:")
 
