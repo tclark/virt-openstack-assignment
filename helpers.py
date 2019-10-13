@@ -229,7 +229,7 @@ def destroy_subnet(subnet_name):
             print(f"DELETING SUBNET {subnet_name} FAILED")
             print(e)
             print(
-                f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
+                f"\nThis may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
 
     else:
@@ -250,7 +250,7 @@ def destroy_network(network_name):
             print(f"DELETING NETWORK {network_name} FAILED")
             print(e)
             print(
-                f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
+                f"\nThis may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
     else:
         doesnt_exist("Network", network_name)
