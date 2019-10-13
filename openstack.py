@@ -1,6 +1,32 @@
 import argparse
 import openstack
 
+# connect to OpenStack
+conn = openstack.connect(cloud_name='openstack', region_name='nz-hlz-1a')
+
+# Variables
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
+FLAVOR = 'c1.c1r1'
+SECURITYGROUP = "assignment2"
+KEYPAIR = 'chauw2key'
+PUBLICNET = 'public-net'
+CIDR = '192.168.50.0/24'
+NETWORK = 'chauw2-net'
+SUBNET = 'chauw2-subnet'
+ROUTER = 'chauw2-rtr'
+ALLSERVERSLIST = ['chauw2-web', 'chauw2-app', 'chauw2-db']
+WEB_SERVER = 'chauw2-web'
+APP_SERVER = 'chauw2-app'
+DB_SERVER = 'chauw2-db'
+
+# Create openstack rescore
+# https://docs.openstack.org/openstacksdk/latest/user/guides/compute.html
+image = conn.compute.find_image(IMAGE)
+flavor = conn.compute.find_flavor(FLAVOR)
+keypair = conn.compute.find_keypair(KEYPAIR)
+security_group = conn.network.find_security_group(SECURITYGROUP)
+publicnet = conn.network.find_network(PUBLICNET)
+
 def create():
     ''' Create a set of Openstack resources '''
      #Find network
