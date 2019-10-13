@@ -53,6 +53,8 @@ def create():
     else:
         print ("Router Borked")
 
+    floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
+
     #reaete servers
     if not n_webserver:
         
@@ -62,17 +64,16 @@ def create():
         webserver = conn.compute.wait_for_server(webserver)
         conn.compute.add_security_group_to_server(webserver, n_security_group)
         print("shinrl1-web up")
-        floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
 
         if n_webserver:
             conn.compute.wait_for_server(n_webserver)
             conn.compute.add_floating_ip_to_server(n_webserver, floating_ip.floating_ip_address)
             print("yeet")
+        else:
+            print("floating ip borked")
            #floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
         #conn.compute.add_floating_ip_to_server(webserver, floating_ip.floating_ip_address)
-        
-    else:
-        print("web server borked")
+
     if not n_appserver:
         appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
         appserver = conn.compute.wait_for_server(appserver)
@@ -91,15 +92,7 @@ def create():
         print("db server borked")
 
     
-        
 
-    if not n_appserver:
-        appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
-        appserver = conn.compute.wait_for_server(appserver)
-        conn.compute.add_security_group_to_server(appserver, n_security_group)
-        print("shinrl1-app up")
-    else:
-        print("db server borked")
         
     
     pass
