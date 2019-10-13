@@ -4,126 +4,137 @@ conn = openstack.connect(could_name='openstack')
 
 
 def create_network(network_name):
+    print(f'\nCreating network {network_name}...')
+
     network = conn.network.find_network(network_name)
     if network is None:
-        print(f'\nCreating network {network_name}...')
         network = conn.network.create_network(name=network_name)
+        print('\tNetwork created')
     else:
-        print(f'\nNetwork {network_name} already exists - skipping')
+        print('\tNetwork already exists - skipping')
 
 
 def create_subnet(subnet_name, network_name, subnet_ip_version, subnet_cidr):
+    print(f'\nCreating subnet {subnet_name}...')
+
     network = conn.network.find_network(network_name)
     if network is None:
-        print(f'\nCOULD NOT FIND NETWORK {network_name}')
+        print(f'\tCOULD NOT FIND NETWORK {network_name}')
 
     subnet = conn.network.find_subnet(subnet_name)
     if subnet is None:
-        print(f'\nCreating subnet {subnet_name}...')
         subnet = conn.network.create_subnet(
             name=subnet_name,
             network_id=network.id,
             ip_version=subnet_ip_version,
             cidr=subnet_cidr)
+        print('\tSubnet created')
     else:
-        print(f'\nSubnet {subnet_name} already exists - skipping')
+        print('\tSubnet already exists - skipping')
 
 
-def create_router(router_name, subnet_name, network_name):
-    subnet = conn.network.find_subnet(subnet_name)
-    if subnet is None:
-        print(f'\nCOULD NOT FIND SUBNET {subnet_name}')
+def create_router(router_name, network_name):
+    print(f'\nCreating router {router_name}...')
 
     network = conn.network.find_network(network_name)
     if network is None:
-        print(f'\nCOULD NOT FIND NETWORK {network_name}')
+        print(f'\tCOULD NOT FIND NETWORK {network_name}')
 
     router = conn.network.find_router(router_name)
     if router is None:
-        print(f'\nCreating router {router_name}...')
         router = conn.network.create_router(
             name=router_name,
             external_gateway_info={
                 'network_id': network.id
             })
-        router = conn.network.add_interface_to_router(router, subnet.id)
+        print('\tRouter created')
     else:
-        print(f'\nRouter {router_name} already exists - skipping')
+        print('\tRouter already exists - skipping')
 
 
 def create_server(
         server_name, image_name, flavour_name,
         keypair_name, security_group_name, network_name):
+    print(f'\nCreating server {server_name}...')
+
     image = conn.compute.find_image(image_name)
     if image is None:
-        print(f'\nCOULD NOT FIND IMAGE {image_name}')
+        print(f'\tCOULD NOT FIND IMAGE {image_name}')
 
     flavour = conn.compute.find_flavor(flavour_name)
     if flavour is None:
-        print(f'\nCOULD NOT FIND FLAVOUR {flavour_name}')
+        print(f'\tCOULD NOT FIND FLAVOUR {flavour_name}')
 
     keypair = conn.compute.find_keypair(keypair_name)
     if keypair is None:
-        print(f'\nCOULD NOT FIND KEYPAIR {keypair_name}')
+        print(f'\tCOULD NOT FIND KEYPAIR {keypair_name}')
 
     security_group = conn.network.find_security_group(security_group_name)
     if security_group is None:
-        print(f'\nCOULD NOT FIND SECURITY GROUP {security_group_name}')
+        print(f'\tCOULD NOT FIND SECURITY GROUP {security_group_name}')
 
     network = conn.network.find_network(network_name)
     if network is None:
-        print(f'\nCOULD NOT FIND NETWORK {network_name}')
+        print(f'\tCOULD NOT FIND NETWORK {network_name}')
 
     server = conn.compute.find_server(server_name)
     if server is None:
-        print(f'\nCreating server {server_name}...')
         server = conn.compute.create_server(
             name=server_name, image_id=image.id,
             flavor_id=flavour.id, networks=[{'uuid': network.id}],
             key_name=keypair.name, security_groups=[
                 {'sgid': security_group.id}]
         )
+        print('\tCreated server')
     else:
-        print(f'\nServer {server_name} already exists - skipping')
+        print('\tServer already exists - skipping')
 
 
 def destroy_server(server_name):
+    print(f'\nDeleting server {server_name}...')
+
     server = conn.compute.find_server(server_name)
     if server is not None:
-        print(f'\nDeleting server {server_name}...')
         conn.compute.delete_server(server)
+        print('\tDeleted server')
     else:
-        print(f'\nServer {server_name} does not exist - skipping')
+        print('\tServer does not exist - skipping')
 
 
 def destroy_router(router_name, subnet_name):
+    print(f'\nDeleting router {router_name}...')
+
     subnet = conn.network.find_subnet(subnet_name)
     router = conn.network.find_router(router_name)
     if router is not None:
-        print(f'\nDeleting router {router_name}...')
         router_no_interface = conn.network.remove_interface_from_router(
             router, subnet.id)
         conn.network.delete_router(router_no_interface)
+        print('\tDeleted router')
     else:
-        print(f'\nRouter {router_name} does not exist - skipping')
+        print('\tRouter does not exist - skipping')
 
 
 def destroy_subnet(subnet_name):
+    print(f'\nDeleting subnet {subnet_name}...')
+
     subnet = conn.network.find_subnet(subnet_name)
     if subnet is not None:
-        print(f'\nDeleting subnet {subnet_name}...')
         conn.network.delete_subnet(subnet)
+        print('\tDeleted subnet')
     else:
         print(f'\nSubnet {subnet_name} does not exist - skipping')
 
 
 def destroy_network(network_name):
+    print(f'\nDeleting network {network_name}...')
+
     network = conn.network.find_network(network_name)
     if network is not None:
-        print(f'\nDeleting network {network_name}...')
         conn.network.delete_network(network)
+        print('\tDeleted network')
     else:
-        print(f'\nNetwork {network_name} does not exist - skipping')
+        print('\tNetwork does not exist - skipping')
 
 
 def find_public_network(public_network_name):
@@ -131,6 +142,23 @@ def find_public_network(public_network_name):
     if public_net is None:
         print(f'\nCOULD NOT FIND NETWORK {public_network_name}')
     return public_net
+
+
+def add_interface_to_router(router_name, subnet_name):
+    print((
+        f'\nAdding interface for {subnet_name}'
+        f' to {router_name}'))
+
+    subnet = conn.network.find_subnet(subnet_name)
+    if subnet is None:
+        print(f'\nCOULD NOT FIND SUBNET {subnet_name}')
+
+    router = conn.network.find_router(router_name)
+    if router is not None:
+        router = conn.network.add_interface_to_router(router, subnet.id)
+        print('\tInterface added')
+    else
+    print('\tCOULD NOT FIND ROUTER')
 
 
 def add_floating_ip_to_server(server_name, network_name):

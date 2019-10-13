@@ -25,8 +25,10 @@ def create():
         SUBNET_IP_VERSION, SUBNET_CIDR)
     utility.find_public_network(PUBLIC_NETWORK_NAME)
     utility.create_router(
-        ROUTER_NAME, SUBNET_NAME,
-        PUBLIC_NETWORK_NAME)
+        ROUTER_NAME, PUBLIC_NETWORK_NAME)
+    utility.add_interface_to_router(
+        ROUTER_NAME, SUBNET_NAME
+    )
 
     for server_name in SERVER_NAMES:
         utility.create_server(
