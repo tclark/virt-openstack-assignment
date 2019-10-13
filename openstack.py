@@ -1,35 +1,9 @@
 import argparse
 import openstack
 
-# connect to OpenStack
-conn = openstack.connect(cloud_name='openstack', region_name='nz-hlz-1a')
-
-# Variables
-IMAGE = 'ubuntu-minimal-16.04-x86_64'
-FLAVOR = 'c1.c1r1'
-SECURITYGROUP = "assignment2"
-KEYPAIR = 'chauw2key'
-PUBLICNET = 'public-net'
-CIDR = '192.168.50.0/24'
-NETWORK = 'chauw2-net'
-SUBNET = 'chauw2-subnet'
-ROUTER = 'chauw2-rtr'
-ALLSERVERSLIST = ['chauw2-web', 'chauw2-app', 'chauw2-db']
-WEB_SERVER = 'chauw2-web'
-APP_SERVER = 'chauw2-app'
-DB_SERVER = 'chauw2-db'
-
-# Create openstack rescore
-# https://docs.openstack.org/openstacksdk/latest/user/guides/compute.html
-image = conn.compute.find_image(IMAGE)
-flavor = conn.compute.find_flavor(FLAVOR)
-keypair = conn.compute.find_keypair(KEYPAIR)
-security_group = conn.network.find_security_group(SECURITYGROUP)
-publicnet = conn.network.find_network(PUBLICNET)
-
 def create():
     ''' Create a set of Openstack resources '''
-    #Find network
+     #Find network
     print("Searching Network...")
     network = conn.network.find_network(NETWORK)
     if network is None:
@@ -74,7 +48,6 @@ def create():
               key_name=keypair.name ,
               security_groups=[{"sgid":security_group.id}]
         )
-        
     else:
         print(WEB_SERVER,"WEB server already exist in the network")
         print("------------------------------")
@@ -110,17 +83,17 @@ def create():
               networks=[{"uuid": conn.compute.network.find_network(NETWORK).id}], 
               key_name=keypair.name ,
               security_groups=[{"sgid":security_group.id}]
-        )
-        
+        )        
     else:
         print(APP_SERVER,"APP server already exist in the network")
         print("------------------------------")
+    pass
 
 def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
-    '''
+     '''
     web_server = conn.compute.find_server(WEB_SERVER)
     if web_server is None:
         print("Cannot find server")
@@ -129,9 +102,7 @@ def run():
         web_server = conn.compute.start_server(WEB_SERVER)
         print("Waiting for WEB server to come up")
         web_server = conn.compute.wait_for_server(web_server)
-
     app_server = conn.compute.find_server(APP_SERVER)
-
     db_server = conn.compute.find_server(DB_SERVER)
     '''
     for servername in ALLSERVERSLIST:
@@ -150,16 +121,17 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
-    app_server = conn.compute.find_server(APP_SERVER)
-    db_server = conn.compute.find_server(DB_SERVER)
+    #app_server = conn.compute.find_server(APP_SERVER)
+    #db_server = conn.compute.find_server(DB_SERVER)
 
     for servername in ALLSERVERSLIST:
         server = conn.find_server(servername) #find each server from the list
         if server.status == 'ACTIVE':
+            print("The server is currently active")
+            print("Stopping server now")
             conn.compute.stop_server(server)
         else:
             print("server already stop")
-
     pass
 
 def destroy():
@@ -182,20 +154,63 @@ def destroy():
         else:
             print("server already deleted")
    #conn.network.delete_network(NETWORK, ignore_missing=False)
-        pass
+
+    '''       
+     for servername in ALLSERVERSLIST:
+    server = conn.compute.find_server(server)
+    if server is None:
+    print("Server deleted/does not exist")
+    '''
+    pass
 
 def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    '''
     web_server = conn.compute.find_server(WEB_SERVER)
     app_server = conn.compute.find_server(APP_SERVER)
     db_server = conn.compute.find_server(DB_SERVER)
-    '''
-    for servername in ALLSERVERSLIST:
-        server = conn.compute.find_server(server)
-        if server
+    
+    print("----Server Status----")
+        if web_server is None:
+            print("Web server doesn't exist")
+        else:
+            print("Web server status")
+            web_server = conn.compute.get_server(web_server.id)
+            print(web_server.name)
+            web_status = web_server.status
+            print("Status:", str(web_status))
+            web_ip = conn.compute.server_ips(web_server.id)
+            print("Web server IP address:")
+            for address in web_ip:
+            print(str(address.network_label), str(address.address))
+			
+		if app_server is None:
+			 print("APP server doesn't exist")
+		else:
+			print("APP server status")
+            app_server = conn.compute.get_server(app_server.id)
+            print(app_server.name)
+            app_status = app_server.status
+            print("Status:", str(app_status))
+            app_ip = conn.compute.server_ips(app_server.id)
+            print("APP server IP address:")
+            for address in app_ip:
+            print(str(address.network_label), str(address.address))
+		
+		if db_server is None:
+			print("DB server doesn't exist")
+		else:
+			print("DB server status")
+            db_server = conn.compute.get_server(db_server.id)
+            print(db_server.name)
+            db_status = db_server.status
+            print("Status:", str(db_status))
+            db_ip = conn.compute.server_ips(db_server.id)
+            print("DB server IP address:")
+            for address in db_ip:
+            print(str(address.network_label), str(address.address))
+		print("End of the status report")
     pass
 
 
