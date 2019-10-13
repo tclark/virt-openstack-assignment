@@ -37,8 +37,9 @@ def create_subnet(subnet_name, network_name):
                 cidr=SUBNET_CIDR,
             )
         except:
+            print(f"CREATING SUBNET {subnet_name} FAILED")
             if network_name is None:
-                print(f"COULD NOT FIND NETWORK {network_name}")
+                print(f"\tCOULD NOT FIND NETWORK {network_name}")
     else:
         print(f"\nSubnet {subnet_name} already exists - skipping")
 
@@ -58,10 +59,11 @@ def create_router(router_name, subnet_name, network_name):
             )
             router = connection.network.add_interface_to_router(router, subnet.id)
         except:
+            print(f"CREATING ROUTER {router_name} FAILED")
             if network is None:
-                print(f"COULD NOT FIND NETWORK {network_name}")
+                print(f"\tCOULD NOT FIND NETWORK {network_name}")
             if subnet is None:
-                print(f"COULD NOT FIND SUBNET {subnet_name}")
+                print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
     else:
         print(f"\nRouter {router_name} already exists - skipping")
 
@@ -88,16 +90,17 @@ def create_server(server_name, network_name):
                 security_groups=[{"sgid": security_group.id}],
             )
         except:
+            print(f"CREATING SERVER {server_name} FAILED")
             if security_group is None:
-                print(f"COULD NOT FIND SECURITY GROUP {SECURITY_GROUP}")
+                print(f"\tCOULD NOT FIND SECURITY GROUP {SECURITY_GROUP}")
             if network is None:
-                print(f"COULD NOT FIND NETWORK {network_name}")
+                print(f"\tCOULD NOT FIND NETWORK {network_name}")
             if keypair is None:
-                print(f"COULD NOT FIND KEYPAIR {KEYPAIR}")
+                print(f"\tCOULD NOT FIND KEYPAIR {KEYPAIR}")
             if flavour is None:
-                print(f"COULD NOT FIND FLAVOUR {FLAVOUR}")
+                print(f"\tCOULD NOT FIND FLAVOUR {FLAVOUR}")
             if image is None:
-                print(f"COULD NOT FIND IMAGE {IMAGE}")
+                print(f"\tCOULD NOT FIND IMAGE {IMAGE}")
     else:
         print(f"\nServer {server_name} already exists - skipping")
 
@@ -141,10 +144,11 @@ def add_floating_ip_to_server(server_name, network_name):
         else:
             print(f"\t{server_name} already has a floating IP address")
     except:
+        print(f"\tADDING FLOATING IP TO {server_name} FAILED")
         if server is None:
-            print(f"\tCOULD NOT FIND SERVER {server_name}")
+            print(f"\t\tCOULD NOT FIND SERVER {server_name}")
         if network is None:
-            print(f"\tCOULD NOT FIND NETWORK {network_name}")
+            print(f"\t\tCOULD NOT FIND NETWORK {network_name}")
 
 
 def destroy_server(server_name):
@@ -181,6 +185,7 @@ def destroy_router(router_name, subnet_name):
             print(f"\tFinishing up deleting router {router_name}...")
             connection.network.delete_router(router, ignore_missing=True)
         except:
+            print("DELETING ROUTER {router_name} FAILED")
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
     else:
@@ -195,8 +200,9 @@ def destroy_subnet(subnet_name):
         try:
             connection.network.delete_subnet(subnet, ignore_missing=True)
         except:
+            print("DELETING SUBNET {subnet_name} FAILED")
             print(
-                f"Failed to delete subnet {subnet_name} this may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
+                f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
 
     else:
@@ -214,8 +220,9 @@ def destroy_network(network_name):
         try:
             connection.network.delete_network(network, ignore_missing=True)
         except:
+            print("DELETING NETWORK {network_name} FAILED")
             print(
-                f"Failed to delete network {network_name} this may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
+                f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
     else:
         print(f"\nNetwork {network_name} does not exist - skipping")
