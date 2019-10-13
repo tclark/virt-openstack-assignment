@@ -230,9 +230,9 @@ def destroy_network(network_name):
 
 def start_server(server_name):
     server = connection.compute.find_server(server_name)
-    if server is None:
+    if server is not None:
         server = connection.compute.get_server(server.id)
-        if server.status != "ACTIVE" or server.status != "BUILD" :
+        if server.status != "ACTIVE" and server.status != "BUILD":
             print(f"\nStarting server {server_name}...")
             connection.compute.start_server(server)
         else:
