@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 
 import argparse
-from helpers import (create_subnet, create_router, create_server,
-                     create_network, add_floating_ip_to_server,
-                     destroy_server, destroy_router, destroy_subnet,
-                     destroy_network, start_server,
-                     stop_server,get_server_status)
+from helpers import (
+    create_subnet,
+    create_router,
+    create_server,
+    create_network,
+    add_floating_ip_to_server,
+    destroy_server,
+    destroy_router,
+    destroy_subnet,
+    destroy_network,
+    start_server,
+    stop_server,
+    get_server_status,
+)
 
 ROUTER_NAME = "nichtj3-rtr"
 
@@ -26,7 +35,7 @@ def create():
     create_router(ROUTER_NAME, SUBNET_NAME, PUBLIC_NETWORK_NAME)
     for server_name in SERVERS:
         create_server(server_name, NETWORK_NAME)
-        if(server_name is WEB_SERVER):
+        if server_name is WEB_SERVER:
             add_floating_ip_to_server(server_name, PUBLIC_NETWORK_NAME)
 
 
@@ -72,8 +81,9 @@ def status():
 ### You should not modify anything below this line ###
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("operation",
-                        help='One of "create", "run", "stop", "destroy", or "status"')
+    parser.add_argument(
+        "operation", help='One of "create", "run", "stop", "destroy", or "status"'
+    )
     args = parser.parse_args()
     operation = args.operation
 
@@ -82,9 +92,10 @@ if __name__ == "__main__":
         "run": run,
         "stop": stop,
         "destroy": destroy,
-        "status": status
+        "status": status,
     }
 
-    action = operations.get(operation, lambda: print(
-        "{}: no such operation".format(operation)))
+    action = operations.get(
+        operation, lambda: print("{}: no such operation".format(operation))
+    )
     action()
