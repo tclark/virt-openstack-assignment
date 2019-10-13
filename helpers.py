@@ -98,6 +98,7 @@ def create_server(server_name, network_name):
                 key_name=keypair.name,
                 security_groups=[{"sgid": security_group.id}],
             )
+            connection.compute.wait_for_server(server)
         except:
             print(f"CREATING SERVER {server_name} FAILED")
             if security_group is None:
