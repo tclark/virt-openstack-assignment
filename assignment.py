@@ -112,7 +112,19 @@ def run():
         print("shinrl1-web not found, cannot start")
     else:
         conn.compute.start_server(n_webserver.id)
-        print("webserver started")
+        print("webserver started"
+                )
+    if not n_appserver:
+        print("shinrl1-app not found, cannot start")
+    else:
+        conn.compute.start_server(n_appserver.id)
+        print("appserver started")
+    if not n_dbserver:
+        print("shinrl1-db not found, cannot start")
+    else:
+        conn.compute.start_server(n_dbserver.id)
+        print("dbserver started")
+
     pass
 
 def stop():
@@ -128,8 +140,21 @@ def stop():
     else:
         conn.compute.stop_server(n_webserver.id)
         print("webserver stopped")
-    pass
 
+    if not n_appserver:
+        print("appserver not found, cannot stop")
+    else:
+        conn.compute.stop_server(n_appserver.id)
+        print("appserver stopped")
+
+    if not n_dbserver:
+        print("cbserver not found, cannot stop")
+    else:
+        conn.compute.stop_server(n_dbserver.id)
+        print("dbserver stopped")
+                                              
+
+    pass
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
