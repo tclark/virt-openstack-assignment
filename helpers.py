@@ -208,6 +208,9 @@ def destroy_router(router_name, subnet_name):
             router = connection.network.remove_interface_from_router(router, subnet.id)
             print(f"\tFinishing up deleting router {router_name}...")
             connection.network.delete_router(router, ignore_missing=True)
+            while True:
+                if connection.network.find_router(router_name):
+                    break
         except Exception as e:
             print(f"DELETING ROUTER {router_name} FAILED")
             if subnet is None:
