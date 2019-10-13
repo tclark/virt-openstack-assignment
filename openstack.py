@@ -172,7 +172,7 @@ def destroy():
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
     subnet = conn.netowork.find_subnet(SUBNET)
-
+    server = conn.compute.find_server(WEB_SERVER)
     '''
     for example_subnet in example_network.subnet_ids:
         conn.network.delete_subnet(example_subnet, ignore_missing=False)
@@ -190,15 +190,15 @@ def destroy():
    #conn.network.delete_network(NETWORK, ignore_missing=False)
    '''
    #delete WEB server
-    if WEB_SERVER is None:
+    if server is None:
         print("Web Sever already deleted")
     else:
         print("Deleting Web Server...")
-        conn.compute.get_server(WEB_SERVER) #get server
+        conn.compute.get_server(server) #get server
         #con.compute.stop_server(WEB_SERVER) #stop server if didnt stop
-        webip = conn.compute.server_ips(WEB_SERVER.id) #find web ip address
-        conn.network.remove_floating_ip_from_server(WEB_SERVER,webip)
-        conn.compute.delete_server(WEB_SERVER) #delete server
+        webip = conn.compute.server_ips(server.id) #find web ip address
+        conn.network.remove_floating_ip_from_server(server,webip)
+        conn.compute.delete_server(server) #delete server
        
     #delete APP server
     if APP_SERVER is None:
