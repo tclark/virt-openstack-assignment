@@ -127,24 +127,24 @@ def extract_all_ips(server):
 
 def add_floating_ip_to_server(server_name, network_name):
     """Adds a floating ip to the given server from the given network"""
+    print(f"\tAdding floating address to {server_name}...")
+
     network = connection.network.find_network(network_name)
     server = connection.compute.find_server(server_name)
-
-    if not extract_floating_ips(server):
-        floating_ip = connection.network.create_ip(floating_network_id=network.id)
-        print(f"\tAdding floating address...")
-        try:
+    try:
+        if not extract_floating_ips(server):
+            floating_ip = connection.network.create_ip(floating_network_id=network.id)
             connection.compute.add_floating_ip_to_server(
                 server, floating_ip.floating_ip_address
             )
             print(f'\tAdded floating address {floating_ip["floating_ip_address"]}')
-        except:
-            if server is None:
-                print(f"\nCOULD NOT FIND SERVER {server_name}")
-            if network is None:
-                print(f"\nCOULD NOT FIND NETWORK {network_name}")
-    else:
-        print(f"\t{server_name} already has a floating IP address")
+        else:
+            print(f"\t{server_name} already has a floating IP address")
+    except:
+        if server is None:
+            print(f"\nCOULD NOT FIND SERVER {server_name}")
+        if network is None:
+            print(f"\nCOULD NOT FIND NETWORK {network_name}")
 
 
 def destroy_server(server_name):
