@@ -13,7 +13,7 @@ SUBNET_CIDR = '192.168.50.0/24'
 
 def create_network(network_name):
     network = conn.network.find_network(network_name)
-    if(network == None):
+    if network is None:
         print(f'\nCreating network {network_name}...')
         network = conn.network.create_network(name=network_name)
     else:
@@ -22,12 +22,11 @@ def create_network(network_name):
 
 def create_subnet(subnet_name, network_name):
     network = conn.network.find_network(network_name)
-    if(network_name == None):
+    if network is None:
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
 
     subnet = conn.network.find_subnet(subnet_name)
-    if(subnet == None):
-        # Move all of these prints to first line.
+    if subnet is None:
         print(f'\nCreating subnet {subnet_name}...')
         subnet = conn.network.create_subnet(
             name=subnet_name, network_id=network.id, ip_version=SUBNET_IP_VERSION, cidr=SUBNET_CIDR)
@@ -37,15 +36,15 @@ def create_subnet(subnet_name, network_name):
 
 def create_router(router_name, subnet_name, network_name):
     subnet = conn.network.find_subnet(subnet_name)
-    if (subnet == None):
+    if subnet is None:
         print(f'\nCOULD NOT FIND SUBNET {subnet_name}')
 
     network = conn.network.find_network(network_name)
-    if (network == None):
+    if network is None:
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
 
     router = conn.network.find_router(router_name)
-    if (router == None):
+    if router is None:
         print(f'\nCreating router {router_name}...')
         router = conn.network.create_router(name=router_name, external_gateway_info={
                                             'network_id': network.id})
@@ -56,27 +55,27 @@ def create_router(router_name, subnet_name, network_name):
 
 def create_server(server_name, network_name):
     image = conn.compute.find_image(IMAGE)
-    if(image == None):
+    if image is None:
         print(f'\nCOULD NOT FIND IMAGE {IMAGE}')
 
     flavour = conn.compute.find_flavor(FLAVOUR)
-    if(flavour == None):
+    if flavour is None:
         print(f'\nCOULD NOT FIND FLAVOUR {FLAVOUR}')
 
     keypair = conn.compute.find_keypair(KEYPAIR)
-    if(keypair == None):
+    if keypair is None:
         print(f'\nCOULD NOT FIND KEYPAIR {KEYPAIR}')
 
     security_group = conn.network.find_security_group(SECURITY_GROUP)
-    if(security_group == None):
+    if security_group is None:
         print(f'\nCOULD NOT FIND SECURITY GROUP {SECURITY_GROUP}')
 
     network = conn.network.find_network(network_name)
-    if (network == None):
+    if network is None:
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
 
     server = conn.compute.find_server(server_name)
-    if(server == None):
+    if server is None:
         print(f'\nCreating server {server_name}...')
         server = conn.compute.create_server(
             name=server_name, image_id=image.id,
@@ -91,7 +90,7 @@ def create_server(server_name, network_name):
 
 def destroy_server(server_name):
     server = conn.compute.find_server(server_name)
-    if(server != None):
+    if server is not None:
         print(f'\nDeleting server {server_name}...')
         conn.compute.delete_server(server)
     else:
@@ -101,9 +100,9 @@ def destroy_server(server_name):
 def destroy_router(router_name, subnet_name):
     subnet = conn.network.find_subnet(subnet_name)
     router = conn.network.find_router(router_name)
-    if (router != None):
+    if router is not None:
         print(f'\nDeleting router {router_name}...')
-        conn.network.remove_interface_from_router(router, subnet.id)
+        router = conn.network.remove_interface_from_router(router, subnet.id)
         conn.network.delete_router(router)
     else:
         print(f'\nRouter {router_name} does not exist - skipping')
@@ -111,7 +110,7 @@ def destroy_router(router_name, subnet_name):
 
 def destroy_subnet(subnet_name):
     subnet = conn.network.find_subnet(subnet_name)
-    if(subnet != None):
+    if subnet is not None:
         print(f'\nDeleting subnet {subnet_name}...')
         conn.network.delete_subnet(subnet)
     else:
@@ -120,7 +119,7 @@ def destroy_subnet(subnet_name):
 
 def destroy_network(network_name):
     network = conn.network.find_network(network_name)
-    if(network != None):
+    if network is not None:
         print(f'\nDeleting network {network_name}...')
         conn.network.delete_network(network)
     else:
@@ -129,18 +128,18 @@ def destroy_network(network_name):
 
 def find_public_network(public_network_name):
     public_net = conn.network.find_network(public_network_name)
-    if(public_net == None):
+    if public_net is None:
         print(f'\nCOULD NOT FIND NETWORK {public_network_name}')
     return public_net
 
 
 def add_floating_ip_to_server(server_name, network_name):
     network = conn.network.find_network(network_name)
-    if (network == None):
+    if network is None:
         print(f'\nCOULD NOT FIND NETWORK {network_name}')
 
     server = conn.compute.find_server(server_name)
-    if(server == None):
+    if server is None:
         print(f'\nCOULD NOT FIND SERVER {server_name}')
     conn.compute.wait_for_server(server)
     if(len(conn.compute.get_server(server.id)['addresses']['chril2-net']) < 2):
@@ -154,7 +153,7 @@ def add_floating_ip_to_server(server_name, network_name):
 
 def start_server(server_name):
     server = conn.compute.find_server(server_name)
-    if(server == None):
+    if server is None:
         print(
             f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
@@ -168,7 +167,7 @@ def start_server(server_name):
 
 def stop_server(server_name):
     server = conn.compute.find_server(server_name)
-    if(server == None):
+    if server is None:
         print(
             f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
@@ -182,12 +181,12 @@ def stop_server(server_name):
 
 def get_server_status(server_name):
     server = conn.compute.find_server(server_name)
-    if(server == None):
+    if server is None:
         print(
             f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
     else:
         server = conn.compute.get_server(server.id)
         print(f'\nGetting status of server {server_name}...')
         print(server.status)
-        for address in conn.compute.get_server(server.id)['addresses']['chril2-net']: 
+        for address in conn.compute.get_server(server.id)['addresses']['chril2-net']:
             print(address['addr'])
