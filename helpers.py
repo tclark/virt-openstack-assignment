@@ -225,6 +225,9 @@ def destroy_router(router_name, subnet_name):
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
             else:
                 print(e)
+                print(
+                    f"\nThis is sometimes due to the router still being created if that is the case running the destroy command again should resolve"
+                )
     else:
         doesnt_exist("Router", router_name)
 
