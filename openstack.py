@@ -25,6 +25,9 @@ image = conn.compute.find_image(IMAGE)
 flavor = conn.compute.find_flavor(FLAVOR)
 keypair = conn.compute.find_keypair(KEYPAIR)
 security_group = conn.network.find_security_group(SECURITYGROUP)
+network = conn.network.find_network(NETWORK)
+router = conn.network.find_router(ROUTER)
+subnet = conn.netowork.find_subnet(SUBNET)
 publicnet = conn.network.find_network(PUBLICNET)
 
 def create():
@@ -150,6 +153,7 @@ def stop():
     #app_server = conn.compute.find_server(APP_SERVER)
     #db_server = conn.compute.find_server(DB_SERVER)
 
+    
     for servername in ALLSERVERSLIST:
         server = conn.find_server(servername) #find each server from the list
         if server.status == 'ACTIVE':
@@ -164,22 +168,83 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    print("Deleting  Network:")
+    print("Deleting  Network...")
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
+    subnet = conn.netowork.find_subnet(SUBNET)
+
     '''
     for example_subnet in example_network.subnet_ids:
         conn.network.delete_subnet(example_subnet, ignore_missing=False)
     conn.network.delete_network(example_network, ignore_missing=False) 
    '''
-   #delete server 
+   #delete server for loop
+   '''
     for servername in ALLSERVERSLIST:
         server = conn.find_server(servername) #find each server from the list
         if server.status == 'ACTIVE':
+            conn.compute.get_server(server)
             conn.compute.delete_server(server)
         else:
             print("server already deleted")
    #conn.network.delete_network(NETWORK, ignore_missing=False)
+   '''
+   #delete WEB server
+    if WEB_SERVER is None:
+        print("Web Sever already deleted")
+    else:
+        print("Deleting Web Server...")
+        conn.compute.get_server(WEB_SERVER) #get server
+        #con.compute.stop_server(WEB_SERVER) #stop server if didnt stop
+        webip = conn.compute.server_ips(WEB_SERVER.id) #find web ip address
+        conn.network.remove_floating_ip_from_server(WEB_SERVER,webip)
+        conn.compute.delete_server(WEB_SERVER) #delete server
+       
+    #delete APP server
+    if APP_SERVER is None:
+        print('App Server already deleted')
+    else:
+        print("Deleting App Server...")
+        conn.compute.get_server(APP_SERVER) #get server
+        #con.compute.stop_server(APP_SERVER) #stop server if didnt stop
+        conn.compute.delete_server(APP_SERVER) #delete server
+        print('Delete App server')
+
+    #delete DB server
+    if DB_SERVER is None
+        print('DB Server already deleted')
+    else:
+        print("Deleting DB Server...")
+        conn.compute.get_server(DB_SERVER) #get server
+        #con.compute.stop_server(DB_SERVER) #stop server if didnt stop
+        conn.compute.delete_server(DB_SERVER) #delete server
+        print('Delete DB server')
+
+    #delete router
+    print("deleting router")
+    if router is None:
+        print("Router doesn't exist in the netowork")
+    else:
+        conn.network.delete_router(router)
+        print("Router has been deleted")
+
+    #delete subnet
+    print("deleting subnet")
+    if subnet is None:
+        print("Subnet doesn't exist in the network")
+    else:
+        conn.network.delete_subnet(subnet)
+        print("Subnet has been deleted")
+
+    #delete network 
+    print("deleting network")
+    if network is None:
+        print("network doesn't exist in the network")
+    else:
+        conn.netowork.delete_network(network)
+        print("Network has been deleted")
+    
+    print("Delete process completed")
 
     '''       
      for servername in ALLSERVERSLIST:
