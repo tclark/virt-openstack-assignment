@@ -29,7 +29,10 @@ def create_subnet(subnet_name, network_name):
     if subnet is None:
         print(f'\nCreating subnet {subnet_name}...')
         subnet = conn.network.create_subnet(
-            name=subnet_name, network_id=network.id, ip_version=SUBNET_IP_VERSION, cidr=SUBNET_CIDR)
+            name=subnet_name,
+            network_id=network.id,
+            ip_version=SUBNET_IP_VERSION,
+            cidr=SUBNET_CIDR)
     else:
         print(f'\nSubnet {subnet_name} already exists - skipping')
 
@@ -46,8 +49,11 @@ def create_router(router_name, subnet_name, network_name):
     router = conn.network.find_router(router_name)
     if router is None:
         print(f'\nCreating router {router_name}...')
-        router = conn.network.create_router(name=router_name, external_gateway_info={
-                                            'network_id': network.id})
+        router = conn.network.create_router(
+            name=router_name,
+            external_gateway_info={
+                'network_id': network.id
+            })
         router = conn.network.add_interface_to_router(router, subnet.id)
     else:
         print(f'\nRouter {router_name} already exists - skipping')
@@ -154,8 +160,9 @@ def add_floating_ip_to_server(server_name, network_name):
 def start_server(server_name):
     server = conn.compute.find_server(server_name)
     if server is None:
-        print(
-            f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
+        print((
+            f'\nServer {server_name} does not exist. To create it,'
+            ' run this script with the create option.'))
     else:
         if(server.status != 'ACTIVE'):
             print(f'\nStarting server {server_name}...')
@@ -168,8 +175,9 @@ def start_server(server_name):
 def stop_server(server_name):
     server = conn.compute.find_server(server_name)
     if server is None:
-        print(
-            f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
+        print((
+            f'\nServer {server_name} does not exist. To create it,'
+            ' run this script with the create option.'))
     else:
         if(server.status != 'SHUTOFF'):
             print(f'\nStopping server {server_name}...')
@@ -182,11 +190,13 @@ def stop_server(server_name):
 def get_server_status(server_name):
     server = conn.compute.find_server(server_name)
     if server is None:
-        print(
-            f'\nServer {server_name} does not exist. To create it, run this script with the create option.')
+        print((
+            f'\nServer {server_name} does not exist. To create it,'
+            ' run this script with the create option.'))
     else:
         server = conn.compute.get_server(server.id)
         print(f'\nGetting status of server {server_name}...')
         print(server.status)
-        for address in conn.compute.get_server(server.id)['addresses']['chril2-net']:
+        addresses = server['addresses']['chril2-net']
+        for address in addresses:
             print(address['addr'])
