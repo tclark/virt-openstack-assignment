@@ -166,6 +166,7 @@ def destroy():
     n_webserver = conn.compute.find_server('shinrl1-web')
     n_appserver = conn.compute.find_server('shinrl1-app')
     n_dbserver = conn.compute.find_server('shinrl1-db')
+
     if n_webserver:
         conn.compute.delete_server(n_webserver)
         print("webserver deleted")
@@ -182,17 +183,17 @@ def destroy():
     else:
         print("dbserver deletion error")
     if n_router:
-        conn.network.delete_router(n_router, ignore_missing=True)
+        conn.network.delete_router(n_router)
         print("rtr deleted")
     else:
         print("rtr deletion error")
     if n_subnet:
-        conn.network.delete_subnet(n_subnet, ignore_missing=True)
+        conn.network.delete_subnet(n_subnet)
         print("subnet deleted")
     else:
         print("subnet deletion error")
     if n_network:
-        conn.network.delete_network(n_network, ignore_missing=True)
+        conn.network.delete_network(n_network)
         print("network deleted")
     else:
         print("network deletion error")
@@ -202,11 +203,26 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    n_webserver = conn.compute.find_server('shinrl1-web')
+    n_appserver = conn.compute.find_server('shinrl1-app')
+    n_dbserver = conn.compute.find_server('shinrl1-db')
+
+    n_webserver = conn.compute.get_server(n_webserver)
+    n_appserver = conn.compute.get_server(n_appserver)
+    n_dbserver = conn.compute.get_server(n_dbserver)
+
+    web_ip_address = n_webserver.addresses['shinrl1-net'][0]["addr"] 
+    n_webname = n_webserver.name
+    n_webstatus = n_webserver.status
+
+    status = "%s is %s and has the ip address %s"%(n_webname, n_webstatus, web_ip_address)
+    print(status)
     def list_networks(conn):
         print("List Networks:")
 
     for network in conn.network.networks():
         print(network)
+    
 
     pass
 
