@@ -55,17 +55,16 @@ def create():
 
     #reaete servers
     if not n_webserver:
-
-        conn.network.add_interface_to_router(n_router, subnet.id)
-        #conn.network.add_interface_to_router(n_router, subnet_id=n_network.subnet_ids[0])
+        
+        #conn.network.add_interface_to_router(n_router, subnet_id=n_subnet.id)
+       # conn.network.add_interface_to_router(n_router, subnet_id=n_network.subnet_ids[0])
         webserver = conn.compute.create_server(name="shinrl1-web", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
         webserver = conn.compute.wait_for_server(webserver)
         conn.compute.add_security_group_to_server(webserver, n_security_group)
         print("shinrl1-web up")
-         #add floating ips to servers
-        webserver_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
-        conn.compute.add_floating_ip_to_server(webserver, address=webserver_ip.floating_ip_address)
-        print ("ip attatched to web server:", webserver_ip.floating_ip_address)
+        #floating_ip = conn.network.create_ip(floating_network_id=n_public_net.id)
+        #conn.compute.add_floating_ip_to_server(webserver, floating_ip.floating_ip_address)
+        
     else:
         print("web server borked")
     if not n_appserver:
@@ -86,15 +85,16 @@ def create():
         print("db server borked")
 
     
+    add_floating_ip_to_server(n_webserver, n_public_net)
         
 
-        if not n_appserver:
-            appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
-            appserver = conn.compute.wait_for_server(appserver)
-            conn.compute.add_security_group_to_server(appserver, n_security_group)
-            print("shinrl1-app up")
-        else:
-            print("db server borked")
+    if not n_appserver:
+        appserver = conn.compute.create_server(name="shinrl1-app", image_id=n_image.id,  flavor_id=n_flavour.id, networks=[{"uuid": network.id}], key_name=n_keypair.name)
+        appserver = conn.compute.wait_for_server(appserver)
+        conn.compute.add_security_group_to_server(appserver, n_security_group)
+        print("shinrl1-app up")
+    else:
+        print("db server borked")
         
     
     pass
