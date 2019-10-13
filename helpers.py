@@ -38,7 +38,7 @@ def create_subnet(subnet_name, network_name):
             )
         except:
             if network_name is None:
-                print(f"\nCOULD NOT FIND NETWORK {network_name}")
+                print(f"COULD NOT FIND NETWORK {network_name}")
     else:
         print(f"\nSubnet {subnet_name} already exists - skipping")
 
@@ -59,9 +59,9 @@ def create_router(router_name, subnet_name, network_name):
             router = connection.network.add_interface_to_router(router, subnet.id)
         except:
             if network is None:
-                print(f"\nCOULD NOT FIND NETWORK {network_name}")
+                print(f"COULD NOT FIND NETWORK {network_name}")
             if subnet is None:
-                print(f"\nCOULD NOT FIND SUBNET {subnet_name}")
+                print(f"COULD NOT FIND SUBNET {subnet_name}")
     else:
         print(f"\nRouter {router_name} already exists - skipping")
 
@@ -89,15 +89,15 @@ def create_server(server_name, network_name):
             )
         except:
             if security_group is None:
-                print(f"\nCOULD NOT FIND SECURITY GROUP {SECURITY_GROUP}")
+                print(f"COULD NOT FIND SECURITY GROUP {SECURITY_GROUP}")
             if network is None:
-                print(f"\nCOULD NOT FIND NETWORK {network_name}")
+                print(f"COULD NOT FIND NETWORK {network_name}")
             if keypair is None:
-                print(f"\nCOULD NOT FIND KEYPAIR {KEYPAIR}")
+                print(f"COULD NOT FIND KEYPAIR {KEYPAIR}")
             if flavour is None:
-                print(f"\nCOULD NOT FIND FLAVOUR {FLAVOUR}")
+                print(f"COULD NOT FIND FLAVOUR {FLAVOUR}")
             if image is None:
-                print(f"\nCOULD NOT FIND IMAGE {IMAGE}")
+                print(f"COULD NOT FIND IMAGE {IMAGE}")
     else:
         print(f"\nServer {server_name} already exists - skipping")
 
@@ -142,9 +142,9 @@ def add_floating_ip_to_server(server_name, network_name):
             print(f"\t{server_name} already has a floating IP address")
     except:
         if server is None:
-            print(f"\nCOULD NOT FIND SERVER {server_name}")
+            print(f"\tCOULD NOT FIND SERVER {server_name}")
         if network is None:
-            print(f"\nCOULD NOT FIND NETWORK {network_name}")
+            print(f"\tCOULD NOT FIND NETWORK {network_name}")
 
 
 def destroy_server(server_name):
@@ -155,7 +155,7 @@ def destroy_server(server_name):
         ips = extract_floating_ips(server)
         for ip in ips:
             address = connection.network.find_ip(ip)
-            print(f"\nReleasing floating IP {ip}...")
+            print(f"\tReleasing floating IP {ip}...")
             connection.network.delete_ip(address)
             while True:
                 if connection.network.find_ip(ip) is None:
@@ -174,11 +174,15 @@ def destroy_router(router_name, subnet_name):
     subnet = connection.network.find_subnet(subnet_name)
     router = connection.network.find_router(router_name)
     if router is not None:
-        print(f"\nDeleting interface for {subnet_name}...")
-        connection.network.remove_interface_from_router(router, subnet.id)
         print(f"\nDeleting router {router_name}...")
-        connection.network.remove_interface_from_router(router, subnet.id)
-        connection.network.delete_router(router, ignore_missing=True)
+        try:
+            print(f"\tDeleting interface for {subnet_name}...")
+            connection.network.remove_interface_from_router(router, subnet.id)
+            print(f"\tFinishing up deleting router {router_name}...")
+            connection.network.delete_router(router, ignore_missing=True)
+        except:
+            if subnet is None:
+                print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
     else:
         print(f"\nRouter {router_name} does not exist - skipping")
 
