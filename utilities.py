@@ -85,7 +85,6 @@ def create_server(server_name, network_name):
         print(f'\nCreating server {server_name}...')
         server = conn.compute.create_server(
             name=server_name, image_id=image.id,
-            # Should all have IP addresses?
             flavor_id=flavour.id, networks=[{'uuid': network.id}],
             key_name=keypair.name, security_groups=[
                 {'sgid': security_group.id}]
@@ -108,8 +107,8 @@ def destroy_router(router_name, subnet_name):
     router = conn.network.find_router(router_name)
     if router is not None:
         print(f'\nDeleting router {router_name}...')
-        router = conn.network.remove_interface_from_router(router, subnet.id)
-        conn.network.delete_router(router)
+        router_no_interface = conn.network.remove_interface_from_router(router, subnet.id)
+        conn.network.delete_router(router_no_interface)
     else:
         print(f'\nRouter {router_name} does not exist - skipping')
 
