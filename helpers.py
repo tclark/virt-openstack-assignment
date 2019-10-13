@@ -130,21 +130,20 @@ def extract_all_ips(server):
 
 def add_floating_ip_to_server(server_name, network_name):
     """Adds a floating ip to the given server from the given network"""
-    print(f"\nAdding floating address to {server_name}...")
-
     network = connection.network.find_network(network_name)
     server = connection.compute.find_server(server_name)
     try:
         if extract_floating_ips(server) is None:
+            print(f"\nAdding floating address to {server_name}...")
             floating_ip = connection.network.create_ip(floating_network_id=network.id)
             connection.compute.add_floating_ip_to_server(
                 server, floating_ip.floating_ip_address
             )
             print(f'\tAdded address {floating_ip["floating_ip_address"]}')
         else:
-            print(f"\t{server_name} already has a floating IP address - skipping")
+            print(f"\n{server_name} already has a floating IP address - skipping")
     except:
-        print(f"ADDING FLOATING IP TO {server_name} FAILED")
+        print(f"\nADDING FLOATING IP TO {server_name} FAILED")
         if server is None:
             print(f"\tCOULD NOT FIND SERVER {server_name}")
         if network is None:
