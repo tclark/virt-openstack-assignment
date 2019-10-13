@@ -194,7 +194,7 @@ def destroy_router(router_name, subnet_name):
             print(f"\tFinishing up deleting router {router_name}...")
             connection.network.delete_router(router, ignore_missing=True)
         except:
-            print("DELETING ROUTER {router_name} FAILED")
+            print(f"DELETING ROUTER {router_name} FAILED")
             if subnet is None:
                 print(f"\tCOULD NOT FIND SUBNET {subnet_name}")
     else:
@@ -209,7 +209,7 @@ def destroy_subnet(subnet_name):
         try:
             connection.network.delete_subnet(subnet, ignore_missing=True)
         except:
-            print("DELETING SUBNET {subnet_name} FAILED")
+            print(f"DELETING SUBNET {subnet_name} FAILED")
             print(
                 f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
@@ -229,7 +229,7 @@ def destroy_network(network_name):
         try:
             connection.network.delete_network(network, ignore_missing=True)
         except:
-            print("DELETING NETWORK {network_name} FAILED")
+            print(f"DELETING NETWORK {network_name} FAILED")
             print(
                 f"This may be due to servers with ips in its range still building if they were just deleted you may want to run the destroy command again"
             )
