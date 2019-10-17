@@ -11,7 +11,7 @@ SERVER_WEB = 'coxts2-web'
 SERVER_APP = 'coxts2-app'
 SERVER_DB = 'coxts2-db'
 SG = 'assignment2'
-PN = 'coxts2-net'
+PN = 'public-net'
 
 conn = openstack.connect(cloud_name='openstack')
 
@@ -78,7 +78,7 @@ if not server_web:
     server_web = conn.compute.create_server(
         name=SERVER_WEB, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
-        security_groups=(security_group))
+        security_groups=[security_group])
     server_web = conn.compute.wait_for_server(server_web)
     print("Assigning floating IP to ", str(SERVER_WEB))
     conn.compute.add_floating_ip_to_server(server_web, floating_ip.floating_ip_address)
@@ -95,7 +95,7 @@ if not server_app:
     server_app = conn.compute.create_server(
         name=SERVER_APP, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
-        security_groups=(security_group))
+        security_groups=[security_group])
     server_app = conn.compute.wait_for_server(server_app)
 else:
     print(str(server_app.name)+ " already exists")
@@ -110,7 +110,7 @@ if not server_db:
     server_db = conn.compute.create_server(
         name=SERVER_DB, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
-        security_groups=(security_group))
+        security_groups=[security_group])
     server_db = conn.compute.wait_for_server(server_db)
 else:
     print(str(server_db.name)+" already exists")
