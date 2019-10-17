@@ -131,7 +131,7 @@ def run():
             print("Starting server", str(SERVER_WEB))
             conn.compute.start_server(server_web)
     except:
-        print(str(SERVER_WEB)+"is already running")
+        print(str(SERVER_WEB)+" is already running")
     
     #Start app server
     
@@ -143,7 +143,7 @@ def run():
             print("Starting server", str(SERVER_APP))
             conn.compute.start_server(server_app)
     except:
-        print(str(SERVER_APP)+"is already running")
+        print(str(SERVER_APP)+" is already running")
     
     #Start db server
     
@@ -155,7 +155,7 @@ def run():
             print("Starting server", str(SERVER_DB))
             conn.compute.start_server(server_db)    
     except:
-        print(str(SERVER_DB)+"is already running")
+        print(str(SERVER_DB)+" is already running")
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
@@ -172,7 +172,7 @@ def stop():
             print("Stopping server", str(SERVER_WEB))
             conn.compute.stop_server(server_web)
     except:
-        print(str(SERVER_WEB)+"is already shutdown")
+        print(str(SERVER_WEB)+" is already shutdown")
     
     #Stop app server
     
@@ -184,7 +184,7 @@ def stop():
             print("Stopping server", str(SERVER_APP))
             conn.compute.stop_server(server_app)
     except:
-        print(str(SERVER_APP)+"is already shutdown")
+        print(str(SERVER_APP)+" is already shutdown")
     #Stop db server
     
     server_db = conn.compute.find_server(SERVER_DB)
@@ -195,7 +195,7 @@ def stop():
             print("Stopping server", str(SERVER_DB))
             conn.compute.stop_server(server_db)   
     except:
-        print(str(SERVER_DB)+"is already shutdown")
+        print(str(SERVER_DB)+" is already shutdown")
     
     
 def destroy():
