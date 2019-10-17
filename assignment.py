@@ -224,7 +224,7 @@ def status():
         #    networks=[{"uuid": network.id}], key_name=keypair.name,
         #    security_groups=[security_group])
         server_web_status=conn.compute.status(server_web)
-        print(server_web_status)
+        print(str(server_web_status))
             
     #app server status
     
@@ -232,12 +232,6 @@ def status():
     
     
     #db server status
-    
-    
-    
-    
-    
-    
     
     
     
