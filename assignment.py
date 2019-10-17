@@ -124,35 +124,38 @@ def run():
     #Start web server
     
     server_web = conn.compute.find_server(SERVER_WEB)
-    
-    if not server_web:
-        print(str(SERVER_WEB)+ " does not exist" )
-    else:
-        print("Starting server", str(SERVER_WEB))
-        conn.compute.start_server(server_web)
-    
+    try:
+        if not server_web:
+            print(str(SERVER_WEB)+ " does not exist" )
+        else:
+            print("Starting server", str(SERVER_WEB))
+            conn.compute.start_server(server_web)
+    except:
+        print(str(SERVER_WEB)+"is already running")
     
     #Start app server
     
     server_app = conn.compute.find_server(SERVER_APP)
-    
-    if not server_app:
-        print(str(SERVER_APP)+ " does not exist" )
-    else:
-        print("Starting server", str(SERVER_APP))
-        conn.compute.start_server(server_app)
-    
+    try:
+        if not server_app:
+            print(str(SERVER_APP)+ " does not exist" )
+        else:
+            print("Starting server", str(SERVER_APP))
+            conn.compute.start_server(server_app)
+    except:
+        print(str(SERVER_APP)+"is already running")
     
     #Start db server
     
     server_db = conn.compute.find_server(SERVER_DB)
-    
-    if not server_db:
-        print(str(SERVER_DB)+ " does not exist" )
-    else:
-        print("Starting server", str(SERVER_DB))
-        conn.compute.start_server(server_db)    
-
+    try:
+        if not server_db:
+            print(str(SERVER_DB)+ " does not exist" )
+        else:
+            print("Starting server", str(SERVER_DB))
+            conn.compute.start_server(server_db)    
+    except:
+        print(str(SERVER_DB)+"is already running")
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
@@ -162,36 +165,39 @@ def stop():
     #Stop web server
     
     server_web = conn.compute.find_server(SERVER_WEB)
-    
-    if not server_web:
-        print(str(SERVER_WEB)+ " does not exist" )
-    else:
-        print("Stopping server", str(SERVER_WEB))
-        conn.compute.stop_server(server_web)
-    
+    try:
+        if not server_web:
+            print(str(SERVER_WEB)+ " does not exist" )
+        else:
+            print("Stopping server", str(SERVER_WEB))
+            conn.compute.stop_server(server_web)
+    except:
+        print(str(SERVER_WEB)+"is already shutdown")
     
     #Stop app server
     
     server_app = conn.compute.find_server(SERVER_APP) 
-    
-    if not server_app:
-        print(str(SERVER_APP)+ " does not exist" )
-    else:
-        print("Stopping server", str(SERVER_APP))
-        conn.compute.stop_server(server_app)
-    
-    
+    try:
+        if not server_app:
+            print(str(SERVER_APP)+ " does not exist" )
+        else:
+            print("Stopping server", str(SERVER_APP))
+            conn.compute.stop_server(server_app)
+    except:
+        print(str(SERVER_APP)+"is already shutdown")
     #Stop db server
     
     server_db = conn.compute.find_server(SERVER_DB)
+    try:
+        if not server_db:
+            print(str(SERVER_DB)+ " does not exist" )
+        else:
+            print("Stopping server", str(SERVER_DB))
+            conn.compute.stop_server(server_db)   
+    except:
+        print(str(SERVER_DB)+"is already shutdown")
     
-    if not server_db:
-        print(str(SERVER_DB)+ " does not exist" )
-    else:
-        print("Stopping server", str(SERVER_DB))
-        conn.compute.stop_server(server_db)   
     
-
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
