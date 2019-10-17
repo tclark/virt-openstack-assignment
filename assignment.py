@@ -11,7 +11,7 @@ SERVER_WEB = 'coxts2-web'
 SERVER_APP = 'coxts2-app'
 SERVER_DB = 'coxts2-db'
 SG = 'assignment2'
-
+PN = 'coxts2-net'
 
 conn = openstack.connect(cloud_name='openstack')
 
@@ -23,7 +23,7 @@ flavor = conn.compute.find_flavor(FLAVOUR)
 network = conn.network.find_network(NETWORK)
 keypair = conn.compute.find_keypair(KEYPAIR)
 security_group = conn.network.find_security_group(SG)
-
+public_net = conn.network.find_network(PN)
 
 #Create Network
 
@@ -54,7 +54,7 @@ else:
 #Create Router
 
 router = conn.network.find_router(ROUTER)
-public_net = conn.network.find_network('public-net')
+
 if not router:
     print("Constructing "+str(ROUTER)+ " Router")
     router = conn.network.create_router(name=ROUTER,external_gateway_info={"network_id": public_net.id})
@@ -78,7 +78,7 @@ if not server_web:
     server_web = conn.compute.create_server(
         name=SERVER_WEB, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
-    security_groups=(security_group))
+        security_groups=(security_group))
     server_web = conn.compute.wait_for_server(server_web)
     print("Assigning floating IP to ", str(SERVER_WEB))
     conn.compute.add_floating_ip_to_server(server_web, floating_ip.floating_ip_address)
@@ -129,7 +129,7 @@ if not server_web:
     print(str(SERVER_WEB)+ " does not exist" )
 else:
     print("Starting server", str(SERVER_WEB))
-    start_server(SERVER_WEB)
+    conn.compute.start_server(SERVER_WEB)
 
 
 #Start app server
@@ -140,7 +140,7 @@ if not server_app:
     print(str(SERVER_APP)+ " does not exist" )
 else:
     print("Starting server", str(SERVER_APP))
-    start_server(SERVER_APP)
+    conn.compute.start_server(SERVER_APP)
 
 
 #Start db server
@@ -151,7 +151,7 @@ if not server_db:
     print(str(SERVER_DB)+ " does not exist" )
 else:
     print("Starting server", str(SERVER_DB))
-    start_server(SERVER_DB)    
+    conn.compute.start_server(SERVER_DB)    
 
 
 def stop():
@@ -167,7 +167,7 @@ if not server_web:
     print(str(SERVER_WEB)+ " does not exist" )
 else:
     print("Stopping server", str(SERVER_WEB))
-    stop_server(SERVER_WEB)
+    conn.compute.stop_server(SERVER_WEB)
 
 
 #Stop app server
@@ -178,7 +178,7 @@ if not server_app:
     print(str(SERVER_APP)+ " does not exist" )
 else:
     print("Stopping server", str(SERVER_APP))
-    stop_server(SERVER_APP)
+    conn.compute.stop_server(SERVER_APP)
 
 
 #Stop db server
@@ -189,7 +189,7 @@ if not server_db:
     print(str(SERVER_DB)+ " does not exist" )
 else:
     print("Stopping server", str(SERVER_DB))
-    stop_server(SERVER_DB)   
+    conn.compute.stop_server(SERVER_DB)   
 
 
 def destroy():
