@@ -208,7 +208,42 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    pass
+    
+    server_web = conn.compute.find_server(SERVER_WEB)
+    server_app = conn.compute.find_server(SERVER_APP)
+    server_db = conn.compute.find_server(SERVER_DB)
+    
+    #web server status
+    server_web = conn.compute.get_server(SERVER_WEB)
+    if not server_web:
+        print(str(server_web.name)+" does not exist")
+    else:
+        print(str(SERVER_WEB)+" Status")
+        #server_web = conn.compute.get_server(
+        #    name=SERVER_WEB, image_id=image.id, flavor_id=flavor.id,
+        #    networks=[{"uuid": network.id}], key_name=keypair.name,
+        #    security_groups=[security_group])
+        server_web_status=conn.compute.status(server_web)
+        print(server_web_status)
+            
+    #app server status
+    
+    
+    
+    
+    #db server status
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 ### You should not modify anything below this line ###
