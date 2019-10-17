@@ -10,7 +10,7 @@ ROUTER = 'coxts2-rtr'
 SERVER_WEB = 'coxts2-web'
 SERVER_APP = 'coxts2-app'
 SERVER_DB = 'coxts2-db'
-
+SG = 'assignment2'
 
 
 conn = openstack.connect(cloud_name='openstack')
@@ -22,6 +22,7 @@ image = conn.compute.find_image(IMAGE)
 flavour = conn.compute.find_flavor(FLAVOUR)
 network = conn.network.find_network(NETWORK)
 keypair = conn.compute.find_keypair(KEYPAIR)
+security_group = conn.network.find_security_group(SG)
 
 
 #Create Network
@@ -53,13 +54,13 @@ else:
 #Create Router
 
 router = conn.network.find_router(ROUTER)
-
+public_net = conn.network.find_network('public-net')
 if not router:
     print("Constructing "+str(ROUTER)+ " Router")
-router = conn.network.create_router(name=ROUTER,external_gateway_info={"network_id": public_net.id})
-conn.network.router_add_interface(router, subnet.id)
+    router = conn.network.create_router(name=ROUTER,external_gateway_info={"network_id": public_net.id})
+    conn.network.router_add_to_interface(router, subnet.id)
 else:
-print(str(router.name)+ " already exists")
+    print(str(router.name)+ " already exists")
 
 
 #Create Floating IP address
@@ -74,16 +75,15 @@ server_web = conn.compute.find_server(SERVER_WEB)
 
 if not server_web:
     print("Constructing "+str(SERVER_WEB)+" server")
-server_web = conn.compute.create_server(
-        name=SERVER_WEB, image_id=image.id, flavor_id=flavor.id,
+    server_web = conn.compute.create_server(
+        name=SERVER_WEB, image_id=image.id, flavour_id=flavour.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
     security_groups=(security_group))
-    server_web = conn.compute.wait_for_server(server)
+    server_web = conn.compute.wait_for_server(server_web)
     print("Assigning floating IP to ", str(SERVER_WEB))
     conn.compute.add_floating_ip_to_server(server_web, floating_ip.floating_ip_address)
-
 else:
-print(str(server_web.name)+" already exists")
+    print(str(server_web.name)+" already exists")
 
 
 #Create App Server
@@ -93,39 +93,33 @@ server_app = conn.compute.find_server(SERVER_APP)
 if not server_app:
     print("Constructing "+str(SERVER_APP)+" server")
     server_app = conn.compute.create_server(
-        name=SERVER_APP, image_id=image.id, flavor_id=flavor.id,
+        name=SERVER_APP, image_id=image.id, flavour_id=flavour.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
         security_groups=(security_group))
-    server_app = conn.compute.wait_for_server(server)
-    print("Assigning floating IP to", str(SERVER_APP))
-    conn.compute.add_floating_ip_to_server(server_app, floating_ip.floating_ip_address)
-
+    server_app = conn.compute.wait_for_server(server_app)
 else:
     print(str(server_app.name)+ " already exists")
 
 
-#Create Db Server
+#Create db Server
 
 server_db = conn.compute.find_server(SERVER_DB)
 
 if not server_db:
     print("Constructing "+str(SERVER_DB)+" server")
     server_db = conn.compute.create_server(
-        name=SERVER_DB, image_id=image.id, flavor_id=flavor.id,
+        name=SERVER_DB, image_id=image.id, flavour_id=flavour.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
         security_groups=(security_group))
-    server_db = conn.compute.wait_for_server(server)
-    print("Assigning floating IP to ", str(SERVER_DB))
-    conn.compute.add_floating_ip_to_server(server_db, floating_ip.floating_ip_address)
-
+    server_db = conn.compute.wait_for_server(server_db)
 else:
     print(str(server_db.name)+" already exists")
 
 
 def run():
-''' Start  a set of Openstack virtual machines
-if they are not already running.
-'''
+    ''' Start  a set of Openstack virtual machines
+    if they are not already running.
+    '''
 
     #Start web server
 
@@ -161,9 +155,9 @@ else:
 
 
 def stop():
-''' Stop  a set of Openstack virtual machines
-if they are running.
-'''
+    ''' Stop  a set of Openstack virtual machines
+    if they are running.
+    '''
 
 #Stop web server
 
