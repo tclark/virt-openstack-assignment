@@ -121,7 +121,7 @@ def run():
     if they are not already running.
     '''
     
-        #Start web server
+    #Start web server
     
     server_web = conn.compute.find_server(SERVER_WEB)
     
@@ -129,7 +129,7 @@ def run():
         print(str(SERVER_WEB)+ " does not exist" )
     else:
         print("Starting server", str(SERVER_WEB))
-        conn.compute.start_server(SERVER_WEB)
+        conn.compute.start_server(server_web)
     
     
     #Start app server
@@ -140,7 +140,7 @@ def run():
         print(str(SERVER_APP)+ " does not exist" )
     else:
         print("Starting server", str(SERVER_APP))
-        conn.compute.start_server(SERVER_APP)
+        conn.compute.start_server(server_app)
     
     
     #Start db server
@@ -151,7 +151,7 @@ def run():
         print(str(SERVER_DB)+ " does not exist" )
     else:
         print("Starting server", str(SERVER_DB))
-        conn.compute.start_server(SERVER_DB)    
+        conn.compute.start_server(server_db)    
 
 
 def stop():
@@ -167,7 +167,7 @@ def stop():
         print(str(SERVER_WEB)+ " does not exist" )
     else:
         print("Stopping server", str(SERVER_WEB))
-        conn.compute.stop_server(SERVER_WEB)
+        conn.compute.stop_server(server_web)
     
     
     #Stop app server
@@ -178,7 +178,7 @@ def stop():
         print(str(SERVER_APP)+ " does not exist" )
     else:
         print("Stopping server", str(SERVER_APP))
-        conn.compute.stop_server(SERVER_APP)
+        conn.compute.stop_server(server_app)
     
     
     #Stop db server
@@ -189,7 +189,7 @@ def stop():
         print(str(SERVER_DB)+ " does not exist" )
     else:
         print("Stopping server", str(SERVER_DB))
-        conn.compute.stop_server(SERVER_DB)   
+        conn.compute.stop_server(server_db)   
     
 
 def destroy():
