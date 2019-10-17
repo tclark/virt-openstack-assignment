@@ -19,7 +19,7 @@ def create():
     ''' Create a set of Openstack resources '''
 
 image = conn.compute.find_image(IMAGE)
-flavour = conn.compute.find_flavor(FLAVOUR)
+flavor = conn.compute.find_flavor(FLAVOUR)
 network = conn.network.find_network(NETWORK)
 keypair = conn.compute.find_keypair(KEYPAIR)
 security_group = conn.network.find_security_group(SG)
@@ -76,7 +76,7 @@ server_web = conn.compute.find_server(SERVER_WEB)
 if not server_web:
     print("Constructing "+str(SERVER_WEB)+" server")
     server_web = conn.compute.create_server(
-        name=SERVER_WEB, image_id=image.id, flavour_id=flavour.id,
+        name=SERVER_WEB, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
     security_groups=(security_group))
     server_web = conn.compute.wait_for_server(server_web)
@@ -93,7 +93,7 @@ server_app = conn.compute.find_server(SERVER_APP)
 if not server_app:
     print("Constructing "+str(SERVER_APP)+" server")
     server_app = conn.compute.create_server(
-        name=SERVER_APP, image_id=image.id, flavour_id=flavour.id,
+        name=SERVER_APP, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
         security_groups=(security_group))
     server_app = conn.compute.wait_for_server(server_app)
@@ -108,7 +108,7 @@ server_db = conn.compute.find_server(SERVER_DB)
 if not server_db:
     print("Constructing "+str(SERVER_DB)+" server")
     server_db = conn.compute.create_server(
-        name=SERVER_DB, image_id=image.id, flavour_id=flavour.id,
+        name=SERVER_DB, image_id=image.id, flavor_id=flavor.id,
         networks=[{"uuid": network.id}], key_name=keypair.name,
         security_groups=(security_group))
     server_db = conn.compute.wait_for_server(server_db)
