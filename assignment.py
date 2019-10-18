@@ -202,7 +202,33 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    #destroy servers
+    server_web = conn.compute.find_server(SERVER_WEB)
+    server_app = conn.compute.find_server(SERVER_APP)
+    server_db = conn.compute.find_server(SERVER_DB)
     
+    #web server destroy
+    if not server_web:
+        print(str(server_web.name)+" does not exist")
+    else:
+        print(str(SERVER_WEB)+" is being annihilated")
+        conn.compute.delete_server(server_web)
+        
+    #app server destroy
+    if not server_app:
+        print(str(server_app.name)+" does not exist")
+    else:
+        print(str(SERVER_APP)+" Is being annihilated")
+        conn.compute.delete_server(server_app)
+    
+    #db server destroy
+    if not server_db:
+        print(str(server_db.name)+" does not exist")
+    else:
+        print(str(SERVER_DB)+" is being annihilated")
+        conn.compute.delete_server(server_db)
+        
+    time.sleep(5)
 
 def status():
     ''' Print a status report on the OpenStack
