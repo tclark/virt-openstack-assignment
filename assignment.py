@@ -281,7 +281,7 @@ def status():
         print(str(SERVER_WEB)+" Status")
         server_web_status=server_web.status
         print(str(server_web_status))
-        server_web_ip=server_web.address
+        server_web_ip=server_web.addresses
         print(str(server_web_ip)+" web server ip")
             
     #app server status
@@ -292,7 +292,7 @@ def status():
         print(str(SERVER_APP)+" Status")
         server_app_status=server_app.status
         print(str(server_app_status))
-        server_app_ip=server_app.address
+        server_app_ip=server_app.addresses
         print(str(server_app_ip)+" app server ip")
     
     #db server status
@@ -303,7 +303,7 @@ def status():
         print(str(SERVER_DB)+" Status")
         server_db_status=server_db.status
         print(str(server_db_status))    
-        server_db_ip=server_db.address
+        server_db_ip=server_db.addresses
         print(str(server_db_ip)+" db server ip")
     
     
