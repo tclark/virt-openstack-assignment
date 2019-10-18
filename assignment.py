@@ -223,12 +223,22 @@ def status():
         print(str(server_web_status))
             
     #app server status
-    
-    
-    
+    if not server_app:
+        print(str(server_app.name)+" does not exist")
+    else:
+        server_app = conn.compute.get_server(server_app.id)
+        print(str(SERVER_APP)+" Status")
+        server_app_status=server_app.status
+        print(str(server_app_status))    
     
     #db server status
-    
+    if not server_db:
+        print(str(server_db.name)+" does not exist")
+    else:
+        server_db = conn.compute.get_server(server_db.id)
+        print(str(SERVER_DB)+" Status")
+        server_db_status=server_db.status
+        print(str(server_db_status))    
     
     
     
