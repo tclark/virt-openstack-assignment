@@ -244,7 +244,7 @@ def destroy():
                 pass
 
         for port in conn.network.get_subnet_ports(subnet.id):
-            print(str(port)+ " removing ports")
+            print("removing port...")
             conn.network.delete_port(port)
     
     
