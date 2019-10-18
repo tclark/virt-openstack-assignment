@@ -1,7 +1,7 @@
 import argparse
 import openstack
 
-IMAGE = 'ubuntu-16.04-x86_64'
+IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
 NETWORK = 'coxts2-net'
 KEYPAIR = 'coxts2-key'
@@ -214,16 +214,12 @@ def status():
     server_db = conn.compute.find_server(SERVER_DB)
     
     #web server status
-    server_web = conn.compute.get_server(SERVER_WEB)
     if not server_web:
         print(str(server_web.name)+" does not exist")
     else:
+        server_web = conn.compute.get_server(server_web.id)
         print(str(SERVER_WEB)+" Status")
-        #server_web = conn.compute.get_server(
-        #    name=SERVER_WEB, image_id=image.id, flavor_id=flavor.id,
-        #    networks=[{"uuid": network.id}], key_name=keypair.name,
-        #    security_groups=[security_group])
-        server_web_status=conn.compute.status(server_web)
+        server_web_status=server_web.status
         print(str(server_web_status))
             
     #app server status
