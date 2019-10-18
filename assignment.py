@@ -210,7 +210,7 @@ def destroy():
     router = conn.network.find_router(ROUTER)
     subnet = conn.network.find_subnet(SUBNET)
     network = conn.network.find_network(NETWORK)
-    
+    #floating_ip = conn.network.find_ip()
         
     #web server destroy
     if not server_web:
@@ -248,10 +248,9 @@ def destroy():
             conn.network.delete_port(port)
     
     
-    floating_ip = conn.network.find_ip(floating_ip.floating_ip_address)
-    if floating_ip:
-        print("removing floating IP")
-        conn.network.delete_ip(floating_ip)
+    #if floating_ip:
+    #    print("removing floating IP")
+    #    conn.network.delete_ip(floating_ip)
     
     if router is not None:
         print("removing router")
@@ -282,6 +281,8 @@ def status():
         print(str(SERVER_WEB)+" Status")
         server_web_status=server_web.status
         print(str(server_web_status))
+        server_web_ip=server_web.address
+        print(str(server_web_ip)+" web server ip")
             
     #app server status
     if not server_app:
@@ -290,7 +291,9 @@ def status():
         server_app = conn.compute.get_server(server_app.id)
         print(str(SERVER_APP)+" Status")
         server_app_status=server_app.status
-        print(str(server_app_status))    
+        print(str(server_app_status))
+        server_app_ip=server_app.address
+        print(str(server_app_ip)+" app server ip")
     
     #db server status
     if not server_db:
@@ -300,7 +303,8 @@ def status():
         print(str(SERVER_DB)+" Status")
         server_db_status=server_db.status
         print(str(server_db_status))    
-    
+        server_db_ip=server_db.address
+        print(str(server_db_ip)+" db server ip")
     
     
     
