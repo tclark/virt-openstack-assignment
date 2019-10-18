@@ -59,7 +59,7 @@ def create():
     if not router:
         print("Constructing "+str(ROUTER)+ " Router")
         router = conn.network.create_router(name=ROUTER,external_gateway_info={"network_id": public_net.id})
-        conn.network.router_add_to_interface(router, subnet.id)
+        conn.network.add_interface_to_router(router, subnet.id)
     else:
         print(str(router.name)+ " already exists")
     
