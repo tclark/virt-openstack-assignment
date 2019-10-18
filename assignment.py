@@ -32,7 +32,7 @@ def create():
     
     if not network:
         print("Constructing "+str(NETWORK)+" Network:")
-        network = conn.network.create_network(name=NETWORK)
+        network = conn.network.create_network(name=NETWORK)aw
     else:
         print("Network "+str(network.name)+" exists")
     
@@ -246,6 +246,12 @@ def destroy():
         for port in conn.network.get_subnet_ports(subnet.id):
             print(str(port)+ " removing ports")
             conn.network.delete_port(port)
+    
+    
+    floating_ip = conn.network.find_ip(floating_ip.floating_ip_address)
+    if floating_ip
+        print("removing floating IP")
+        conn.network.delete_ip(floating_ip)
     
     if router is not None:
         print("removing router")
