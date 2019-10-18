@@ -32,7 +32,7 @@ def create():
     
     if not network:
         print("Constructing "+str(NETWORK)+" Network:")
-        network = conn.network.create_network(name=NETWORK)aw
+        network = conn.network.create_network(name=NETWORK)
     else:
         print("Network "+str(network.name)+" exists")
     
