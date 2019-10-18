@@ -1,5 +1,6 @@
 import argparse
 import openstack
+import time
 
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
@@ -209,21 +210,21 @@ def destroy():
     
     #web server destroy
     if not server_web:
-        print(str(server_web.name)+" does not exist")
+        print(str(SERVER_WEB)+" does not exist")
     else:
         print(str(SERVER_WEB)+" is being annihilated")
         conn.compute.delete_server(server_web)
         
     #app server destroy
     if not server_app:
-        print(str(server_app.name)+" does not exist")
+        print(str(SERVER_APP)+" does not exist")
     else:
         print(str(SERVER_APP)+" Is being annihilated")
         conn.compute.delete_server(server_app)
     
     #db server destroy
     if not server_db:
-        print(str(server_db.name)+" does not exist")
+        print(str(SERVER_DB)+" does not exist")
     else:
         print(str(SERVER_DB)+" is being annihilated")
         conn.compute.delete_server(server_db)
