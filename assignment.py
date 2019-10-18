@@ -252,12 +252,12 @@ def destroy():
         conn.network.delete_router(router)
     
     if subnet:
-    print("removing subnet")
+        print("removing subnet")
         conn.network.delete_subnet(subnet)
     
     if network is not None:
-         print(str(network)+" network being removed")
-         conn.network.delete_network(network)
+        print(str(network)+" network being removed")
+        conn.network.delete_network(network)
 
 def status():
     ''' Print a status report on the OpenStack
