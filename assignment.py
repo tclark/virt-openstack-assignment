@@ -275,7 +275,7 @@ def status():
     
     #web server status
     if not server_web:
-        print(str(server_web.name)+" does not exist")
+        print(str(server_web)+" does not exist")
     else:
         server_web = conn.compute.get_server(server_web.id)
         print(str(SERVER_WEB)+" Status")
@@ -286,7 +286,7 @@ def status():
             
     #app server status
     if not server_app:
-        print(str(server_app.name)+" does not exist")
+        print(str(server_app)+" does not exist")
     else:
         server_app = conn.compute.get_server(server_app.id)
         print(str(SERVER_APP)+" Status")
@@ -297,7 +297,7 @@ def status():
     
     #db server status
     if not server_db:
-        print(str(server_db.name)+" does not exist")
+        print(str(server_db)+" does not exist")
     else:
         server_db = conn.compute.get_server(server_db.id)
         print(str(SERVER_DB)+" Status")
