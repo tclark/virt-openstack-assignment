@@ -237,15 +237,15 @@ def destroy():
     
     if subnet is not None:
         if router:
--           try:
+            try:
                 print("removing interface from router")
--               conn.network.remove_interface_from_router(router, subnet.id)
--           except Exception:
--               pass
-            
+                conn.network.remove_interface_from_router(router, subnet.id)
+            except Exception:
+                pass
+
         for port in conn.network.get_subnet_ports(subnet.id):
--           print(str(port)+ " removing ports")
--           conn.network.delete_port(port)
+            print(str(port)+ " removing ports")
+            conn.network.delete_port(port)
     
     if router is not None:
         print("removing router")
@@ -256,8 +256,8 @@ def destroy():
         conn.network.delete_subnet(subnet)
     
     if network is not None:
--        print(str(network)+" network being removed")
--        conn.network.delete_network(network)
+         print(str(network)+" network being removed")
+         conn.network.delete_network(network)
 
 def status():
     ''' Print a status report on the OpenStack
