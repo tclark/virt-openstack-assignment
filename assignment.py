@@ -249,7 +249,7 @@ def destroy():
     
     
     floating_ip = conn.network.find_ip(floating_ip.floating_ip_address)
-    if floating_ip
+    if floating_ip:
         print("removing floating IP")
         conn.network.delete_ip(floating_ip)
     
