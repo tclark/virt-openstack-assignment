@@ -4,8 +4,8 @@ import time
 
 
 global conn 
-conn = openstack.connect(cloud_name='openstack')
 global serverList
+conn = openstack.connect(cloud_name='openstack')
 serverList = ["dackja1-app", "dackja1-db", "dackja1-web"]
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOUR = 'c1.c1r1'
@@ -15,6 +15,7 @@ SECURITY_GROUP = 'assignment2'
 SUBNET = 'dackja1-subnet'
 ROUTER = 'dackja1-rtr'
 PUBLICNET = 'public-net'
+GATEWAY_IP = '192.168.50.1'
 
 subnet = conn.network.find_subnet(SUBNET)
 image = conn.compute.find_image(IMAGE)
@@ -45,11 +46,11 @@ def create():
     if conn.network.find_subnet(SUBNET) is None:
         print ("creating subnet")
         subnet = conn.network.create_subnet(
-            name = 'dackja1-subnet',
-            network_id=Network.id,
+            name = SUBNET,
+            network_id= Network.id,
             ip_version='4',
             cidr='192.168.50.0/24',
-            gateway_ip='192.168.50.1'
+            gateway_ip= GATEWAY_IP
         )
         print ("Subnet dackja1-subnet has been created")
 
@@ -155,7 +156,7 @@ def destroy():
                 conn.compute.remove_floating_ip_from_server(web, web_floating_ip)
                 deleteIp = conn.network.delete_ip(deleteIp)
             conn.compute.delete_server(ser)
-            time.sleep(3)
+            time.sleep(3)  # suggested by another student to get around an error I encounted 
            
             print(ser.name + " Destroyed.")
         else:
