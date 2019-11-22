@@ -1,5 +1,6 @@
 import argparse
 import openstack
+import time
 
 conn = openstack.connect(cloud_name='openstack')
 serverList = [ "bradcw1-app", "bradcw1-db", "bradcw1-web" ]
@@ -149,6 +150,7 @@ def destroy():
                 print("Floating IP removed from " + ser.name)
                 drop_ip = conn.network.find_ip(server_floating_ip)
                 conn.network.delete_ip(drop_ip)
+                time.sleep(3)
                 
                 print("IP Dropped")
                 
@@ -162,6 +164,7 @@ def destroy():
     if router is not None:
         delInterface = conn.network.remove_interface_from_router(router, subnet.id)
         delRouter = conn.network.delete_router(router)
+        time.sleep(3)
         print("Router Destroyed")
     else:
         print("Network does not exist.")        
@@ -169,6 +172,7 @@ def destroy():
     # DESTROY SUBNET
     if subnet is not None:
         delSubnet = conn.network.delete_subnet(subnet)
+        time.sleep(3)
         print("Subnet Destroyed")
     else:
         print("Subnet does not exist.")
@@ -177,9 +181,12 @@ def destroy():
     network = conn.network.find_network("bradcw1-net")
     if network is not None:
         delNetwork = conn.network.delete_network(network)
+        time.sleep(3)
         print("Network Destroyed")
     else:
-        print("Network does not exist.")   
+        print("Network does not exist.")  
+
+     
     
     pass
 
