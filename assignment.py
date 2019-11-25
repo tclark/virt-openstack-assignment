@@ -1,7 +1,5 @@
 import argparse
 import openstack
-
-
   
 IMAGE = 'ubuntu-minimal-16.04-x86_64'
 FLAVOR = 'c1.c1r1'
