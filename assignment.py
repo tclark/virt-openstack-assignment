@@ -6,19 +6,7 @@ import time
 conn= openstack.connect(cloud_name ='otago-polytechnic')
 
 def create():
-    #create required variables
-    IMAGE = 'ubuntu-minimal-16.04-x86_64'
-    FLAVOR = 'c1.c1r1'
-    NETWORK = 'hachm1-net'
-    SUBNET = 'hachm1-subnet'
-    KEYPAIR = 'hachm1-key'
 
-    image = conn.compute.find_image(IMAGE)
-    flavor = conn.compute.find_flavor (FLAVOR)
-    network = conn.network.find_network(NETWORK)
-    keypair = conn.compute.find_keypair(KEYPAIR)
-    security_group = conn.network.find_security_group('assignment2')
-    ''' Create a set of Openstack resources '''
 
     '''create variables'''
     IMAGE = 'ubuntu-minimal-16.04-x86_64'
