@@ -1,21 +1,23 @@
 import argparse
 import openstack
-  
-IMAGE = 'ubuntu-minimal-16.04-x86_64'
-FLAVOR = 'c1.c1r1'
-NETWORK = 'hachm1-net'
-SUBNET = 'hachm1-subnet'
-KEYPAIR = 'hachm1-key'
+import time
 
-image = conn.compute.find_image(IMAGE)
-flavor = conn.compute.find_flavor (FLAVOR)
-network = conn.network.find_network(NETWORK)
-keypair = conn.compute.find_keypair(KEYPAIR)
-security_group = conn.network.find_security_group('assignment2')
     
-conn.openstack.connect(cloud_name ='openstack')
-def create():
+conn= openstack.connect(cloud_name ='otago-polytechnic')
 
+def create():
+    #create required variables
+    IMAGE = 'ubuntu-minimal-16.04-x86_64'
+    FLAVOR = 'c1.c1r1'
+    NETWORK = 'hachm1-net'
+    SUBNET = 'hachm1-subnet'
+    KEYPAIR = 'hachm1-key'
+
+    image = conn.compute.find_image(IMAGE)
+    flavor = conn.compute.find_flavor (FLAVOR)
+    network = conn.network.find_network(NETWORK)
+    keypair = conn.compute.find_keypair(KEYPAIR)
+    security_group = conn.network.find_security_group('assignment2')
     ''' Create a set of Openstack resources '''
 
     '''create variables'''
@@ -43,7 +45,7 @@ def create():
         print("error, network exits")
 
 
-     '''create subnet'''
+    '''create subnet'''
     subnet = conn.network.find_subnet(SUBNET)
     if subnet is None:
         '''create subnet'''
@@ -60,9 +62,9 @@ def create():
     router = conn.network.find_router('hachm1-rtr')
     if router is None:
         public_net = conn.network.find_network('public-net')
-        hachm1-rtr = conn.network.create_router(name='hachm1-rtr', 
+        hachm1_rtr = conn.network.create_router(name='hachm1-rtr', 
         external_gateway_info={'network_id':public_net.id})
-        conn.network.add_interface_to_router(hachm1-rtr, hachm1_subnet.id)
+        conn.network.add_interface_to_router(hachm1_rtr, hachm1_subnet.id)
 
     else:
         print("error")
@@ -77,7 +79,7 @@ def create():
         server.conn.compute.create_server(
             name = SERVER, image_id =image.id, flavor = flavor.id,
             networks = [{"uuid":hachm1_net.id}], key_name = keypair.name,
-            security_group=[{'name:'security_group.id}]
+            security_groups=[{'name':security_group.id}]
         )
         server = conn.compute.wait_for_server(server)
         floating_ip = conn.network.create_ip(floating_network_id=public_net.id, server = 'hachm1-web')
@@ -87,9 +89,9 @@ def create():
     if server is None:
         SERVER = 'hachm1-app'
         server.conn.compute.create_server(
-            name = SERVER, image_id - image.id, flavor = flavor.id,
-            networks = [{"uuid":hachm1_net.id}], key_name = keypair.name
-            security_group=[{'name:'security_group.id}]
+            name = SERVER, image_id = image.id, flavor = flavor.id,
+            networks = [{"uuid":hachm1_net.id}], key_name = keypair.name,
+            security_groups=[{'name':security_group.id}]
         )
         server = conn.compute.wait_for_server(server)
 
@@ -97,9 +99,9 @@ def create():
     if server is None:
         SERVER = 'hachm1-db'
         server.conn.compute.create_server(
-            name = SERVER, image_id - image.id, flavor = flavor.id,
-            networks = [{"uuid":hachm1_net.id}], key_name = keypair.name
-            security_group=[{'name:'security_group.id}]
+            name = SERVER, image_id = image.id, flavor = flavor.id,
+            networks = [{"uuid":hachm1_net.id}], key_name = keypair.name,
+            security_groups=[{'name':security_group.id}]
         )
         server = conn.compute.wait_for_server(server)
 
@@ -114,28 +116,28 @@ def run():
     server = conn.compute.find_server('hachm1-web')
     if server is not None:
         server = conn.compute.get_server('hachm1-web')
-        if server.status = 'ACTIVE':
+        if server.status == 'ACTIVE':
             print ('server is running')
 
-        elif server.status='SHUTOFF':
+        elif server.status=='SHUTOFF':
             conn.compute.start_server('hachm1-web')
     
     server = conn.compute.find_server('hachm1-app')
     if server is not None:
         server = conn.compute.get_server('hachm1-app')
-        if server.status = 'ACTIVE':
+        if server.status == 'ACTIVE':
             print ('server is running')
 
-        elif server.status='SHUTOFF':
+        elif server.status=='SHUTOFF':
             conn.compute.start_server('hachm1-app')
     
     server = conn.compute.find_server('hachm1-db')
     if server is not None:
         server = conn.compute.get_server('hachm1-db')
-        if server.status = 'ACTIVE':
+        if server.status == 'ACTIVE':
             print ('server is running')
 
-        elif server.status='SHUTOFF':
+        elif server.status=='SHUTOFF':
             conn.compute.start_server('hachm1-db')
     
 
@@ -149,28 +151,28 @@ def stop():
     server = conn.compute.find_server('hachm1-web')
     if server is not None:
         server = conn.compute.get_server('hachm1-web')
-        if server.status = 'ACTIVE':
+        if server.status == 'ACTIVE':
             conn.compute.stop_server('hachm1-web')
 
-        elif server.status='SHUTOFF':
+        elif server.status =='SHUTOFF':
             print('server is not running')
     
     server = conn.compute.find_server('hachm1-app')
     if server is not None:
         server = conn.compute.get_server('hachm1-app')
-        if server.status = 'ACTIVE':
+        if server.status == 'ACTIVE':
             conn.compute.stop_server('hachm1-app')
 
-        elif server.status='SHUTOFF':
+        elif server.status=='SHUTOFF':
             print('server is not running')
     
     server = conn.compute.find_server('hachm1-db')
     if server is not None:
         server = conn.compute.get_server('hachm1-db')
-        if server.status = 'ACTIVE':
+        if server.status == 'ACTIVE':
             conn.compute.stop_server('hachm1-db')
 
-        elif server.status='SHUTOFF':
+        elif server.status =='SHUTOFF':
             print('server is not running')
     
     pass
@@ -184,21 +186,21 @@ def destroy():
     print ("delete server")
     server = conn.compute.find_server('hachm1-web')
     if server is not None:
-        conn.delete_server(server.id, ignore_missing = True)
+        conn.delete_server(server.id)
     
     server = conn.compute.find_server('hachm1-app')
     if server is not None:
-        conn.delete_server(server.id, ignore_missing = True)
+        conn.delete_server(server.id)
 
     server = conn.compute.find_server('hachm1-db')
     if server is not None:
-        conn.delete_server(server.id, ignore_missing = True)
+        conn.delete_server(server.id)
 
     '''delete network'''
     print ("delete network")
 
     
-    router = conn.network.find_router('hachm1-rtr')
+    router = conn.network.find_router('hachm1_rtr')
     if router is not None:
         sub = conn.network.find_subnet('hachm1-subnet')
         if sub is not None:
@@ -206,13 +208,13 @@ def destroy():
             print ('router destroyed')
         conn.network.delete_router(router)
 
-    subnet = conn.network.find_subnet(SUBNET)
+    subnet = conn.network.find_subnet('hachm1_subnet')
     if subnet is not None:
         conn.network.delete_subnet(subnet)
         print ('subnet destroyed')
 
 
-    network = conn.network.find_network('hachm1-net')
+    network = conn.network.find_network('hachm1_net')
     if network is not None:
         conn.network.delete_network(network.id)
         print ('network destroyed')
@@ -224,19 +226,19 @@ def status():
     virtual machines created by the create action.
     '''
 
-    hachm1-web = conn.compute.find_server('hachm1-web')
-    if hachm1-web is not None:
-        server = conn.compute.get_server(hachm1-web)
+    hachm1_web = conn.compute.find_server('hachm1-web')
+    if hachm1_web is not None:
+        server = conn.compute.get_server(hachm1_web)
         print ({server.name, server.status, server.addresses})
 
-    hachm1-app = conn.compute.find_server('hachm1-app')
-    if hachm1-app is not None:
-        server = conn.compute.get_server(hachm1-app)
+    hachm1_app = conn.compute.find_server('hachm1-app')
+    if hachm1_app is not None:
+        server = conn.compute.get_server(hachm1_app)
         print ({server.name, server.status, server.addresses}) 
 
-    hachm1-db = conn.compute.find_server('hachm1-db')
-    if hachm1-db is not None:
-        server = conn.compute.get_server(hachm1-db)
+    hachm1_db = conn.compute.find_server('hachm1-db')
+    if hachm1_db is not None:
+        server = conn.compute.get_server(hachm1_db)
         print ({server.name, server.status, server.addresses})
     pass
 
