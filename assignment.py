@@ -1,32 +1,127 @@
 import argparse
 import openstack
 
+conn = openstack.connect(cloud_name="catalystcloud")
+
+IMAGE = "ubuntu-22.04-x86_64"
+FLAVOUR = "c1.c1r1"
+NETWORK = "private-net"
+KEYPAIR = "huar2-key"
+SERVERNAME = "huar2-server"
+
 def create():
     ''' Create a set of Openstack resources '''
+    server = conn.compute.find_server(SERVERNAME)
+    if not server:
+        image = conn.compute.find_image(IMAGE)
+        flavour = conn.compute.find_flavor(FLAVOUR)
+        network = conn.network.find_network(NETWORK)
+        keypair = conn.compute.find_keypair(KEYPAIR)
+
+        server = conn.compute.create_server(name=SERVERNAME, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": "lab5-secgrp"}])
+
+        print("Creating VM: " + SERVERNAME)
+        server = conn.compute.wait_for_server(server)
+        print("VM Created: " + SERVERNAME)
+
+        public_net = conn.network.find_network("public-net")
+        floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
+
+        print("Floating IP address: " + floating_ip.floating_ip_address)
+        conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
+        print("Floating IP address added to " + SERVERNAME)
+    else:
+        print("Server already exists, no action taken")
     pass
 
 def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    server = conn.compute.find_server(SERVERNAME)
+    if server:
+        serverDetails = conn.compute.get_server(server)
+        serverStatus = serverDetails.status
+        print("Current status: " + serverStatus)
+        if serverStatus == "SHUTOFF":
+            conn.compute.start_server(serverDetails)
+            print("Starting server")
+            conn.compute.wait_for_server(serverDetails, status='ACTIVE')
+            print("Server started")
+            serverDetails = conn.compute.get_server(server)
+            serverStatus = serverDetails.status
+            print("New status: " + serverStatus)
+        else:
+            print("Server already active, no action taken")
+    else:
+        print("Server not found")
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    server = conn.compute.find_server(SERVERNAME)
+    if server:
+        serverDetails = conn.compute.get_server(server)
+        serverStatus = serverDetails.status
+        print("Current status: " + serverStatus)
+        if serverStatus == "ACTIVE":
+            conn.compute.stop_server(serverDetails)
+            print("Server stopping")
+            conn.compute.wait_for_server(serverDetails, status='SHUTOFF')
+            print("Server stopped")
+            serverDetails = conn.compute.get_server(server)
+            serverStatus = serverDetails.status
+            print("New status: " + serverStatus)        
+        else:
+            print("Server already stopped, no action taken")
+    else:
+        print("Server not found")
     pass
 
 def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    SERVER = conn.compute.find_server(SERVERNAME)
+    
+    if SERVER:
+        server = conn.compute.get_server(SERVER)
+        floating_ip = server["addresses"][NETWORK][1]["addr"]
+
+        print("Disallowcating floating IP " + floating_ip + " from " + SERVERNAME)
+        conn.compute.remove_floating_ip_from_server(server, floating_ip)
+
+        server = conn.compute.delete_server(SERVER)
+        print("Server deleted")
+
+        ip_address=conn.network.find_ip(floating_ip)
+        conn.network.delete_ip(ip_address)
+        print("Floating IP address " + floating_ip + " released")
+    else:
+        print("Server not found")
     pass
 
 def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    server = conn.compute.find_server(SERVERNAME)
+    if server:
+        serverDetails = conn.compute.get_server(server)
+        private_ip = server["addresses"][NETWORK][0]["addr"]
+        if SERVERNAME == "huar2-server":
+            floating_ip = server["addresses"][NETWORK][1]["addr"]
+        else:
+            floating_ip = "not found"
+        serverStatus = serverDetails.status
+        print("Server name: " + SERVERNAME)
+        print("Current status: " + serverStatus)
+        print("Private IP: " + private_ip)
+        print("Floating IP: " + floating_ip)
+    else:
+        print("Server not found")
     pass
 
 
