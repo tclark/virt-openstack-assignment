@@ -38,6 +38,7 @@ def create():
         gateway_ip='192.168.50.1')
         print("Subnet created")
         new_router = conn.network.create_router(name=ROUTER, external_gateway_info={"network_id": public_net.id})
+        conn.network.add_interface_to_router(new_router.id, new_subnet.id)
     else:
         print("Network not created")
     '''if not server:
