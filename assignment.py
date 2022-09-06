@@ -110,14 +110,24 @@ def destroy():
     produced by the create action
     '''
     network = conn.network.find_network(NETWORK)
-
-    for subnet in network.subnet_ids:
-        print("Deleting subnet ID: " + subnet)
-        conn.network.delete_subnet(subnet, ignore_missing=False)
-    print("Deleting network: " + NETWORK)
-    conn.network.delete_network(network, ignore_missing=False)
-    print("Network " + NETWORK + " deleted")
-
+    router = conn.network.find_router(ROUTER)
+    if network:
+        for subnet in network.subnet_ids:
+            conn.network.remove_interface_from_router(router.id, subnet)
+            print("Deleting subnet ID: " + subnet)
+            conn.network.delete_subnet(subnet, ignore_missing=False)
+        print("Deleting network: " + NETWORK)
+        conn.network.delete_network(network, ignore_missing=False)
+        print("Network " + NETWORK + " deleted")
+    else:
+        print("Network not found")
+    
+    if router:
+        print("Deleting router " + ROUTER)
+        conn.network.delete_router(router)
+        print("Router deleted")
+    else:
+        print("Router not found")
     '''SERVER = conn.compute.find_server(SERVERNAME)
     
     if SERVER:
