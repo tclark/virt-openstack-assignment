@@ -10,6 +10,7 @@ KEYPAIR = "huar2-key"
 SERVERNAME = "huar2-server"
 SUBNET = "huar2-subnet"
 ROUTER = "huar2-router"
+SECGROUP = "assignment2"
 
 WEBSERVER = "huar2-web"
 APPSERVER = "huar2-server"
@@ -24,30 +25,32 @@ def create():
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
     network = conn.network.find_network(NETWORK)
+    router = conn.network.find_router(ROUTER)
     keypair = conn.compute.find_keypair(KEYPAIR)
     if not network:
         print("Creating network: " + NETWORK)
-        new_network = conn.network.create_network(name=NETWORK)
+        network = conn.network.create_network(name=NETWORK)
         print("Network " + NETWORK + " created")
         print("Creating subnet: " + SUBNET)
-        new_subnet = conn.network.create_subnet(
+        subnet = conn.network.create_subnet(
         name=SUBNET,
-        network_id=new_network.id,
+        network_id=network.id,
         ip_version='4',
         cidr='192.168.50.0/24',
         gateway_ip='192.168.50.1')
         print("Subnet created")
-        new_router = conn.network.create_router(name=ROUTER, external_gateway_info={"network_id": public_net.id})
-        conn.network.add_interface_to_router(new_router.id, new_subnet.id)
     else:
-        print("Network not created")
-    '''if not server:
-        server = conn.compute.create_server(name=SERVERNAME, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": "lab5-secgrp"}])
+        print("Network exists, therefore not created")
+    if not router:
+        router = conn.network.create_router(name=ROUTER, external_gateway_info={"network_id": public_net.id})
+        conn.network.add_interface_to_router(router.id, subnet.id)
+    else:
+        print("Router exists, therefore not created")
+    if not server:
+        server = conn.compute.create_server(name=SERVERNAME, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": SECGROUP}])
         print("Creating VM: " + SERVERNAME)
         server = conn.compute.wait_for_server(server)
         print("VM Created: " + SERVERNAME)
-
-        public_net = conn.network.find_network("public-net")
         floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
 
         print("Floating IP address: " + floating_ip.floating_ip_address)
@@ -55,8 +58,6 @@ def create():
         print("Floating IP address added to " + SERVERNAME)
     else:
         print("Server already exists, no action taken")
-    '''
-
     pass
 
 def run():
