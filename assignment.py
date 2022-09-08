@@ -13,7 +13,7 @@ ROUTER = "huar2-router"
 SECGROUP = "assignment2"
 
 WEBSERVER = "huar2-web"
-APPSERVER = "huar2-server"
+APPSERVER = "huar2-app"
 DBSERVER = "huar2-db"
 SERVERS = [WEBSERVER, APPSERVER, DBSERVER]
 
@@ -21,7 +21,7 @@ public_net = conn.network.find_network("public-net")
 
 def create():
     ''' Create a set of Openstack resources '''
-    server = conn.compute.find_server(SERVERNAME)
+    #server = conn.compute.find_server(SERVERNAME)
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
     network = conn.network.find_network(NETWORK)
@@ -46,18 +46,21 @@ def create():
         conn.network.add_interface_to_router(router.id, subnet.id)
     else:
         print("Router exists, therefore not created")
-    if not server:
-        server = conn.compute.create_server(name=SERVERNAME, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": SECGROUP}])
-        print("Creating VM: " + SERVERNAME)
-        server = conn.compute.wait_for_server(server)
-        print("VM Created: " + SERVERNAME)
-        floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
+    for server_name in SERVERS:
+        server = conn.compute.find_server(server_name)
+        if not server:
+            server = conn.compute.create_server(name=server_name, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": SECGROUP}])
+            print("Creating VM: " + server_name)
+            server = conn.compute.wait_for_server(server)
+            print("VM Created: " + server_name)
+            if server_name == WEBSERVER:
+                floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
 
-        print("Floating IP address: " + floating_ip.floating_ip_address)
-        conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
-        print("Floating IP address added to " + SERVERNAME)
-    else:
-        print("Server already exists, no action taken")
+                print("Floating IP address: " + floating_ip.floating_ip_address)
+                conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
+                print("Floating IP address added to " + server_name)
+        else:
+            print("Server already exists, no action taken")
     pass
 
 def run():
@@ -110,6 +113,24 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    SERVER = conn.compute.find_server(SERVERNAME)
+    
+    if SERVER:
+        server = conn.compute.get_server(SERVER)
+        floating_ip = server["addresses"][NETWORK][1]["addr"]
+
+        print("Disallowcating floating IP " + floating_ip + " from " + SERVERNAME)
+        conn.compute.remove_floating_ip_from_server(server, floating_ip)
+
+        server = conn.compute.delete_server(SERVER)
+        print("Server deleted")
+
+        ip_address=conn.network.find_ip(floating_ip)
+        conn.network.delete_ip(ip_address)
+        print("Floating IP address " + floating_ip + " released")
+    else:
+        print("Server not found")
+
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
     if network:
@@ -129,23 +150,7 @@ def destroy():
         print("Router deleted")
     else:
         print("Router not found")
-    '''SERVER = conn.compute.find_server(SERVERNAME)
     
-    if SERVER:
-        server = conn.compute.get_server(SERVER)
-        floating_ip = server["addresses"][NETWORK][1]["addr"]
-
-        print("Disallowcating floating IP " + floating_ip + " from " + SERVERNAME)
-        conn.compute.remove_floating_ip_from_server(server, floating_ip)
-
-        server = conn.compute.delete_server(SERVER)
-        print("Server deleted")
-
-        ip_address=conn.network.find_ip(floating_ip)
-        conn.network.delete_ip(ip_address)
-        print("Floating IP address " + floating_ip + " released")
-    else:
-        print("Server not found")'''
     pass
 
 def status():
@@ -166,7 +171,7 @@ def status():
         print("Private IP: " + private_ip)
         print("Floating IP: " + floating_ip)
     else:
-        print("Server not found")
+        print('Server "' + SERVERNAME + '" not found')
     pass
 
 
