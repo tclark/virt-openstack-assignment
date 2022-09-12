@@ -60,7 +60,7 @@ def create():
                 conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
                 print("Floating IP address added to " + server_name)
         else:
-            print("Server already exists, no action taken")
+            print('Server "' + server_name + '" already exists, no action taken')
     pass
 
 def run():
@@ -157,21 +157,23 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    server = conn.compute.find_server(SERVERNAME)
-    if server:
-        serverDetails = conn.compute.get_server(server)
-        private_ip = server["addresses"][NETWORK][0]["addr"]
-        if SERVERNAME == "huar2-server":
-            floating_ip = server["addresses"][NETWORK][1]["addr"]
+    for server_name in SERVERS:
+        server = conn.compute.find_server(server_name)
+        if server:
+            serverDetails = conn.compute.get_server(server)
+            private_ip = server["addresses"][NETWORK][0]["addr"]
+            if server_name == WEBSERVER:
+                floating_ip = server["addresses"][NETWORK][1]["addr"]
+            else:
+                floating_ip = "not found"
+            serverStatus = serverDetails.status
+            print("------------------------------------------")
+            print("Server name: " + server_name)
+            print("Current status: " + serverStatus)
+            print("Private IP: " + private_ip)
+            print("Floating IP: " + floating_ip)
         else:
-            floating_ip = "not found"
-        serverStatus = serverDetails.status
-        print("Server name: " + SERVERNAME)
-        print("Current status: " + serverStatus)
-        print("Private IP: " + private_ip)
-        print("Floating IP: " + floating_ip)
-    else:
-        print('Server "' + SERVERNAME + '" not found')
+            print('Server "' + server_name + '" not found')
     pass
 
 
