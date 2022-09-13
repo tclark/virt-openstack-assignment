@@ -8,15 +8,18 @@ conn = openstack.connect(cloud_name='openstack', region_name='nz-por-1')
 
 
 def create_network():
-    print("Creating network with name " + constant.NETWORK)
+    print ("Checking network status...")
 
 #check for network and create if non existing
     network = conn.network.find_network(constant.NETWORK)
     subnet = conn.network.find_subnet(constant.SUBNET)
+
     if (network is None):
         network = conn.network.create_network(
             name=constant.NETWORK
         )
+        print("Created network with name " + constant.NETWORK)
+        
     #print(westcl4_net)
 #check for subnet and create if non existing
     if (subnet is None):
@@ -24,9 +27,10 @@ def create_network():
         name=constant.SUBNET,
         network_id=network.id,
         ip_version='4',
-        cidr='192.168.50.0/24',
-        gateway_ip='192.168.50.1'
+        cidr=constant.CIDR,
+        gateway_ip=constant.GATEWAY_IP
         )
+        print("Created subnet with name " + constant.SUBNET)
 
     #print(USER_subnet)
 
