@@ -1,3 +1,5 @@
+DUE: 17 October
+
 # virt-openstack-assignment
 OpenStack SDK assignment for ID720 paper
 
