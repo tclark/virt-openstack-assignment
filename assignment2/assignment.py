@@ -1,7 +1,6 @@
 # Adapted from examples on the openstack github https://github.com/openstack/openstacksdk/tree/master/examples/compute
 
 
-
 import argparse
 import openstack
 
@@ -27,7 +26,7 @@ def create_network(conn):
 
 def create():
     ''' Create a set of Openstack resources '''
-
+    print("Create test")
 
     pass
 
