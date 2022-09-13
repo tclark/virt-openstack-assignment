@@ -113,23 +113,25 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    SERVER = conn.compute.find_server(SERVERNAME)
+    for server_name in SERVERS:
+        SERVER = conn.compute.find_server(server_name)
     
-    if SERVER:
-        server = conn.compute.get_server(SERVER)
-        floating_ip = server["addresses"][NETWORK][1]["addr"]
+        if SERVER:
+            server = conn.compute.get_server(SERVER)
 
-        print("Disallowcating floating IP " + floating_ip + " from " + SERVERNAME)
-        conn.compute.remove_floating_ip_from_server(server, floating_ip)
+            if server_name == WEBSERVER:
+                floating_ip = server["addresses"][NETWORK][1]["addr"]
+                print("Disallowcating floating IP " + floating_ip + " from " + server_name)
+                conn.compute.remove_floating_ip_from_server(server, floating_ip)
+                ip_address=conn.network.find_ip(floating_ip)
+                conn.network.delete_ip(ip_address)
+                print("Floating IP address " + floating_ip + " released")
 
-        server = conn.compute.delete_server(SERVER)
-        print("Server deleted")
+            server = conn.compute.delete_server(SERVER)
+            print('Server "' + server_name + '" deleted')
 
-        ip_address=conn.network.find_ip(floating_ip)
-        conn.network.delete_ip(ip_address)
-        print("Floating IP address " + floating_ip + " released")
-    else:
-        print("Server not found")
+        else:
+            print('Server "' + server_name + '" not found, therefore no action taken')
 
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
