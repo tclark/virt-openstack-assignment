@@ -1,25 +1,25 @@
 # Adapted from examples on the openstack github https://github.com/openstack/openstacksdk/tree/master/examples/compute
 
-
+import constant
 import argparse
 import openstack
 
-def create_network(conn):
+def create_network(CONN):
     print("Create Network:")
 
     westcl4_net = conn.network.create_network(
-        name='westcl4-net'
+        name=constant.NETWORK
     )
     print(westcl4_net)
 
-    westcl4_subnet = conn.network.create_subnet(
+    constant.USER_subnet = conn.network.create_subnet(
         name='westcl4-subnet',
         network_id=westcl4_subnet.id,
         ip_version='4',
         cidr='192.168.50.0/24',
         gateway_ip='192.168.50.1')
 
-    print(westcl4_subnet)
+    print(USER_subnet)
 
 
 
@@ -27,6 +27,7 @@ def create_network(conn):
 def create():
     ''' Create a set of Openstack resources '''
     print("Create test")
+    print(constant.USER)
 
     pass
 
