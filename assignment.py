@@ -7,7 +7,6 @@ IMAGE = "ubuntu-22.04-x86_64"
 FLAVOUR = "c1.c1r1"
 NETWORK = "huar2-net"
 KEYPAIR = "huar2-key"
-SERVERNAME = "huar2-server"
 SUBNET = "huar2-subnet"
 ROUTER = "huar2-router"
 SECGROUP = "assignment2"
@@ -67,46 +66,55 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
-    server = conn.compute.find_server(SERVERNAME)
-    if server:
-        serverDetails = conn.compute.get_server(server)
-        serverStatus = serverDetails.status
-        print("Current status: " + serverStatus)
-        if serverStatus == "SHUTOFF":
-            conn.compute.start_server(serverDetails)
-            print("Starting server")
-            conn.compute.wait_for_server(serverDetails, status='ACTIVE')
-            print("Server started")
+    for SERVERNAME in SERVERS:
+        server = conn.compute.find_server(SERVERNAME)
+        print("------------------------------------------")
+        print('Server: ' + SERVERNAME)
+        if server:
             serverDetails = conn.compute.get_server(server)
             serverStatus = serverDetails.status
-            print("New status: " + serverStatus)
+            print("Current status: " + serverStatus)
+            if serverStatus == "SHUTOFF":
+                conn.compute.start_server(serverDetails)
+                print("Starting server")
+                conn.compute.wait_for_server(serverDetails, status='ACTIVE')
+                print("Server started")
+                serverDetails = conn.compute.get_server(server)
+                serverStatus = serverDetails.status
+                print("New status: " + serverStatus)
+            else:
+                print("Server already active, no action taken")
         else:
-            print("Server already active, no action taken")
-    else:
-        print("Server not found")
+            print("Server not found")
+    print("------------------------------------------")
     pass
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
-    server = conn.compute.find_server(SERVERNAME)
-    if server:
-        serverDetails = conn.compute.get_server(server)
-        serverStatus = serverDetails.status
-        print("Current status: " + serverStatus)
-        if serverStatus == "ACTIVE":
-            conn.compute.stop_server(serverDetails)
-            print("Server stopping")
-            conn.compute.wait_for_server(serverDetails, status='SHUTOFF')
-            print("Server stopped")
+    for SERVERNAME in SERVERS:
+        server = conn.compute.find_server(SERVERNAME)
+        print("------------------------------------------")
+        print('Server: ' + SERVERNAME)
+        server = conn.compute.find_server(SERVERNAME)
+        if server:
             serverDetails = conn.compute.get_server(server)
             serverStatus = serverDetails.status
-            print("New status: " + serverStatus)        
+            print("Current status: " + serverStatus)
+            if serverStatus == "ACTIVE":
+                conn.compute.stop_server(serverDetails)
+                print("Server stopping")
+                conn.compute.wait_for_server(serverDetails, status='SHUTOFF')
+                print("Server stopped")
+                serverDetails = conn.compute.get_server(server)
+                serverStatus = serverDetails.status
+                print("New status: " + serverStatus)        
+            else:
+                print("Server already stopped, no action taken")
         else:
-            print("Server already stopped, no action taken")
-    else:
-        print("Server not found")
+            print("Server not found")
+    print("------------------------------------------")
     pass
 
 def destroy():
