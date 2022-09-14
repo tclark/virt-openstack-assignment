@@ -27,6 +27,7 @@ def create():
     router = conn.network.find_router(ROUTER)
     keypair = conn.compute.find_keypair(KEYPAIR)
     if not network:
+        print("------------------------------------------")
         print("Creating network: " + NETWORK)
         network = conn.network.create_network(name=NETWORK)
         print("Network " + NETWORK + " created")
@@ -45,21 +46,23 @@ def create():
         conn.network.add_interface_to_router(router.id, subnet.id)
     else:
         print("Router exists, therefore not created")
-    for server_name in SERVERS:
-        server = conn.compute.find_server(server_name)
+    for SERVERNAME in SERVERS:
+        server = conn.compute.find_server(SERVERNAME)
+        print("------------------------------------------")
         if not server:
-            server = conn.compute.create_server(name=server_name, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": SECGROUP}])
-            print("Creating VM: " + server_name)
+            server = conn.compute.create_server(name=SERVERNAME, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": SECGROUP}])
+            print("Creating VM: " + SERVERNAME)
             server = conn.compute.wait_for_server(server)
-            print("VM Created: " + server_name)
-            if server_name == WEBSERVER:
+            print("VM Created")
+            if SERVERNAME == WEBSERVER:
                 floating_ip = conn.network.create_ip(floating_network_id=public_net.id)
 
                 print("Floating IP address: " + floating_ip.floating_ip_address)
                 conn.compute.add_floating_ip_to_server(server, floating_ip.floating_ip_address)
-                print("Floating IP address added to " + server_name)
+                print("Floating IP address added to " + SERVERNAME)
         else:
-            print('Server "' + server_name + '" already exists, no action taken')
+            print('Server "' + SERVERNAME + '" already exists, no action taken')
+    print("------------------------------------------")
     pass
 
 def run():
@@ -121,26 +124,28 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
-    for server_name in SERVERS:
-        SERVER = conn.compute.find_server(server_name)
-    
+    for SERVERNAME in SERVERS:
+        SERVER = conn.compute.find_server(SERVERNAME)
+        print("------------------------------------------")
+        print('Server: ' + SERVERNAME)
         if SERVER:
             server = conn.compute.get_server(SERVER)
 
-            if server_name == WEBSERVER:
+            if SERVERNAME == WEBSERVER:
                 floating_ip = server["addresses"][NETWORK][1]["addr"]
-                print("Disallowcating floating IP " + floating_ip + " from " + server_name)
+                print("Disallowcating floating IP " + floating_ip + " from " + SERVERNAME)
                 conn.compute.remove_floating_ip_from_server(server, floating_ip)
                 ip_address=conn.network.find_ip(floating_ip)
                 conn.network.delete_ip(ip_address)
                 print("Floating IP address " + floating_ip + " released")
 
             server = conn.compute.delete_server(SERVER)
-            print('Server "' + server_name + '" deleted')
+            print('Server "' + SERVERNAME + '" deleted')
 
         else:
-            print('Server "' + server_name + '" not found, therefore no action taken')
+            print('Server "' + SERVERNAME + '" not found, therefore no action taken')
 
+    print("------------------------------------------")
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
     if network:
@@ -153,37 +158,38 @@ def destroy():
         print("Network " + NETWORK + " deleted")
     else:
         print("Network not found")
-    
+    print("------------------------------------------")
     if router:
         print("Deleting router " + ROUTER)
         conn.network.delete_router(router)
         print("Router deleted")
     else:
         print("Router not found")
-    
+    print("------------------------------------------")
     pass
 
 def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    for server_name in SERVERS:
-        server = conn.compute.find_server(server_name)
+    for SERVERNAME in SERVERS:
+        server = conn.compute.find_server(SERVERNAME)
         if server:
             serverDetails = conn.compute.get_server(server)
             private_ip = server["addresses"][NETWORK][0]["addr"]
-            if server_name == WEBSERVER:
+            if SERVERNAME == WEBSERVER:
                 floating_ip = server["addresses"][NETWORK][1]["addr"]
             else:
-                floating_ip = "not found"
+                floating_ip = "no floating IP"
             serverStatus = serverDetails.status
             print("------------------------------------------")
-            print("Server name: " + server_name)
+            print("Server name: " + SERVERNAME)
             print("Current status: " + serverStatus)
             print("Private IP: " + private_ip)
             print("Floating IP: " + floating_ip)
         else:
-            print('Server "' + server_name + '" not found')
+            print('Server "' + SERVERNAME + '" not found')
+    print("------------------------------------------")
     pass
 
 
