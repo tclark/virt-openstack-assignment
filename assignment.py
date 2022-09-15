@@ -18,7 +18,7 @@ def create():
             name='nichmr1-net'
             )
 
-    print(network)
+    print('Network created')
 
     subnet = conn.network.create_subnet(
             name='nichmr1-net',
@@ -28,9 +28,17 @@ def create():
             gateway_ip='192.168.50.1'
             )
 
-    print(subnet)
-    #Create a router
+    print('Subnet created')
 
+    #Create a router
+    public_network = conn.network.find_network('public-net')
+    router = conn.network.create_router(
+            name='nichmr1-rtr',
+            external_gateway_info={'network_id': public_network.id}            
+            )
+    conn.network.add_interface_to_router(router, subnet.id)
+
+    print('Router created')
     #Create a floating IP address
 
 
@@ -56,14 +64,24 @@ def destroy():
     '''
     conn = openstack.connect(cloud_name='catalystcloud')
 
-    #Delete Networking Stuff
-    network = conn.network.find_network(
-            'nichmr1-net'
-            )
+    #Get the stuff to delete
+    network = conn.network.find_network('nichmr1-net')
+    router = conn.network.find_router('nichmr1-rtr')
+    subnet = conn.network.find_subnet('nichmr1-net')
 
+    #Destroy the router
+    conn.network.remove_interface_from_router(router, subnet.id)
+    conn.network.delete_router(router)
+    print('Router Destroyed')
+
+    #Destroy the Subnets
     for subnet in network.subnet_ids:
         conn.network.delete_subnet(subnet, ignore_missing=False)
+    print('Subnets Destroyed')
+
+    #Destroy the Network
     conn.network.delete_network(network, ignore_missing=False)
+    print('Network Destroyed')
 
 def status():
     ''' Print a status report on the OpenStack
