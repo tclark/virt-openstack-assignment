@@ -3,7 +3,10 @@ import openstack
 
 IMAGE = 'ubuntu-minimal-22.04-x86_64'
 FLAVOUR = 'c1.c1r1'
+PUBLIC_NETWORK = 'public-net'
 NETWORK = 'nichmr1-net'
+SUBNET = 'nichmr1-subnet'
+ROUTER = 'nichmr1-rtr'
 SECURITY_GROUP = 'assignment2'
 KEYPAIR = 'nichmr1-key'
 SERVERS = ['nichmr1-web','nichmr1-app', 'nichmr1-db']
@@ -15,38 +18,39 @@ def create():
     conn = openstack.connect(cloud_name='catalystcloud')
     
     #Create a network
-    network = conn.network.create_network(
-            name='nichmr1-net'
+    if conn.network.find_network(NETWORK) is None:
+        network = conn.network.create_network(
+            name = NETWORK
+        )
+        print('Network ' + NETWORK + ' created')
+    else:
+        network = conn.network.find_network(NETWORK)
+        print('Network ' + NETWORK + ' already exists! Continuing...')
+
+    #Create a subnet
+    if conn.network.find_subnet(SUBNET) is None:
+        subnet = conn.network.create_subnet(
+            name = SUBNET,
+            network_id = network.id,
+            ip_version = '4',
+            cidr = '192.168.50.0/24',
+            gateway_ip = '192.168.50.1'
             )
-
-    print('Network created')
-
-    subnet = conn.network.create_subnet(
-            name='nichmr1-subnet',
-            network_id=network.id,
-            ip_version='4',
-            cidr='192.168.50.0/24',
-            gateway_ip='192.168.50.1'
-            )
-
-    print('Subnet created')
+        print('Subnet ' + SUBNET + ' created')
+    else:
+        print('Subnet ' + SUBNET + ' already exists! Continuing...')
 
     #Create a router
-    public_network = conn.network.find_network('public-net')
-    router = conn.network.create_router(
-            name='nichmr1-rtr',
+    public_network = conn.network.find_network(PUBLIC_NETWORK)
+    if conn.network.find_router(ROUTER) is None:
+        router = conn.network.create_router(
+            name = ROUTER,
             external_gateway_info={'network_id': public_network.id}            
             )
-    conn.network.add_interface_to_router(router, subnet.id)
-
-    print('Router created')
-
-    #Create a floating IP address
-    floating_ip = conn.network.create_ip(
-            floating_network_id=public_network.id
-            )
-
-    print('Floating IP created')
+        conn.network.add_interface_to_router(router, subnet.id)
+        print('Router ' + ROUTER + ' created')
+    else:
+        print('Router ' + ROUTER + ' already exists! Continuing...')
 
     #Create three servers
     image = conn.compute.find_image(IMAGE)
@@ -66,13 +70,20 @@ def create():
                     )
             new_server = conn.compute.wait_for_server(new_server)
             print(server + " created")
-
+            
+            #The web server need a floating IP associated with it
             if server == 'nichmr1-web':
+                #Create a floating IP address
+                floating_ip = conn.network.create_ip(
+                    floating_network_id=public_network.id
+                )
+                print("Floating IP created")
+                #Associate the floating IP to the web server
                 web_server = conn.compute.find_server('nichmr1-web')
                 conn.compute.add_floating_ip_to_server(web_server, floating_ip.floating_ip_address)
                 print("Assigned floating IP to web server")
         else:
-            print("ERROR: " + server + " already exists!")
+            print("Server " + server + " already exists! Continuing...")
 
 
 def run():
@@ -94,22 +105,19 @@ def destroy():
     conn = openstack.connect(cloud_name='catalystcloud')
     
     #Get the stuff to delete
-    network = conn.network.find_network('nichmr1-net')
-    router = conn.network.find_router('nichmr1-rtr')
-    subnet = conn.network.find_subnet('nichmr1-subnet')
+    network = conn.network.find_network(NETWORK)
+    router = conn.network.find_router(ROUTER)
+    subnet = conn.network.find_subnet(SUBNET)
 
     #Destroy the Servers
     for server in SERVERS:
         if conn.compute.find_server(name_or_id=server) is not None:
             server_to_delete = conn.compute.find_server(name_or_id=server)
-            #Remove and Destroy Floating IP
+            #Destroy Floating IP
             if server == 'nichmr1-web':
-                conn.network.delete_ip(conn.network.find_ip(conn.compute.get_server(server_to_delete).addresses['nichmr1-net'][1]["addr"]))
-                #nichmr1_web = conn.compute.get_server(server_to_delete)
-                #nichmr1_web_floating_ip = nichmr1_web['addresses'][network][1]['addr']
-                #conn.compute.remove_floating_ip_from_server(nichmr1_web, nichmr1_web_floating_ip)
-                #ip_to_delete = conn.network.find_ip(nichmr1_web_floating_ip)
-                #conn.network.delete_ip(ip_to_delete, ignore_missing=False)
+                conn.network.delete_ip(
+                        conn.network.find_ip(
+                            conn.compute.get_server(server_to_delete).addresses['nichmr1-net'][1]["addr"]))
             conn.compute.delete_server(server_to_delete)
             print(server + " Destroyed")
         else:
