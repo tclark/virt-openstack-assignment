@@ -144,18 +144,15 @@ def destroy():
 
         else:
             print('Server "' + SERVERNAME + '" not found, therefore no action taken')
-
-    print("------------------------------------------")
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
+    print("------------------------------------------")
     if network:
         for subnet in network.subnet_ids:
-            conn.network.remove_interface_from_router(router.id, subnet)
+            if router:
+                conn.network.remove_interface_from_router(router.id, subnet)
             print("Deleting subnet ID: " + subnet)
             conn.network.delete_subnet(subnet, ignore_missing=False)
-        print("Deleting network: " + NETWORK)
-        conn.network.delete_network(network, ignore_missing=False)
-        print("Network " + NETWORK + " deleted")
     else:
         print("Network not found")
     print("------------------------------------------")
@@ -165,6 +162,11 @@ def destroy():
         print("Router deleted")
     else:
         print("Router not found")
+    if network:
+        conn.network.delete_network(network, ignore_missing=False)
+        print("Network " + NETWORK + " deleted")
+    else:
+        print("Network not found")
     print("------------------------------------------")
     pass
 
