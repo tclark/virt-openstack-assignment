@@ -89,7 +89,7 @@ def run():
             else:
                 print("Server already active, no action taken")
         else:
-            print("Server not found")
+            print("Server not found, no action taken")
     print(NEWLINE)
     pass
 
