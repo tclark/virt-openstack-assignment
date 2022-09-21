@@ -90,13 +90,33 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
-    pass
+    conn = openstack.connect(cloud_name='catalystcloud')
+    for server in SERVERS:
+        if conn.compute.find_server(name_or_id=server) is not None:
+            server_to_run = conn.compute.find_server(name_or_id=server)
+            if conn.compute.get_server(server_to_run).status == 'SHUTOFF':
+                conn.compute.start_server(server_to_run)
+                print('Server ' + server + ' had been started')
+            else:
+                print('Server ' + server + ' is already running! Continuing...')
+        else:
+            print('Server ' + server + ' does not exist! Continuing...')
 
 def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
-    pass
+    conn = openstack.connect(cloud_name='catalystcloud')
+    for server in SERVERS:
+        if conn.compute.find_server(name_or_id=server) is not None:
+            server_to_run = conn.compute.find_server(name_or_id=server)
+            if conn.compute.get_server(server_to_run).status == 'ACTIVE':
+                conn.compute.stop_server(server_to_run)
+                print('Server ' + server + ' had been stopped')
+            else:
+                print('Server ' + server + ' is already stopped! Continuing...')
+        else:
+            print('Server ' + server + ' does not exist! Continuing...')
 
 def destroy():
     ''' Tear down the set of Openstack resources 
