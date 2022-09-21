@@ -16,18 +16,19 @@ APPSERVER = "huar2-app"
 DBSERVER = "huar2-db"
 SERVERS = [WEBSERVER, APPSERVER, DBSERVER]
 
+NEWLINE = "--------------------------------------------------------"
+
 public_net = conn.network.find_network("public-net")
 
 def create():
     ''' Create a set of Openstack resources '''
-    #server = conn.compute.find_server(SERVERNAME)
     image = conn.compute.find_image(IMAGE)
     flavour = conn.compute.find_flavor(FLAVOUR)
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
     keypair = conn.compute.find_keypair(KEYPAIR)
     if not network:
-        print("------------------------------------------")
+        print(NEWLINE)
         print("Creating network: " + NETWORK)
         network = conn.network.create_network(name=NETWORK)
         print("Network " + NETWORK + " created")
@@ -48,7 +49,7 @@ def create():
         print("Router exists, therefore not created")
     for SERVERNAME in SERVERS:
         server = conn.compute.find_server(SERVERNAME)
-        print("------------------------------------------")
+        print(NEWLINE)
         if not server:
             server = conn.compute.create_server(name=SERVERNAME, image_id=image.id, flavor_id=flavour.id, networks=[{"uuid": network.id}], key_name=keypair.name, security_groups=[{"name": SECGROUP}])
             print("Creating VM: " + SERVERNAME)
@@ -62,7 +63,7 @@ def create():
                 print("Floating IP address added to " + SERVERNAME)
         else:
             print('Server "' + SERVERNAME + '" already exists, no action taken')
-    print("------------------------------------------")
+    print(NEWLINE)
     pass
 
 def run():
@@ -71,7 +72,7 @@ def run():
     '''
     for SERVERNAME in SERVERS:
         server = conn.compute.find_server(SERVERNAME)
-        print("------------------------------------------")
+        print(NEWLINE)
         print('Server: ' + SERVERNAME)
         if server:
             serverDetails = conn.compute.get_server(server)
@@ -89,7 +90,7 @@ def run():
                 print("Server already active, no action taken")
         else:
             print("Server not found")
-    print("------------------------------------------")
+    print(NEWLINE)
     pass
 
 def stop():
@@ -98,9 +99,8 @@ def stop():
     '''
     for SERVERNAME in SERVERS:
         server = conn.compute.find_server(SERVERNAME)
-        print("------------------------------------------")
+        print(NEWLINE)
         print('Server: ' + SERVERNAME)
-        server = conn.compute.find_server(SERVERNAME)
         if server:
             serverDetails = conn.compute.get_server(server)
             serverStatus = serverDetails.status
@@ -117,7 +117,7 @@ def stop():
                 print("Server already stopped, no action taken")
         else:
             print("Server not found")
-    print("------------------------------------------")
+    print(NEWLINE)
     pass
 
 def destroy():
@@ -126,36 +126,32 @@ def destroy():
     '''
     for SERVERNAME in SERVERS:
         SERVER = conn.compute.find_server(SERVERNAME)
-        print("------------------------------------------")
+        print(NEWLINE)
         print('Server: ' + SERVERNAME)
         if SERVER:
             server = conn.compute.get_server(SERVER)
-
             if SERVERNAME == WEBSERVER:
                 floating_ip = server["addresses"][NETWORK][1]["addr"]
                 print("Disallowcating floating IP " + floating_ip + " from " + SERVERNAME)
                 conn.compute.remove_floating_ip_from_server(server, floating_ip)
-                ip_address=conn.network.find_ip(floating_ip)
+                ip_address = conn.network.find_ip(floating_ip)
                 conn.network.delete_ip(ip_address)
                 print("Floating IP address " + floating_ip + " released")
-
-            server = conn.compute.delete_server(SERVER)
-            print('Server "' + SERVERNAME + '" deleted')
-
+            conn.compute.delete_server(SERVER)
+            print('Server deleted')
         else:
-            print('Server "' + SERVERNAME + '" not found, therefore no action taken')
+            print("Server not found, therefore no action taken")
     network = conn.network.find_network(NETWORK)
     router = conn.network.find_router(ROUTER)
-    print("------------------------------------------")
+    print(NEWLINE)
     if network:
         for subnet in network.subnet_ids:
-            if router:
-                conn.network.remove_interface_from_router(router.id, subnet)
             print("Deleting subnet ID: " + subnet)
             conn.network.delete_subnet(subnet, ignore_missing=False)
+            print("Subnet deleted")
     else:
         print("Network not found")
-    print("------------------------------------------")
+    print(NEWLINE)
     if router:
         print("Deleting router " + ROUTER)
         conn.network.delete_router(router)
@@ -165,9 +161,7 @@ def destroy():
     if network:
         conn.network.delete_network(network, ignore_missing=False)
         print("Network " + NETWORK + " deleted")
-    else:
-        print("Network not found")
-    print("------------------------------------------")
+    print(NEWLINE)
     pass
 
 def status():
@@ -184,16 +178,15 @@ def status():
             else:
                 floating_ip = "no floating IP"
             serverStatus = serverDetails.status
-            print("------------------------------------------")
+            print(NEWLINE)
             print("Server name: " + SERVERNAME)
             print("Current status: " + serverStatus)
             print("Private IP: " + private_ip)
             print("Floating IP: " + floating_ip)
         else:
             print('Server "' + SERVERNAME + '" not found')
-    print("------------------------------------------")
+    print(NEWLINE)
     pass
-
 
 ### You should not modify anything below this line ###
 if __name__ == '__main__':
