@@ -173,7 +173,17 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
-    pass
+    conn = openstack.connect(cloud_name='catalystcloud')
+    for server in SERVERS:
+        if conn.compute.find_server(name_or_id=server) is not None:
+            server_to_check = conn.compute.find_server(name_or_id=server)
+            ips = conn.compute.server_ips(server_to_check)
+            print("\nName: " + server + "\nStatus: " + conn.compute.get_server(server_to_check).status
+                    + "\nIP address: ")
+            for ip in ips:
+                print(ip.address)
+        else:
+            print('Server ' + server + ' does not exist! Continuing...')
 
 
 ### You should not modify anything below this line ###
