@@ -69,7 +69,7 @@ def create():
                     security_groups=[{"name":security_group.name}]
                     )
             new_server = conn.compute.wait_for_server(new_server)
-            print(server + " created")
+            print(server + ' created')
             
             #The web server need a floating IP associated with it
             if server == 'nichmr1-web':
@@ -77,13 +77,13 @@ def create():
                 floating_ip = conn.network.create_ip(
                     floating_network_id=public_network.id
                 )
-                print("Floating IP created")
+                print('Floating IP created')
                 #Associate the floating IP to the web server
                 web_server = conn.compute.find_server('nichmr1-web')
                 conn.compute.add_floating_ip_to_server(web_server, floating_ip.floating_ip_address)
-                print("Assigned floating IP to web server")
+                print('Assigned floating IP to web server')
         else:
-            print("Server " + server + " already exists! Continuing...")
+            print('Server " + server + " already exists! Continuing...')
 
 
 def run():
@@ -139,9 +139,9 @@ def destroy():
                         conn.network.find_ip(
                             conn.compute.get_server(server_to_delete).addresses['nichmr1-net'][1]["addr"]))
             conn.compute.delete_server(server_to_delete)
-            print(server + " Destroyed")
+            print(server + ' Destroyed')
         else:
-            print("ERROR: " + server + " does not exist. Continuing...")
+            print('Server ' + server + ' does not exist. Continuing...')
 
 
     #Destroy the Router
@@ -150,14 +150,14 @@ def destroy():
         conn.network.delete_router(router)
         print('Router Destroyed')
     else:
-        print("ERROR: Router does not exist. Continuing...")
+        print('Router does not exist. Continuing...')
 
     #Destroy the Subnet
     if subnet is not None:
         conn.network.delete_subnet(subnet, ignore_missing=False)
         print('Subnets Destroyed')
     else:
-        print("ERROR: Subnet does not exist. Continuing...")
+        print('Subnet does not exist. Continuing...')
 
 
     #Destroy the Network
@@ -165,7 +165,7 @@ def destroy():
         conn.network.delete_network(network, ignore_missing=False)
         print('Network Destroyed')
     else:
-        print("ERROR: Network does not exist. Continuing...")
+        print('Network does not exist. Continuing...')
 
 
 
