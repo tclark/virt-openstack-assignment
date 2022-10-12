@@ -6,22 +6,36 @@ import openstack
 
 conn = openstack.connect(cloud_name='openstack', region_name='nz-por-1')
 
+def getNetwork():
+    network = conn.network.find_network(constant.NETWORK)
+    return network
+
+def getSubnet():
+    subnet = conn.network.find_subnet(constant.SUBNET)
+    return subnet
+
+def getRouter():
+    router = conn.network.find_router(constant.ROUTERNAME)
+    return router
 
 def create_network():
-    print ("Checking network status...")
+    print("Checking network status...")
+
+#define network variables
+    network = getNetwork()
+    subnet = getSubnet()
+    router = getRouter()
+
+    print(router)
 
 #check for network and create if non existing
-    network = conn.network.find_network(constant.NETWORK)
-    subnet = conn.network.find_subnet(constant.SUBNET)
-
     if (network is None):
         network = conn.network.create_network(
             name=constant.NETWORK
         )
         print("Created network with name " + constant.NETWORK)
-        
-    #print(westcl4_net)
-#check for subnet and create if non existing
+
+# check for subnet and create if non existing
     if (subnet is None):
         subnet = conn.network.create_subnet(
         name=constant.SUBNET,
@@ -32,13 +46,20 @@ def create_network():
         )
         print("Created subnet with name " + constant.SUBNET)
 
-    #print(USER_subnet)
-
+    if (router is None):   
+        try:
+            router = conn.network.create_router(
+                name= "westcl4-net", external_gateway_info={"network_id": conn.network.find_network("public-net").id})
+            print("Created router with name ")
+        except:
+            print("Router creation failed")
+        router = conn.network.add_interface_to_router(router,subnet_id=subnet.id)
+        print(router)
 
 def create():
     ''' Create a set of Openstack resources '''
     print("Create test")
-    #print(constant.USER)
+    # print(constant.USER)
     create_network()
 
     pass
