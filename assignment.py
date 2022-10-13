@@ -200,9 +200,15 @@ def destroy():
 pass
 
 def status():
-    ''' Print a status report on the OpenStack
-    virtual machines created by the create action.
-    '''
+    for name in SERVERNAMES:
+        server = conn.compute.find_server(name_or_id=name)
+
+        if server is not None:
+            vm = conn.compute.get_server(server)
+            addresses = []
+            for info in server.addresses[NETWORK]:
+                addresses.append(info['addr'])
+                print(f'Sever: {vm.name}, Status: {vm.status}, Address: {addresses}')
     pass
 
 
