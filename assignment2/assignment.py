@@ -68,7 +68,7 @@ def create_network():
         print(router)
     else:
         print("Router already exists")
-        
+
     print(floating_ip)
     # Check for floating IP and create if non existing
     if (floating_ip is None):
@@ -156,33 +156,33 @@ def run_compute():
     print(app.status)
 
     if (app is not None):
-        if (app.status == "SHUTOFF"):
+        if (app.status != "Running"):
             try:
                 conn.compute.start_server(app)
                 print("App server started")
             except:
                 print("App server failed to start")
-        else:
+        elif (app.status == "Running"):
             print("App server already running")
 
     if (web is not None):
-        if (web.status == "SHUTOFF"):
+        if (web.status != "Running"):
             try:
                 conn.compute.start_server(web)
                 print("Web server started")
             except:
                 print("Web server failed to start")
-        else:
+        elif (web.status == "Running"):
             print("Web server already running")
 
     if (db is not None):
-        if (db.status == "SHUTOFF"):
+        if (db.status != "Running"):
             try:
                 conn.compute.start_server(db)
                 print("DB server started")
             except:
                 print("DB server failed to start")
-        else:
+        elif (db.status == "Running"):
             print("DB server already running")
 
     
