@@ -244,11 +244,6 @@ def status():
             print("Server",serverName,"not found")
 #   pass
 
-#create()
-#run()
-#stop()
-#status()
-destroy()
 
 ### You should not modify anything below this line ###
 #if __name__ == '__main__':
