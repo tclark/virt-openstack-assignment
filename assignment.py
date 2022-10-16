@@ -119,7 +119,7 @@ def stop():
             elif serverStatus == "SHUTOFF":
                 print("Server already stopped, no action taken")
         else:
-            print("Server not found")
+            print("Server not found, no action taken")
     print(NEWLINE)
     pass
 
