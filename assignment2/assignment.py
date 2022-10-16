@@ -20,15 +20,22 @@ def getRouter():
     router = conn.network.find_router(constant.ROUTERNAME)
     return router
 
+def get_floating_ip():
+    ''' Get a floating IP address from the pool
+    '''
+    floating_ip = conn.network.create_ip(floating_network_id=conn.network.find_network("public-net").id)
+    return floating_ip
+
 def create_network():
     print("Checking network status...")
 
-    #define network variables
+    # define network variables
     network = getNetwork()
     subnet = getSubnet()
     router = getRouter()
+    floating_ip = get_floating_ip()
 
-    #check for network and create if non existing
+    # check for network and create if non existing
     if (network is None):
         network = conn.network.create_network(
             name=constant.NETWORK
@@ -38,25 +45,37 @@ def create_network():
     # check for subnet and create if non existing
     if (subnet is None):
         subnet = conn.network.create_subnet(
-        name=constant.SUBNET,
-        network_id=network.id,
-        ip_version='4',
-        cidr=constant.CIDR,
-        gateway_ip=constant.GATEWAY_IP
+            name=constant.SUBNET,
+            network_id=network.id,
+            ip_version='4',
+            cidr=constant.CIDR,
+            gateway_ip=constant.GATEWAY_IP
         )
         print("Created subnet with name " + constant.SUBNET)
 
     # Check for router and create if non existing
-    if (router is None):   
+    if (router is None):
         try:
             router = conn.network.create_router(
-                name= "westcl4-net", 
+                name="westcl4-net",
                 external_gateway_info={"network_id": conn.network.find_network("public-net").id})
             print("Created router with attributes: ")
         except:
             print("Router creation failed")
-        router = conn.network.add_interface_to_router(router,subnet_id=subnet.id)
+        router = conn.network.add_interface_to_router(
+            router, 
+            subnet_id=subnet.id)
         print(router)
+    else:
+        print("Router already exists")
+        
+    print(floating_ip)
+    # Check for floating IP and create if non existing
+    if (floating_ip is None):
+        floating_ip = conn.network.create_ip(
+            floating_network_id=conn.network.find_network("public-net").id)
+        print("Created floating IP with attributes: ")
+        print(floating_ip)
 
 # checking for existing compute
 def get_app():
@@ -71,52 +90,54 @@ def get_db():
     db = conn.compute.find_server(constant.DB_NAME)
     return db
 
+
 def create_compute():
     print("Checking compute status...")
-    #define compute variables
+    # define compute variables
     app = get_app()
     web = get_web()
     db = get_db()
 
-    print(app)
-
-    #check for app server and create if non existing
+    # check for app server and create if non existing
     if (app is None):
         def create_app():
             print("Creating app server with attributes: ")
             app = conn.compute.create_server(
-                name = constant.APP_NAME,
-                image_id = conn.compute.find_image(constant.IMAGE).id,
-                flavor_id = conn.compute.find_flavor(constant.FLAVOUR).id,
-                networks = [{"uuid": conn.network.find_network(constant.NETWORK).id}]
+                name=constant.APP_NAME,
+                image_id=conn.compute.find_image(constant.IMAGE).id,
+                flavor_id=conn.compute.find_flavor(constant.FLAVOUR).id,
+                networks=[
+                    {"uuid": conn.network.find_network(constant.NETWORK).id}]
             )
             app = conn.compute.wait_for_server(app)
             print(app)
         create_app()
 
-    #check for web server and create if non existing
+    # check for web server and create if non existing
     if (web is None):
         def create_web():
             print("Creating web server with attributes: ")
             web = conn.compute.create_server(
-                name = constant.WEB_NAME,
-                image_id = conn.compute.find_image(constant.IMAGE).id,
-                flavor_id = conn.compute.find_flavor(constant.FLAVOUR).id,
-                networks = [{"uuid": conn.network.find_network(constant.NETWORK).id}]
+                name=constant.WEB_NAME,
+                image_id=conn.compute.find_image(constant.IMAGE).id,
+                flavor_id=conn.compute.find_flavor(constant.FLAVOUR).id,
+                networks=[
+                    {"uuid": conn.network.find_network(constant.NETWORK).id}]
             )
             web = conn.compute.wait_for_server(web)
             print(web)
         create_web()
-    
-    #check for db server and create if non existing
+
+    # check for db server and create if non existing
     if (db is None):
         def create_db():
             print("Creating db server with attributes: ")
             db = conn.compute.create_server(
-                name = constant.DB_NAME,
-                image_id = conn.compute.find_image(constant.IMAGE).id,
-                flavor_id = conn.compute.find_flavor(constant.FLAVOUR).id,
-                networks = [{"uuid": conn.network.find_network(constant.NETWORK).id}]
+                name=constant.DB_NAME,
+                image_id=conn.compute.find_image(constant.IMAGE).id,
+                flavor_id=conn.compute.find_flavor(constant.FLAVOUR).id,
+                networks=[
+                    {"uuid": conn.network.find_network(constant.NETWORK).id}]
             )
             db = conn.compute.wait_for_server(db)
             print(db)
@@ -124,7 +145,47 @@ def create_compute():
     return
 
 
+def run_compute():
+    ''' Start the compute resources created by the create action '''
+    print("Starting compute resources...")
 
+    app = get_app()
+    web = get_web()
+    db = get_db()
+
+    print(app.status)
+
+    if (app is not None):
+        if (app.status == "SHUTOFF"):
+            try:
+                conn.compute.start_server(app)
+                print("App server started")
+            except:
+                print("App server failed to start")
+        else:
+            print("App server already running")
+
+    if (web is not None):
+        if (web.status == "SHUTOFF"):
+            try:
+                conn.compute.start_server(web)
+                print("Web server started")
+            except:
+                print("Web server failed to start")
+        else:
+            print("Web server already running")
+
+    if (db is not None):
+        if (db.status == "SHUTOFF"):
+            try:
+                conn.compute.start_server(db)
+                print("DB server started")
+            except:
+                print("DB server failed to start")
+        else:
+            print("DB server already running")
+
+    
 def create():
     ''' Create a set of Openstack resources '''
     print("Creating resources...")
@@ -137,6 +198,7 @@ def run():
     ''' Start  a set of Openstack virtual machines
     if they are not already running.
     '''
+    run_compute()
     pass
 
 
