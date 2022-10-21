@@ -1,5 +1,7 @@
 # Adapted from examples on the openstack github https://github.com/openstack/openstacksdk/tree/master/examples/compute
 
+#
+
 from unicodedata import name
 import constant
 import argparse
@@ -77,22 +79,31 @@ def create_network():
         print("Created floating IP with attributes: ")
         print(floating_ip)
 
+def get_current_servers():
+    servers = {
+        f'westcl4-web': conn.compute.find_server(f'westcl4-web', ignore_missing=True),
+        f'westcl4-app': conn.compute.find_server(f'westcl4-app', ignore_missing=True),
+        f'westcl4-db': conn.compute.find_server(f'westcl4-db', ignore_missing=True)
+    }
+    return servers
+
 # checking for existing compute
 def get_app():
-    app = conn.compute.find_server(constant.APP_NAME)
+    app = conn.compute.get_server('westcl4-app')
     return app
 
 def get_web():
-    web = conn.compute.find_server(constant.WEB_NAME)
+    web = conn.compute.get_server(constant.WEB_NAME)
     return web
 
 def get_db():
-    db = conn.compute.find_server(constant.DB_NAME)
+    db = conn.compute.get_server(constant.DB_NAME)
     return db
 
 
 def create_compute():
     print("Checking compute status...")
+    print("Note: Each server instance will take a few minutes to create.")
     # define compute variables
     app = get_app()
     web = get_web()
@@ -149,42 +160,34 @@ def run_compute():
     ''' Start the compute resources created by the create action '''
     print("Starting compute resources...")
 
-    app = get_app()
-    web = get_web()
-    db = get_db()
+    #create array and populate with servers
+    servers = get_current_servers()
+    for server_name, server in servers.items():
+        if(server is not None):
+            res = conn.compute.get_server(server.id)
+            if(res.status == "SHUTOFF"):
+                print("Starting server:  {} ".format(server_name))
+                conn.compute.start_server(server.id)
+            else:
+                print("Server already running:  {} ".format(server_name))
+        else:
+            print("Server unavailable:  {} ".format(server_name))  
 
-    print(app.status)
+def stop_compute():
+    ''' Stop the compute resources created by the create action '''
+    print("Stopping compute resources...")
 
-    if (app is not None):
-        if (app.status != "Running"):
-            try:
-                conn.compute.start_server(app)
-                print("App server started")
-            except:
-                print("App server failed to start")
-        elif (app.status == "Running"):
-            print("App server already running")
-
-    if (web is not None):
-        if (web.status != "Running"):
-            try:
-                conn.compute.start_server(web)
-                print("Web server started")
-            except:
-                print("Web server failed to start")
-        elif (web.status == "Running"):
-            print("Web server already running")
-
-    if (db is not None):
-        if (db.status != "Running"):
-            try:
-                conn.compute.start_server(db)
-                print("DB server started")
-            except:
-                print("DB server failed to start")
-        elif (db.status == "Running"):
-            print("DB server already running")
-
+    servers = get_current_servers()
+    for server_name, server in servers.items():
+        if(server is not None):
+            res = conn.compute.get_server(server.id)
+            if(res.status == "ACTIVE"):
+                print("Stopping server: {} ".format(server_name))
+                conn.compute.stop_server(server.id)
+            else:
+                print("Server already stopped: {} ".format(server_name))
+        else:
+            print("Server unavailable: {} ".format(server_name))
     
 def create():
     ''' Create a set of Openstack resources '''
@@ -206,6 +209,7 @@ def stop():
     ''' Stop  a set of Openstack virtual machines
     if they are running.
     '''
+    stop_compute()
     pass
 
 
