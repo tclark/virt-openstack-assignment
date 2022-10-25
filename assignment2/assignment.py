@@ -208,6 +208,17 @@ def get_status():
             print("Server unavailable: {} ".format(server_name))
     pass 
 
+def tear_down():
+    #delete servers and networks
+    print("Deleting compute resources...")
+    servers = get_current_servers()
+    for server_name, server in servers.items():
+        if(server is not None):
+            print("Deleting server: {} ".format(server_name))
+            conn.compute.delete_server(server.id)
+        else:
+            print("Server unavailable: {} ".format(server_name))
+
 def create():
     ''' Create a set of Openstack resources '''
     print("Creating resources...")
@@ -236,6 +247,7 @@ def destroy():
     ''' Tear down the set of Openstack resources 
     produced by the create action
     '''
+    tear_down()
     pass
 
 
