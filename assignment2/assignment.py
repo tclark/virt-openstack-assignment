@@ -218,6 +218,22 @@ def tear_down():
             conn.compute.delete_server(server.id)
         else:
             print("Server unavailable: {} ".format(server_name))
+    
+    print("Deleting network resources...")
+    # define network variables
+    network = getNetwork()
+    subnet = getSubnet()
+    router = getRouter()
+    ports = None
+
+    # delete router
+    if (router is not None):
+        print("Deleting router...")
+        conn.network.remove_interface_from_router(router, subnet.id, ports.id)
+        conn.network.delete_router(router.id)
+    else:
+        print("Router unavailable.")
+    
 
 def create():
     ''' Create a set of Openstack resources '''
