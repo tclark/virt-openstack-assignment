@@ -2,6 +2,7 @@
 
 #
 
+from configparser import SectionProxy
 from unicodedata import name
 import constant
 import argparse
@@ -35,7 +36,6 @@ def create_network():
     network = getNetwork()
     subnet = getSubnet()
     router = getRouter()
-    floating_ip = get_floating_ip()
 
     # check for network and create if non existing
     if (network is None):
@@ -108,6 +108,9 @@ def create_compute():
     app = get_app()
     web = get_web()
     db = get_db()
+    
+    public = conn.network.find_network(constant.PUBLIC_NET).id
+
 
     # check for app server and create if non existing
     if (app is None):
@@ -118,9 +121,10 @@ def create_compute():
                 image_id=conn.compute.find_image(constant.IMAGE).id,
                 flavor_id=conn.compute.find_flavor(constant.FLAVOUR).id,
                 networks=[
-                    {"uuid": conn.network.find_network(constant.NETWORK).id}]
+                    {"uuid": conn.network.find_network(constant.NETWORK).id}],
             )
             app = conn.compute.wait_for_server(app)
+            conn.compute.add_security_group_to_server(app, constant.SECURITY_GROUP)
             print(app)
         create_app()
 
@@ -136,6 +140,9 @@ def create_compute():
                     {"uuid": conn.network.find_network(constant.NETWORK).id}]
             )
             web = conn.compute.wait_for_server(web)
+            conn.compute.add_security_group_to_server(app, constant.SECURITY_GROUP)
+            ip = conn.network.create_ip(floating_network_id=public)
+            conn.compute.add_floating_ip_to_server(app, ip.floating_ip_address)
             print(web)
         create_web()
 
@@ -151,6 +158,7 @@ def create_compute():
                     {"uuid": conn.network.find_network(constant.NETWORK).id}]
             )
             db = conn.compute.wait_for_server(db)
+            conn.compute.add_security_group_to_server(app, constant.SECURITY_GROUP)
             print(db)
         create_db()
     return
@@ -189,6 +197,17 @@ def stop_compute():
         else:
             print("Server unavailable: {} ".format(server_name))
     
+def get_status():
+    #get server status and print to terminal
+    servers = get_current_servers()
+    for server_name, server in servers.items():
+        if(server is not None):
+            res = conn.compute.get_server(server.id)
+            print("Server: {} Status: {} ".format(server_name, res.status))
+        else:
+            print("Server unavailable: {} ".format(server_name))
+    pass 
+
 def create():
     ''' Create a set of Openstack resources '''
     print("Creating resources...")
@@ -224,6 +243,7 @@ def status():
     ''' Print a status report on the OpenStack
     virtual machines created by the create action.
     '''
+    get_status()
     pass
 
 

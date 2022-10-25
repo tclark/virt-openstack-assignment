@@ -13,12 +13,15 @@ CIDR = "192.168.50.0/24"
 GATEWAY_IP = "192.168.50.1"
 ROUTERNAME = "westcl4-rtr"
 
+
 # compute constants
 IMAGE = "ubuntu-minimal-22.04-x86_64"
 FLAVOUR = "c1.c1r1"
 WEB_NAME = "westcl4-web"
 APP_NAME = "westcl4-app"
 DB_NAME = "westcl4-db"
+SECURITY_GROUP = "default"
+PUBLIC = "public-net"
 
 # run constants
 
