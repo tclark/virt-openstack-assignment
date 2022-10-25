@@ -1,3 +1,8 @@
+
+
+
+DUE: 17 October
+
 # virt-openstack-assignment
 OpenStack SDK assignment for ID720 paper
 
@@ -19,7 +24,7 @@ be taken for each argument are
      - names: \<username\>-web, \<username\>-app, \<username\>-db
      - security-group: assignment2 (You do not need to create this)
   Assign the floating IP to the web server.
-  If any of the resources above already exisit when the script is run, then they 
+  If any of the resources above already exist when the script is run, then they 
   should not be recreated.
 
 *run*: Start the three servers created above. If any of them do not exist, 
